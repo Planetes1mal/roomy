@@ -190,6 +190,12 @@
                     rail:!!offNav, railLeft:offNav && offNav.left, paneRight:paneRight(), contentRight:window.contexts[0].navigation.contentRight(),
                     column:contentWidth('column'), composer:rect('composer').width, columnLeft:rect('column').left, composerLeft:rect('composer').left,
                     width:status().capabilities.width };
+                // 稳定状态下再同步一次布局不改写 html 的 class：布局观察器监听它，改写会让每一帧都再排一次同步。
+                const classRecords = new MutationObserver(() => {});
+                classRecords.observe(root, { attributes:true, attributeFilter:['class'] });
+                status();
+                out.widthOff.classMutations = classRecords.takeRecords().length;
+                classRecords.disconnect();
                 await save(K.navigation, false);
                 out.widthOffNavOff = { gutterClass:root.classList.contains('wider-nav-gutter'), owners:qa('[data-wgx-width]').length };
                 await save(K.navigation, true);
@@ -409,6 +415,7 @@
         }
         assert(r.widthOff.railLeft >= r.widthOff.contentRight - 0.5 && r.widthOff.railLeft + 24 <= r.widthOff.paneRight + 0.5,
             label(`rail fits beside the native column: ${JSON.stringify(r.widthOff)}`));
+        assert.strictEqual(r.widthOff.classMutations, 0, label('a settled layout sync with width off leaves html classes untouched'));
         assert.deepStrictEqual([r.widthOffNavOff.gutterClass, r.widthOffNavOff.owners], [false, 0], label('navigation off releases it'));
 
         // 界面识别。
