@@ -128,13 +128,16 @@
         }
 
         // 采样前临时撤下本扩展的排版规则，同一任务内恢复；先批量读取再批量写入。
+        // 默认排版不采样文字；用户消息铺满与排版无关，仍要为新气泡（含换掉的对话里清除过标记的气泡）标记路径。
         function measure(scopes) {
             const settings = ctx.settings;
-            if (!readingScope || (settings.messageFontSize === 100 && settings.messageCompactness === 0 &&
-                !settings.messageSpacingCustom)) return;
+            const sample = settings.messageFontSize !== 100 || settings.messageCompactness !== 0 ||
+                settings.messageSpacingCustom;
+            const fullWidth = settings.userFullWidth && ctx.width.active;
+            if (!readingScope || (!sample && !fullWidth)) return;
             const { nodes: pending, bubbles } = collectReadingNodes(scopes);
-            if (settings.userFullWidth && ctx.width.active) markFullPaths(bubbles);
-            if (!pending.length) return;
+            if (fullWidth) markFullPaths(bubbles);
+            if (!sample || !pending.length) return;
             const root = document.documentElement;
             const tokens = root.getAttribute(READING_ATTR);
             if (tokens !== null) root.removeAttribute(READING_ATTR);

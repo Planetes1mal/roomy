@@ -62,10 +62,11 @@
             const railWanted = navigation.wanted() && navigation.turns().length >= (window.widerMessageNavigation
                 ? window.widerMessageNavigation.MIN_TURNS : 2);
             // 宽度关闭时先撤下本扩展为导航留白写入的标记与内边距，在同一任务内测量原生布局（不会闪烁）。
+            // 宽度规则同时要求所有者标记，撤下标记即可；html 的类留给下面按需切换：布局观察器监听它，
+            // 每次先删后加会让每一帧都再排一次同步。
             if (!module.active && markedOwners.length) {
                 markedOwners.forEach(owner => owner.removeAttribute(WIDTH_ATTR));
                 markedOwners = [];
-                root.classList.remove(GUTTER_CLASS);
             }
             module.columnWidth = 0;
             if (surface.column) {

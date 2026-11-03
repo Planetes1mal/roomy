@@ -190,6 +190,12 @@
                     rail:!!offNav, railLeft:offNav && offNav.left, paneRight:paneRight(), contentRight:window.contexts[0].navigation.contentRight(),
                     column:contentWidth('column'), composer:rect('composer').width, columnLeft:rect('column').left, composerLeft:rect('composer').left,
                     width:status().capabilities.width };
+                // 稳定状态下再同步一次布局不改写 html 的 class：布局观察器监听它，改写会让每一帧都再排一次同步。
+                const classRecords = new MutationObserver(() => {});
+                classRecords.observe(root, { attributes:true, attributeFilter:['class'] });
+                status();
+                out.widthOff.classMutations = classRecords.takeRecords().length;
+                classRecords.disconnect();
                 await save(K.navigation, false);
                 out.widthOffNavOff = { gutterClass:root.classList.contains('wider-nav-gutter'), owners:qa('[data-wgx-width]').length };
                 await save(K.navigation, true);
@@ -266,6 +272,19 @@
                 out.takeover = { railsBefore, rails:rails(), contexts:window.contexts.length, oldRetired:window.contexts[0].retired,
                     newRetired:window.contexts[1] && window.contexts[1].retired, font:px('p1','fontSize'), column:contentWidth('column'),
                     owners:qa('[data-wgx-width]').length };
+                // 11. 默认字号与间距下的用户消息铺满：网站换掉对话元素（切换对话）而窗格与滚动区不变时，新对话同样铺满。
+                await reading({ userFullWidth:true });
+                const conversation = window.contexts[window.contexts.length - 1].surface.root;
+                const fresh = conversation.cloneNode(true);
+                for (const el of [fresh, ...fresh.querySelectorAll('*')]) {
+                    [...el.attributes].filter(attr => attr.name.startsWith('data-wgx')).forEach(attr => el.removeAttribute(attr.name));
+                    Array.from(el.style).filter(name => name.startsWith('--wgx')).forEach(name => el.style.removeProperty(name));
+                }
+                conversation.replaceWith(fresh);
+                // 同步识别新对话（与排队的布局帧相同），在任何后续布局同步之前读取结果。
+                s = status();
+                out.switched = { root:window.contexts[window.contexts.length - 1].surface.root === fresh, bubble:rect('bubble').width,
+                    column:contentWidth('column'), fullWidth:s.capabilities.fullWidth };
                 ${expected.extraScenario || ''}
                 report(out);
             } catch (error) {
@@ -396,6 +415,7 @@
         }
         assert(r.widthOff.railLeft >= r.widthOff.contentRight - 0.5 && r.widthOff.railLeft + 24 <= r.widthOff.paneRight + 0.5,
             label(`rail fits beside the native column: ${JSON.stringify(r.widthOff)}`));
+        assert.strictEqual(r.widthOff.classMutations, 0, label('a settled layout sync with width off leaves html classes untouched'));
         assert.deepStrictEqual([r.widthOffNavOff.gutterClass, r.widthOffNavOff.owners], [false, 0], label('navigation off releases it'));
 
         // 界面识别。
@@ -430,6 +450,11 @@
             [1, 1, 2, true, false], label(`a new instance retires the old one and keeps one rail: ${JSON.stringify(r.takeover)}`));
         near(r.takeover.font, n.p * 1.25, label('the new instance reapplies reading'));
         near(r.takeover.column, 1000, label('the new instance reapplies width'), 1);
+
+        // 默认字号与间距下切换对话：用户消息铺满不依赖阅读采样。
+        assert.strictEqual(r.switched.root, true, label('the replaced conversation is recognized'));
+        near(r.switched.bubble, r.switched.column, label(`user bubble fills a replaced conversation at default text settings: ${JSON.stringify(r.switched)}`), 1);
+        assert.strictEqual(r.switched.fullWidth, 'active');
     }
 
     for (const target of selected) {
