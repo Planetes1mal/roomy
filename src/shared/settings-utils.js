@@ -1,7 +1,6 @@
 (function (global) {
     'use strict';
 
-    // 站点注册表（sites.js）必须先加载：存储键、任务预设和能力都由它推导。
     const sites = global.widerRoomySites;
     const SITE_IDS = sites.sites.map(site => site.id);
     const keysById = Object.fromEntries(SITE_IDS.map(id => [id, sites.getStorageKeys(id)]));
@@ -12,24 +11,18 @@
     const PRESET_COUNT = 5;
     const SITE_ENABLED_KEYS = keyMap('enabled');
     const TASK_UNDO_KEYS = keyMap('taskUndo');
-    // 消息导航按网站独立开关，不属于任务预设管理的字段。
     const NAVIGATION_KEYS = keyMap('navigation');
-    // 宽度与阅读对象的键；Gemini 用顶层键，这里为 null。
     const SITE_WIDTH_KEYS = keyMap('width');
     const SITE_READING_KEYS = keyMap('reading');
-    // 新装或从加入该网站之前的版本更新后、尚未打开弹窗时存在（chrome.storage.local），工具栏图标显示角标。
     const SITE_INTRO_KEYS = keyMap('intro');
-    // 旧导出名保留给 chatgpt-content.js 与现有测试，直到它迁到内核。
     const CHATGPT_WIDTH_KEY = SITE_WIDTH_KEYS.chatgpt;
     const CHATGPT_READING_KEY = SITE_READING_KEYS.chatgpt;
     const CHATGPT_INTRO_KEY = SITE_INTRO_KEYS.chatgpt;
-    // 内容脚本协议版本：2 起支持总开关、阅读设置刷新与细分状态。
     const PROTOCOL_VERSION = 2;
     const DENSITY_KEYS = ['messageCompactness', 'messageSpacingCustom', 'messageLineHeight', 'messageParagraphSpacing'];
     const READING_KEYS = [...DENSITY_KEYS, 'messageFontSize', 'userFullWidth'];
     const GEMINI_WIDTH_KEYS = ['widthEnabled', 'chatWidth', 'chatWidthSetting', 'widthMin', 'widthMax',
         'widthPercentMin', 'widthPercentMax', 'presetsByUnit', 'presets'];
-    // 任务预设的定义；每个网站在注册表里选用其中几项。代码换行只对有 codeWrap 能力的网站生效。
     const TASK_DEFINITIONS = {
         reading: { chatWidthSetting: { value: 1000, unit: 'px' }, messageFontSize: 110, codeWrap: true },
         table: { chatWidthSetting: { value: 90, unit: 'percent' }, messageFontSize: 100, codeWrap: false },
@@ -227,8 +220,6 @@
     }
 
     function deriveDensityFromCompactness(compactness) {
-        // 保留旧字段作为高级手动控件的起始值和存储兼容层。
-        // Auto 的实际间距由内容脚本按各消息的原生样式连续缩放，不使用这些绝对值。
         const normalizedCompactness = Math.round(clampNumber(compactness, 0, 100));
 
         if (normalizedCompactness === 0) {
@@ -327,10 +318,6 @@
         };
     }
 
-    /**
-     * 存储编解码器：读取时把存储内容转成统一的网站设置对象，写入时把修改转成要写的键。
-     * 默认编解码器按命名规则服务所有网站；Gemini 的顶层键由兼容编解码器处理，其它代码不接触键名。
-     */
     const CODECS = {
         default: {
             storageKeys: keys => [keys.enabled, keys.navigation, keys.width, keys.reading],
@@ -352,7 +339,6 @@
                 chatWidth: getLegacyChatWidth(width.chatWidthSetting),
                 presets: width.presetsByUnit[UNIT_PX]
             }),
-            // 密度四个字段相互关联，编辑其中任一项时一起写入；其余只写本次涉及的字段。
             readingPatch(next, changed, edit) {
                 const keys = new Set(changed);
                 if (DENSITY_KEYS.some(key => keys.has(key))) DENSITY_KEYS.forEach(key => keys.add(key));
@@ -378,7 +364,6 @@
         return keysById[site] || sites.getStorageKeys(site);
     }
 
-    // 从一个扁平对象（顶层宽度字段）得到宽度视图。
     function normalizeWidthFields(source) {
         const settings = normalizeStorage(source);
         return {
@@ -397,12 +382,10 @@
         return normalizeWidthFields(codecFor(site).widthSource(source, keysFor(site)));
     }
 
-    /** settings 是扁平的宽度字段；写入时按该网站的编解码器转成要写的键。 */
     function getSiteWidthStoragePayload(settings, site) {
         return codecFor(site).widthPayload(normalizeWidthFields(settings), keysFor(site));
     }
 
-    // 阅读设置：Gemini 沿用顶层字段；其它网站使用独立对象，宽度对象整体写入时不会抹掉它。
     function normalizeReadingSettings(source) {
         const reading = source && typeof source === 'object' ? source : {};
         return {
@@ -417,17 +400,14 @@
         return codecFor(site).readingSource(source, keysFor(site));
     }
 
-    /** 该网站在 storage.sync 里的全部键（读取与监听用）。 */
     function getSiteStorageKeys(site) {
         return codecFor(site).storageKeys(keysFor(site));
     }
 
-    /** 该网站的全部键名（含 local 的任务恢复记录与提示标记）。 */
     function getSiteKeys(site) {
         return { ...keysFor(site) };
     }
 
-    /** 一个站点的完整只读视图：总开关、宽度与阅读偏好。缺失字段取原生默认值。 */
     function normalizeSiteSettings(stored, site) {
         const source = stored && typeof stored === 'object' ? stored : {};
         const keys = keysFor(site);
@@ -438,7 +418,6 @@
             ...normalizeSiteWidthSettings(source, site),
             ...normalizeReadingSettings(getReadingSource(source, site))
         };
-        // 代码换行目前只有 Gemini 支持，且仍是顶层键。
         if (hasCapability(site, 'codeWrap')) settings.codeWrap = (getReadingSource(source, site) || {}).codeWrap === true;
         return settings;
     }
@@ -451,10 +430,6 @@
         return { [keysFor(site).navigation]: enabled === true };
     }
 
-    /**
-     * 只生成本次编辑涉及的阅读字段。独立阅读对象先合并最新已存值再整体替换；
-     * Gemini 的顶层键只写涉及的字段（见兼容编解码器）。
-     */
     function getSiteReadingPatch(stored, site, edit) {
         const changed = READING_KEYS.filter(key => Object.hasOwn(edit, key));
         const next = normalizeReadingSettings({
@@ -464,8 +439,6 @@
         return codecFor(site).readingPatch(next, changed, edit, keysFor(site));
     }
 
-    // 任务预设管理的字段：宽度、字号、间距（有代码换行能力的网站另含代码换行）。总开关、宽度开关、
-    // 用户消息铺满、范围和命名宽度预设都不属于任务。
     function getTaskManaged(settings, site) {
         const managed = {
             chatWidthSetting: { ...settings.chatWidthSetting },
@@ -485,7 +458,6 @@
         }, site);
     }
 
-    /** 把受管字段写回存储；宽度按当前范围钳制，站点其它设置保持不变。 */
     function getTaskPatch(stored, site, managed) {
         const current = normalizeSiteSettings(stored, site);
         const chatWidthSetting = normalizeWidthSetting(managed.chatWidthSetting, current);
@@ -505,17 +477,12 @@
         return key(a) === key(b);
     }
 
-    // 旧版 taskPresetUndo 是直接存放的快照，按已就绪记录读取。
     function readUndoRecord(value) {
         if (!value || typeof value !== 'object') return null;
         if (!value.state) return { state: 'ready', snapshot: value };
         return value;
     }
 
-    /**
-     * local 与 sync 不是同一事务。重新打开时按实际已存值判断未完成的操作：
-     * 与目标一致视为已完成，与操作前一致视为未发生，其余情况无法判断。
-     */
     function reconcileUndoRecord(record, actual, site) {
         if (!record || record.state === 'ready') return { record };
         const applying = record.state === 'applying';

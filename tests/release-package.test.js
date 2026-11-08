@@ -16,7 +16,6 @@ const notesPath = path.join(tempRoot, 'release notes.md');
 const manifestPath = path.join(fixtureRoot, 'manifest.json');
 const changelogPath = path.join(fixtureRoot, 'CHANGELOG.md');
 const runnerPath = path.join(tempRoot, 'run-package.ps1');
-// 与 scripts/package.ps1 相同的目录规则：manifest、LICENSE、src/ 下的 js/css/html、每种语言的字典和三个 PNG 图标。
 function packageFiles(root) {
     const list = ['manifest.json', 'LICENSE'];
     const walk = directory => {
@@ -32,7 +31,6 @@ function packageFiles(root) {
     return [...new Set(list)].sort();
 }
 const files = packageFiles(sourceRoot);
-// 注册表引用的每个文件都必须进 ZIP。
 const registrySandbox = { globalThis: {} };
 registrySandbox.globalThis = registrySandbox;
 vm.runInNewContext(fs.readFileSync(path.join(sourceRoot, 'src/shared/sites.js'), 'utf8'), registrySandbox);
@@ -123,7 +121,6 @@ try {
         fs.writeFileSync(destination, 'This file must never enter the release ZIP.');
     }
     fs.writeFileSync(changelogPath, changelog);
-    // Load ZIP inspection assemblies only after invoking the real packager so its own dependencies are tested.
     fs.writeFileSync(runnerPath, `param([string]$RepoRoot, [string]$OutputDirectory, [string]$Tag, [string]$NotesPath)
 $ErrorActionPreference = 'Stop'
 $package = & (Join-Path $RepoRoot 'scripts/package.ps1') -OutputDirectory $OutputDirectory -Tag $Tag -ReleaseNotesPath $NotesPath
@@ -181,7 +178,6 @@ Write-Output ('RESULT:' + ($report | ConvertTo-Json -Depth 5 -Compress))
 
     console.log(`release-package: ${checks} checks passed (${powershell})`);
 } finally {
-    // Resolve and verify the one temporary fixture root before deleting it recursively.
     const cleanupPath = path.resolve(tempRoot);
     assert.strictEqual(path.dirname(cleanupPath), path.resolve(os.tmpdir()));
     assert.ok(path.basename(cleanupPath).startsWith('roomy release '));

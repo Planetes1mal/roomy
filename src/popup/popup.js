@@ -1,6 +1,3 @@
-// 弹窗入口：读取设置、决定进入网站列表还是网站设置页、语言切换与返回。
-// 在支持的网站上打开 → 该网站设置页；其它页面 → 网站列表。
-
 const siteListView = document.getElementById('siteListView');
 const siteView = document.getElementById('siteView');
 const uiLanguageSelect = document.getElementById('uiLanguageSelect');
@@ -42,8 +39,6 @@ async function openSiteList() {
 document.getElementById('backToSites').addEventListener('click', openSiteList);
 document.getElementById('introLine').addEventListener('click', openSiteList);
 
-// ---- 初始化 ----
-
 async function initializeSettings() {
     setTaskBusy(false);
     try {
@@ -68,7 +63,6 @@ async function initializeSettings() {
         const savedSite = params.get('site');
         const requested = siteRegistry.get(savedSite) ? savedSite : params.get('view') === 'list' ? null : activeTabSite;
 
-        // 语言、网站与存储全部就绪后才开放控件，避免初始状态闪烁或覆盖用户操作。
         const uiLanguage = settingsUtils.normalizeUiLanguage(result.uiLanguage);
         await loadLanguageDictionary(uiLanguage);
         localizeHtmlPage();
@@ -104,7 +98,6 @@ uiLanguageSelect.addEventListener('change', async function () {
     try {
         await flushPendingChanges();
         await enqueue(() => chrome.storage.sync.set({ uiLanguage: language }));
-        // 保留当前页面（列表或某个网站），重新加载 popup 以全量重渲染新语言。
         const url = new URL(window.location.href);
         url.searchParams.delete('site');
         url.searchParams.delete('view');

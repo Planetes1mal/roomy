@@ -1,6 +1,3 @@
-// Synthetic max-width regressions using the real content CSS/JS and mocked Chrome APIs.
-// This is not the reporter's macOS DOM. Run: node tests/e2e/message-width.js [--probe]
-// WG_CHROME may point to another Chrome executable. Each run uses a disposable profile.
 (function () {
     'use strict';
 
@@ -51,8 +48,6 @@
                 <div class="upload-card" style="max-width:321px !important;width:500px">Attachment</div></input-area-v2>
             </input-container></section>`;
     };
-    // 2026-10-27 Gemini 实测结构：图片的两层 708px 上限不能随正文解锁。
-    // 仅保留结构和空白图片；同一正文里的代码、表格仍应加宽。
     const generatedFixture = `<div class="conversation-container" data-generated>
         <model-response><response-container><message-content><div class="markdown">
             <div class="attachment-container generated-images"><response-element>
@@ -208,7 +203,6 @@
                 send({action:'updateWidthSetting',enabled:true,setting:{value:900,unit:'px'}});
                 const resumed = {conversation:width(conversation),
                     bubble:width(baseline.querySelector('.user-query-bubble-with-background'))};
-                // 网站在扩展写入之后改变的值，应由网站继续持有。
                 conversation.style.setProperty('max-width','810px','important');
                 send({action:'updateWidthEnabled',enabled:false});
                 const siteOwned = conversation.style.getPropertyValue('max-width');
@@ -251,7 +245,6 @@
         `)}</body></html>`;
     const file = path.join(temp, 'fixture.html');
     fs.writeFileSync(file, html);
-    // 这是 CI 里第一次启动 Chrome，全新 Windows 环境的冷启动偶尔很慢：放宽超时，超时后用新的配置目录重试一次。
     const runChrome = (profile, size = '2000,1200') => spawnSync(chrome, ['--headless=new', '--no-first-run', '--no-default-browser-check',
         '--disable-extensions', `--window-size=${size}`, `--user-data-dir=${path.join(temp, profile)}`,
         '--dump-dom', '--virtual-time-budget=1000', pathToFileURL(file).href],
@@ -324,7 +317,6 @@
         assert(match, `No generated-image browser report at ${size} (${result.status})`);
         const measured = JSON.parse(match[1]);
         fs.writeFileSync(path.join(temp, `images-${size}.json`), JSON.stringify(measured.generated, null, 4));
-        // Windows 的无头 Chrome 视口比 --window-size 略窄（CI 实测 1470 → 1454），只确认尺寸大致正确。
         assert(Math.abs(measured.generated[0].viewport - Number(size.split(',')[0])) <= 40,
             `actual image test viewport ${measured.generated[0].viewport} for window ${size}`);
         imageReports.push(measured);
@@ -346,7 +338,6 @@
             }
             assert(Math.abs(row.imageLeft-row.bodyLeft) <= 1,
                 `Generated image must align with prose: imageLeft=${row.imageLeft}, bodyLeft=${row.bodyLeft}`);
-            // % 按视口（含滚动条）计算；上限取页面实际可用宽度，Windows 的常规滚动条会占掉一部分。
             const requested = row.setting.unit === 'px' ? row.setting.value : row.viewport * row.setting.value / 100;
             const expected = Math.min(requested, row.available);
             for (const key of ['body', 'code', 'table']) {

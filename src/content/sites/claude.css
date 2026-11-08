@@ -1,8 +1,3 @@
-/* Claude：html 上的 --transcript-width（48rem）同时限制消息列（transcript-list 的 max-width）与对话列
-   （chat-column 的 max-width = 变量 + 1.5rem 或 2.5rem）；输入区外层占对话列内容宽度的 100%。
-   只在内核标记的当前 chat-column 上覆盖这个变量：设定宽度是消息内容宽度，加回消息列两侧各 1rem 的原生内边距；
-   以内核实测的可用宽度减去对话列自己的内边距（--wgx-pad）与导航留白封顶，Artifacts 面板打开、窗口变窄时
-   不会比原生更窄。隐藏的旧路由、浮层与首页都不受影响。 */
 :where(html.wider-width-active, html.wider-nav-gutter) [data-testid="chat-column"][data-wgx-width="variable"] {
     --transcript-width: min(calc(var(--wgx-width, 1000px) + 2rem),
         calc(var(--wgx-available, 100%) - var(--wgx-pad, 0px) - var(--wgx-gutter, 0px) * 2)) !important;

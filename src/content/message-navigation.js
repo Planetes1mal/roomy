@@ -1,31 +1,21 @@
 (function () {
     'use strict';
 
-    // 共享的消息导航条：只负责渲染、滚动定位、键盘与清理。
-    // 站点脚本提供已识别的用户消息、实际滚动容器和可用的窗格边界，这里不含任何站点选择器。
     if (window.widerMessageNavigation) return;
 
     const RAIL_WIDTH = 24;
-    // 消息较少时每个刻度占 24px；超过窗格高度后整体压缩，所有刻度始终同时可见（不分页、不内部滚动）。
     const MAX_PITCH = 24;
-    // 指针或键盘焦点附近的刻度按 Dock 方式展开，使目标间距回到 24px；半径以压缩后的坐标计。
     const MAGNIFY_RADIUS = 72;
     const OLDER_SIZE = 24;
-    // 滚动到顶部后若在此时间内没有载入更早的消息，视为已到开头，隐藏“更早的消息”标记。
     const OLDER_SETTLE_MS = 1500;
     const MIN_TURNS = 2;
-    // 同时显示的刻度上限：当前位置附近一段，长对话不显示全部消息。
     const MAX_VISIBLE = 20;
-    // 跳到已卸载的消息：滚到记录位置后等待站点挂载，最多重试几次。
     const RELOCATE_MS = 250;
     const RELOCATE_TRIES = 4;
-    // 跳转后网站可能在开头载入更早的消息，使内容整体位移；此时间内内容高度变化后按目标重新对齐。
     const SETTLE_MS = 5000;
-    // 不支持 scrollend 时，以此时间视为平滑滚动已结束。
     const SETTLE_FALLBACK_MS = 1000;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    // rAF 在后台标签页与无头环境中可能暂停；以短定时器兜底，二者先到者执行一次。
     function schedule(callback) {
         let done = false;
         let frame = 0;
@@ -50,10 +40,6 @@
         return Math.min(Math.max(value, min), max);
     }
 
-    /**
-     * @param {{ labels: { rail: string, message: (n: number, total: number) => string, attachment: string,
-     *   older: string }, topInset?: (scrollRoot: Element) => number, onStale?: () => void }} options
-     */
     function create(options) {
         const labels = options.labels;
         const rail = document.createElement('nav');
@@ -74,12 +60,10 @@
         preview.id = `wg-nav-preview-${Math.random().toString(36).slice(2)}`;
         preview.setAttribute('role', 'tooltip');
         preview.hidden = true;
-        // 两行截断放在无内边距的内层元素上，避免第三行从外层的下内边距里露出。
         const previewText = document.createElement('span');
         previewText.className = 'wg-nav-preview-text';
         preview.append(previewText);
 
-        // pool：已挂载与记住的消息（按对话顺序）；turns：其中正在显示的一段，从 pool[start] 开始。
         let pool = [];
         let turns = [];
         let start = 0;
@@ -108,8 +92,6 @@
             return turn.text ? turn.text : labels.attachment;
         }
 
-        // ---- 刻度布局：压缩到窗格高度，指针/焦点附近展开 ----
-
         function magnifyCenter() {
             if (pointerY !== null) return pointerY;
             if (rail.contains(document.activeElement) && turns[focusIndex]) return MAX_PITCH / 2 + pitch * focusIndex;
@@ -118,11 +100,9 @@
 
         function tickPositions() {
             const n = turns.length;
-            // 首尾刻度中心距边缘 12px，使每个 24px 命中框都完整落在导航条内。
             const base = turns.map((turn, i) => MAX_PITCH / 2 + pitch * i);
             const center = magnifyCenter();
             if (center === null || pitch >= MAX_PITCH || n < 2) return base;
-            // 展开范围按刻度个数计（两侧各 MAGNIFY_RADIUS / 24 个），与消息总数无关。
             const reach = MAGNIFY_RADIUS / MAX_PITCH;
             const index = (center - MAX_PITCH / 2) / pitch;
             const weights = [];
@@ -130,7 +110,6 @@
             const total = weights.reduce((sum, w) => sum + w, 0);
             const span = pitch * (n - 1);
             if (n - 1 - total < 0.5) return base;
-            // 展开区间用 24px，但最多占总长度的一半；其余间距均匀压缩且保持为正，刻度不重叠、顺序不变。
             const spread = Math.min(MAX_PITCH, span / 2 / Math.max(total, 1e-6));
             const rest = (span - spread * total) / (n - 1 - total);
             const positions = [base[0]];
@@ -138,7 +117,6 @@
             return positions;
         }
 
-        // bounds 为容器坐标：挂在根元素时即视口坐标；挂进宿主浮窗时相对宿主，浮窗移动时导航条随之移动。
         function layout() {
             if (!bounds || !turns.length) return;
             const olderShown = !older.hidden;
@@ -159,16 +137,10 @@
             });
         }
 
-        // ---- 消息池：已挂载的消息，加上站点已卸载但带稳定 key、此前见过的消息（有上限） ----
-        // 每条记录的 offset 为消息顶部在滚动内容中的位置，与 scrollTop 同一坐标系；
-        // 已卸载的记录保留最后一次测得的位置，作为跳转时的估计。
-
-        // 测量已挂载消息；它们相对上次测量的位移中位数同样施加到已卸载记录上（流式输出、历史插入等整体位移）。
         function measure() {
             const rootRect = scrollRoot.getBoundingClientRect();
             const shifts = [];
             pool.forEach(entry => {
-                // 站点刚卸载、尚未重新同步的节点保留上次的位置。
                 if (!entry.element || !entry.element.isConnected) return;
                 const offset = entry.element.getBoundingClientRect().top - rootRect.top + scrollRoot.scrollTop;
                 if (entry.offset !== null) shifts.push(offset - entry.offset);
@@ -182,16 +154,11 @@
             measured = { height: scrollRoot.scrollHeight, width: scrollRoot.clientWidth };
         }
 
-        // 内容高度或宽度变化（字号、宽度、图片、流式输出、载入更早消息）时重新测量。
         function ensureMeasured() {
             if (!measured || measured.height !== scrollRoot.scrollHeight || measured.width !== scrollRoot.clientWidth ||
                 pool.some(entry => entry.offset === null)) measure();
         }
 
-        /**
-         * 合并站点本次给出的已挂载消息（连续的一段）与已记住的记录：
-         * 记录按位置排在这一段之前或之后；落在这一段内部的记录已过时，丢弃。
-         */
         function merge(mounted) {
             const previous = new Map(pool.map(entry => [entry.id, entry]));
             const current = mounted.map(turn => {
@@ -224,10 +191,6 @@
             clearSettle();
         }
 
-        // ---- 显示窗口：当前位置附近最多 MAX_VISIBLE 条 ----
-
-        // 超出上限时先丢弃离当前位置最远的已卸载记录；仍超出（已挂载消息本身很多）时只显示附近一段，
-        // 当前项接近窗口边缘才移动窗口。
         function selectWindow(index) {
             const activeEntry = pool[index];
             while (pool.length > MAX_VISIBLE) {
@@ -249,7 +212,6 @@
             return index;
         }
 
-        // 只有显示的消息集合或顺序变化才重建按钮，保留焦点所在的已有节点。
         function render(visible) {
             const same = visible.length === turns.length && visible.every((entry, i) => entry === turns[i]);
             if (!same) {
@@ -282,8 +244,6 @@
             if (turns[index]) turns[index].button.setAttribute('aria-current', 'location');
         }
 
-        // ---- 当前位置：按缓存的位置二分查找 ----
-
         function updateActive() {
             cancelActive = null;
             if (!scrollRoot || !pool.length) return;
@@ -301,7 +261,6 @@
                     high = mid - 1;
                 }
             }
-            // 已滚到对话末尾时，最后一条已挂载的消息即当前位置（它的顶部可能到不了标记线）。
             if (scrollRoot.scrollTop >= scrollRange()[1] - 1) {
                 const lastMounted = pool.findLastIndex(entry => entry.element);
                 if (lastMounted >= 0) index = lastMounted;
@@ -314,8 +273,6 @@
         function queueActive() {
             if (!cancelActive) cancelActive = schedule(updateActive);
         }
-
-        // ---- 更早的消息：只显示已载入的消息；标记只负责滚到开头，让网站自己载入下一批 ----
 
         function scrollRange() {
             const range = scrollRoot.scrollHeight - scrollRoot.clientHeight;
@@ -348,9 +305,6 @@
             scrollRoot.scrollTo({ top: scrollRange()[0], behavior: reducedMotion.matches ? 'auto' : 'smooth' });
         });
 
-        // ---- 跳转 ----
-
-        // 按实际滚动方向计算有效范围：column-reverse 的 scrollTop 为负值。
         function scrollToElement(element, behavior) {
             const rootRect = scrollRoot.getBoundingClientRect();
             const delta = element.getBoundingClientRect().top - rootRect.top - topInset();
@@ -372,7 +326,6 @@
                 if (options.onStale) options.onStale();
                 return;
             }
-            // 站点已卸载这条消息：先瞬时滚到记录的位置让站点挂载它，挂载后按 key 精确对齐。
             pending = { entry: turn, tries: 0, timer: null };
             relocate();
             setActive(index);
@@ -384,8 +337,6 @@
             clearSettle();
         }
 
-        // 跳到最早几条时，站点常在开头插入更早的消息：进行中的平滑滚动仍朝旧位置结束，目标被挤走。
-        // 滚动停下后、内容高度又变化时按目标瞬时重新对齐；只在高度变化时对齐，不干扰用户随后的滚动。
         function settleOn(element) {
             clearSettle();
             settle = { element, height: scrollRoot.scrollHeight, moving: true,
@@ -421,7 +372,6 @@
             scrollRoot.scrollTo({ top: clamp(pending.entry.offset - topInset(), min, max), behavior: 'auto' });
             pending.timer = setTimeout(() => {
                 if (!pending) return;
-                // 让站点重新收集已挂载消息；update 中挂载到了即完成对齐。
                 if (options.onStale) options.onStale();
                 pending.timer = setTimeout(() => {
                     if (!pending) return;
@@ -439,12 +389,9 @@
             settleOn(element);
         }
 
-        // 用户自己滚动或操作时放弃未完成的重新定位。
         function cancelRelocation(event) {
             if ((pending || settle) && !rail.contains(event.target)) clearPending();
         }
-
-        // ---- 预览 ----
 
         function showPreview(index) {
             const turn = turns[index];
@@ -453,7 +400,6 @@
             preview.hidden = false;
             turns.forEach(item => item.button.removeAttribute('aria-describedby'));
             turn.button.setAttribute('aria-describedby', preview.id);
-            // 与导航条同一容器坐标，不读取视口位置。
             const tickY = railTop + (older.hidden ? 0 : OLDER_SIZE) + turn.y;
             const width = Math.min(280, Math.max(120, bounds.right - bounds.left - RAIL_WIDTH - 24));
             preview.style.maxWidth = `${width}px`;
@@ -473,8 +419,6 @@
             hoverIndex = index;
             if (turns[index]) turns[index].button.classList.add('wg-nav-hover');
         }
-
-        // ---- 指针：在整条导航上按最近刻度命中，压缩状态下同样可点 ----
 
         function nearestTick(clientY) {
             const y = clientY - list.getBoundingClientRect().top;
@@ -504,13 +448,10 @@
             layout();
         });
         list.addEventListener('click', event => {
-            // 键盘触发的 click 没有坐标，由按钮自身处理。
             if (event.detail === 0) return;
             const index = nearestTick(event.clientY);
             if (index >= 0) scrollToTurn(index);
         });
-
-        // ---- 键盘：一个 Tab 停靠点，方向键 / Home / End 在导航内移动 ----
 
         function focusTurn(index) {
             const next = turns[clamp(index, 0, turns.length - 1)];
@@ -555,8 +496,6 @@
             focusTurn(keys[event.key]);
         });
 
-        // ---- 颜色与字体取自宿主页面的实际表面：跟随 data-theme、系统主题与实时切换 ----
-
         function adoptHostStyle() {
             let background = '';
             for (let el = scrollRoot; el; el = el.parentElement) {
@@ -576,7 +515,6 @@
 
         const CANCEL_EVENTS = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
 
-        // 换了滚动容器（换对话或换界面）时，记住的消息全部作废。
         function setScrollRoot(next) {
             if (next === scrollRoot) return;
             if (scrollRoot) {
@@ -597,7 +535,6 @@
             }
         }
 
-        // 挂进站点浮窗（如 Page 对话）时与宿主同一层叠上下文，并随宿主移动；否则挂在根元素上固定定位。
         function mount(container) {
             const hosted = container !== document.documentElement;
             if (rail.parentNode !== container || preview.parentNode !== container) container.append(rail, preview);
@@ -605,7 +542,6 @@
             preview.classList.toggle('wg-nav--hosted', hosted);
         }
 
-        // 视口坐标换算为导航条所在容器的坐标：在 (0, 0) 处测量一次实际位置。
         function toContainer(viewportBounds) {
             rail.style.left = '0px';
             rail.style.top = '0px';
@@ -616,26 +552,16 @@
             };
         }
 
-        // 宿主浮窗可能以整个窗体作为拖动手柄；导航条上的按下不交给它。
         rail.addEventListener('pointerdown', event => {
             if (rail.classList.contains('wg-nav--hosted')) event.stopPropagation();
         });
 
-        /**
-         * 每次站点识别结果变化时调用。turns 为当前已挂载的用户消息（按顺序、连续的一段）；
-         * key 为站点提供的稳定标识，有 key 的消息被站点卸载后仍保留刻度（总数有上限）。
-         * 只有显示的消息集合或顺序变化才重建按钮，流式输出回复时不会丢失焦点。
-         * @param {{ turns: {element: Element, text: string, key?: string}[], scrollRoot: Element,
-         *   bounds: {left: number, top: number, right: number, bottom: number}, container?: Element } | null} source
-         *   bounds 为视口坐标；container 为站点浮窗时导航条挂在其中。
-         */
         function update(source) {
             if (destroyed) return;
             if (!source || !source.scrollRoot) {
                 hide();
                 return;
             }
-            // 同一滚动容器里换了对话（单页路由）时，记住的消息作废。
             if (location.pathname !== path) {
                 path = location.pathname;
                 clearPending();
@@ -644,7 +570,6 @@
             setScrollRoot(source.scrollRoot);
             const first = pool[0];
             merge(source.turns);
-            // 更早的消息被插到开头时，可能还有更多，重新允许显示“更早的消息”。
             if (first && pool.indexOf(first) > 0) olderExhausted = false;
             if (pool.length < MIN_TURNS) {
                 hide();

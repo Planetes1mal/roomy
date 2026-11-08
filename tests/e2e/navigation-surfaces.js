@@ -1,7 +1,3 @@
-// Active-surface discovery and message navigation on stripped markup derived from the 2026-09-29 sanitized
-// captures (ordinary ChatGPT, Dots, Page document, empty Page quick chat, Gemini). Real content CSS/JS with
-// mocked Chrome APIs; wrappers and layout CSS below are reconstructed where noted. Not a live-site check.
-// Run: node tests/e2e/navigation-surfaces.js   (WG_CHROME may point to another Chrome executable)
 (function () {
     'use strict';
 
@@ -19,7 +15,6 @@
     const near = (actual, expected, label, tolerance = 1) => assert(Math.abs(actual - expected) <= tolerance,
         `${label}: ${actual}, expected ${expected}`);
 
-    // 页面内通用：模拟扩展存储与消息，脚本异常时也输出报告。
     const harness = `
         window.store = window.initialStore;
         window.chrome = {
@@ -65,7 +60,6 @@
         return report;
     }
 
-    // ---- ChatGPT：普通对话（隐藏路由 / column-reverse 滚动）、Dots、Page 文档、Page 浮动对话 ----
     const native = 'max-w-(--thread-body-max-width)';
     const dotsRow = (id, self, body) => `<article class="message-row ${self ? 'self' : ''}" data-message-id="${id}">
         <div class="message-bubble-wrap"><div class="message-content-line"><div class="message-content-stack">
@@ -83,7 +77,6 @@
         *, ::before, ::after { box-sizing:border-box; }
         body { margin:0; font:16px/26px sans-serif; }
         .route[hidden-route] { display:none; }
-        /* 重建：原生宽度变量链（ordinary 与 Dots 的实际 class 均带 max-w-(--thread-body-max-width)） */
         .max-w-\\(--thread-body-max-width\\) {
             --thread-body-inline-padding:16px;
             --thread-content-max-width:var(--thread-content-responsive-max-width, 640px);
@@ -97,12 +90,10 @@
         .thread-pane { --thread-content-responsive-max-width:640px; display:flex; flex-direction:column; height:640px; }
         .messages-scroll { overflow-y:auto; height:560px; scrollbar-gutter:stable both-edges; }
         html[data-theme="dark"] body, html[data-theme="dark"] .thread-pane { background:rgb(14, 14, 14); color:rgb(236, 236, 236); }
-        /* 2026-09-30 采集：Dots 代码块没有 pre，块级 code 显式 12px/20px，外层 DIV 负责横向滚动 */
         [data-markdown-copy="code-block"] code { display:block; font-size:12px; line-height:20px; white-space:pre; font-family:monospace; }
         [data-markdown-copy="exclude"] { font-size:14px; }
         section[data-pip-obstacle="quick-chat"] { position:fixed; right:20px; bottom:20px; width:572px; height:420px; display:flex; flex-direction:column; background:#fff; }
         .thread-scroll-container { overflow-y:auto; flex:1; }
-        /* 2026-10-01 实测：Page 浮窗位于带 transform 的 z50 portal 内；转录区原生右内边距的变体取 16px */
         #quick-portal { position:fixed; inset:0; z-index:50; transform:translateZ(0); pointer-events:none; }
         #quick-portal > section { pointer-events:auto; }
         #quick [data-thread-user-message-navigation-content] { padding-inline-end:16px; }
@@ -168,7 +159,6 @@
             window.addEventListener('load', async () => {
                 await wait(120);
                 const out = {};
-                // 1. Dots 可见，普通对话仍连接但隐藏。
                 let s = status();
                 await wait();
                 out.dots = { surface:s.surface.kind, status:s.status,
@@ -178,19 +168,16 @@
                     code:px('#dots-code','fontSize'), codeLine:px('#dots-code','lineHeight'), codeLabel:px('#code-label','fontSize'),
                     codeScrolls:q('#code-scroll').scrollWidth > q('#code-scroll').clientWidth,
                     navVisible:!q('.wg-nav').hidden, reading:s.capabilities.reading, navigation:s.capabilities.navigation };
-                // 2. Dots 用户消息铺满：保留 Reply/Reaction 的原生空间。
                 await save('chatgptReadingSettings', { messageFontSize:125, userFullWidth:true });
                 const row = q('#dots-list .message-row.self');
                 const wrap = row.querySelector('.message-bubble-wrap');
                 out.dotsFull = { row:row.getBoundingClientRect().width, wrap:wrap.getBoundingClientRect().width,
                     actionsLeft:row.querySelector('.message-inline-actions').getBoundingClientRect().left - row.getBoundingClientRect().left };
-                // 3. 点击导航刻度滚动到目标。
                 const scroller = q('.messages-scroll');
                 qa('.wg-nav-tick')[1].click();
                 await wait(400);
                 out.dotsJump = { targetTop:qa('#dots-list .message-row.self:has(.message-surface)')[1].getBoundingClientRect().top - scroller.getBoundingClientRect().top,
                     current:qa('.wg-nav-tick').findIndex(b => b.getAttribute('aria-current') === 'location') };
-                // 4. 键盘：焦点在导航条内移动。
                 qa('.wg-nav-tick')[0].focus();
                 q('.wg-nav-list').dispatchEvent(new KeyboardEvent('keydown', { key:'ArrowDown', bubbles:true }));
                 out.keyboard = { focused:qa('.wg-nav-tick').indexOf(document.activeElement), tabbable:qa('.wg-nav-tick').filter(b => b.tabIndex === 0).length,
@@ -202,7 +189,6 @@
                 q('.wg-nav-list').dispatchEvent(new KeyboardEvent('keydown', { key:'Escape', bubbles:true }));
                 out.keyboard.previewAfterEscape = !q('.wg-nav-preview').hidden;
                 document.activeElement.blur();
-                // 5. 100% 宽度：导航条需要的空间由对称收窄对话列得到。
                 await save('chatgptWidthSettings', { widthEnabled:true, chatWidthSetting:{ value:100, unit:'percent' } });
                 status();
                 await wait();
@@ -214,13 +200,11 @@
                     contentRight:list.getBoundingClientRect().right - parseFloat(listStyle.paddingRight),
                     composer:rect('#dots-composer').width, list:list.getBoundingClientRect().width,
                     visible:!q('.wg-nav').hidden, clientRight:scroller.getBoundingClientRect().left + scroller.clientLeft + scroller.clientWidth };
-                // 深色主题：刻度与预览取宿主的文字色和表面色。
                 document.documentElement.setAttribute('data-theme', 'dark');
                 status();
                 await wait();
                 out.dark = { ink:q('.wg-nav').style.getPropertyValue('--wg-nav-ink'), surface:q('.wg-nav-preview').style.getPropertyValue('--wg-nav-surface') };
                 document.documentElement.removeAttribute('data-theme');
-                // Reply：输入区移入回复对话框，主列表保持拓宽，对话框保持原生。
                 const widthBefore = list.getBoundingClientRect().width;
                 const host = q('#dots-composer-host');
                 q('#reply-panel').removeAttribute('hidden-route');
@@ -237,7 +221,6 @@
                 out.navOff = { gutter:document.documentElement.style.getPropertyValue('--wg-chatgpt-nav-gutter'),
                     rail:qa('.wg-nav').length, width:status().capabilities.width };
                 await save('chatgptMessageNavigationEnabled', true);
-                // 宽度关闭：原生列在窄窗格里占满宽度时，只为导航留白，列表与输入区仍对齐。
                 q('.thread-pane').style.cssText = 'width:700px; --thread-content-responsive-max-width:1000px';
                 await save('chatgptWidthSettings', { widthEnabled:false, chatWidthSetting:{ value:1000, unit:'px' } });
                 s = status();
@@ -255,7 +238,6 @@
                 q('.thread-pane').style.cssText = '';
                 await save('chatgptWidthSettings', { widthEnabled:true, chatWidthSetting:{ value:1000, unit:'px' } });
 
-                // 6. 切回普通对话：标记转移，Dots 的排版标记撤回。
                 show('ordinary');
                 s = status();
                 await wait();
@@ -266,7 +248,6 @@
                 qa('.wg-nav-tick')[1].click();
                 await wait(400);
                 out.reverse = { scrollTop:root.scrollTop, targetTop:qa('#transcript [data-user-message-bubble]')[1].getBoundingClientRect().top - root.getBoundingClientRect().top };
-                // 7. 流式：起初为空的文字拥有者后来才得到文字。
                 const answer = document.createElement('div');
                 answer.setAttribute('data-markdown-text-style', 'assistant-message');
                 const para = document.createElement('p');
@@ -281,14 +262,12 @@
                 await wait();
                 out.streaming = { paragraph:parseFloat(getComputedStyle(para).fontSize), user:px('#late-user','fontSize'),
                     nav:qa('.wg-nav-tick').length };
-                // 8. 只有 Page 文档：不适用，界面保持原生，不提示不支持。
                 show('page');
                 s = status();
                 await wait();
                 out.page = { surface:s.surface.kind, status:s.status, width:s.capabilities.width, reading:s.capabilities.reading,
                     owners:qa('[data-wgc-width]').length, markers:qa('[data-wgc-font]').length, pageFont:px('#page-p','fontSize'),
                     rail:qa('.wg-nav').length };
-                // 9. Page 关联的空浮动对话：宿主决定宽度，保持原生。
                 q('#quick').removeAttribute('hidden-route');
                 s = status();
                 await wait();
@@ -299,7 +278,6 @@
                     railInside:!!q('.wg-nav') && rect('.wg-nav').right <= rect('#quick-scroll').right + 0.5 &&
                         rect('.wg-nav').left >= Math.max(...qa('#quick [data-markdown-text-style], #quick [data-user-message-bubble]').map(el => el.getBoundingClientRect().right)) - 0.5,
                     inset:q('#quick [data-thread-user-message-navigation-content]').style.getPropertyValue('padding-inline-end') };
-                // 9b. 浮窗在 z50 portal 内：刻度中心实际命中导航条；拖动与缩放后导航条仍在浮窗内。
                 const hits = () => qa('.wg-nav-tick').map(b => { const r = b.getBoundingClientRect();
                     const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!el && el.closest('.wg-nav') !== null; });
                 const quickRail = () => { const host = rect('#quick'), nav = rect('.wg-nav'), sc = q('#quick-scroll');
@@ -319,7 +297,6 @@
                 await wait();
                 out.quickMove = { hostDx:rect('#quick').left - hostBefore.left, railDx:rect('.wg-nav').left - railBefore.left,
                     hostDy:rect('#quick').top - hostBefore.top, railDy:rect('.wg-nav').top - railBefore.top, ...quickRail() };
-                // 虚拟时间下不产生渲染帧，ResizeObserver 不触发；这里用状态请求同步一次布局，只验证重新布局的几何。
                 q('#quick').style.width = '480px';
                 q('#quick').style.height = '360px';
                 status();
@@ -327,7 +304,6 @@
                 out.quickResize = { hostWidth:rect('#quick').width, ...quickRail() };
                 q('#quick').style.cssText = '';
                 await wait(200);
-                // 10. 未识别的可见对话（识别属性被去掉）且隐藏的已知对话仍存在。
                 show('ordinary');
                 q('#transcript').removeAttribute('data-thread-user-message-navigation-content');
                 s = status();
@@ -338,7 +314,6 @@
                 s = status();
                 await wait();
                 out.recovered = { surface:s.surface.kind, owners:qa('[data-wgc-width]').length, font:px('#transcript [data-markdown-text-style] p','fontSize') };
-                // 11. 暂停：导航条移除，全部标记撤回。
                 await save('chatgptEnabled', false);
                 s = status();
                 out.paused = { rail:qa('.wg-nav, .wg-nav-preview').length, owners:qa('[data-wgc-width]').length,
@@ -428,7 +403,6 @@
     assert.deepStrictEqual([c.paused.rail, c.paused.owners, c.paused.markers, c.paused.navigation, c.paused.gutter],
         [0, 0, 0, 'paused', ''], 'pause removes rail, width markers and reading markers');
 
-    // ---- Gemini：infinite-scroller.chat-history 内的 user-query ----
     const geminiTurn = (i, long) => `<div class="conversation-container" id="c${i}"><user-query><span class="user-query-container">
         <user-query-content><div class="user-query-container"><div class="query-content"><span class="user-query-bubble-with-background">
         <div class="query-text${long ? ' collapsed' : ''}"><h5 class="cdk-visually-hidden screen-reader-user-query-label"><span>You said</span> Gemini question ${i} sassy</h5>
@@ -489,7 +463,6 @@
                 await wait(400);
                 out.jump = { targetTop:q('#c2 user-query').getBoundingClientRect().top - scroller.getBoundingClientRect().top,
                     collapsed:q('#c1 .query-text').classList.contains('collapsed') };
-                // 跳到最早一条时站点在开头载入更早的消息：滚动停下后仍对准目标，而不是停在旧位置。
                 scroller.scrollTop = scroller.scrollHeight;
                 await wait(300);
                 qa('.wg-nav-tick')[0].click();
@@ -504,7 +477,6 @@
                 out.prependJump = { targetTop:q('#c1 user-query').getBoundingClientRect().top - scroller.getBoundingClientRect().top };
                 earlier.remove();
                 await wait(300);
-                // 编辑时正文节点被 textarea 替换：保留已保存的预览，保存后读取新正文。
                 const prompt = q('#c3 .query-text-line');
                 const editor = document.createElement('textarea');
                 editor.value = 'Unsaved draft';
@@ -523,7 +495,6 @@
                 await save('geminiMessageNavigationEnabled', false);
                 out.off = { rail:qa('.wg-nav').length, width:getComputedStyle(document.documentElement).getPropertyValue('--gemini-chat-width').trim() };
                 await save('geminiMessageNavigationEnabled', true);
-                // 宽度关闭的窄窗格：原生对话占满宽度时只为导航留白，对话与输入区对称内缩、保持原生对齐。
                 q('chat-window').style.width = '640px';
                 await save('widthEnabled', false);
                 await save('geminiMessageNavigationEnabled', false);
@@ -563,7 +534,6 @@
                 const pane = q('#pane');
                 const turns = () => qa('.bubble').map(element => ({ element, text:element.textContent }));
                 const r = pane.getBoundingClientRect();
-                // 导航区域只有约 300px：20 个刻度需要压缩，用来检查指针展开。
                 const bounds = { left:r.left, right:r.left + pane.clientWidth, top:r.top + 16, bottom:r.top + 330 };
                 const nav = widerMessageNavigation.create({ labels:{ rail:'Nav', message:(n, t) => n + '/' + t, attachment:'Att', older:'Earlier' },
                     topInset:() => 16 });
@@ -578,7 +548,6 @@
                         return t.top + 12 >= railRect.top - 0.5 && t.top + 12 <= railRect.bottom + 0.5; }),
                     listScrolls:['auto', 'scroll'].includes(getComputedStyle(q('.wg-nav-list')).overflowY),
                     active:ticks().findIndex(b => b.hasAttribute('aria-current')), older:!q('.wg-nav-older').hidden };
-                // 指针附近展开：命中的刻度与相邻刻度相距约 24px。
                 const list = q('.wg-nav-list');
                 const target = ticks()[12];
                 const y = target.getBoundingClientRect().top + 12;
@@ -593,7 +562,6 @@
                 out.jump = { top:q('#u33').getBoundingClientRect().top - pane.getBoundingClientRect().top,
                     active:ticks().findIndex(b => b.hasAttribute('aria-current')) };
                 list.dispatchEvent(new PointerEvent('pointerleave', { bubbles:false }));
-                // 滚动正文时导航条本身不移动；当前项仍在窗口内时窗口不动。
                 const before = rect('.wg-nav-list').top;
                 q('#u37').scrollIntoView();
                 pane.scrollTop -= 16;
@@ -601,13 +569,11 @@
                 await wait(200);
                 out.scrolled = { active:ticks().findIndex(b => b.hasAttribute('aria-current')), railMoved:rect('.wg-nav-list').top - before,
                     first:text(0) };
-                // 当前项接近窗口上缘：窗口移到当前位置附近，仍最多 20 个。
                 q('#u12').scrollIntoView();
                 pane.scrollTop -= 16;
                 pane.dispatchEvent(new Event('scroll'));
                 await wait(200);
                 out.slid = { count:ticks().length, current:text(ticks().findIndex(b => b.hasAttribute('aria-current'))), first:text(0) };
-                // 更早的消息：不在顶部时显示；点击滚到开头；在顶部稳定后隐藏；插入更早消息后重新可用。
                 out.olderBefore = !q('.wg-nav-older').hidden;
                 q('.wg-nav-older').click();
                 await wait(200);
@@ -648,7 +614,6 @@
     assert.deepStrictEqual(o.prepended, { count: 20, older: true }, 'a prepended batch re-enables the marker');
     assert.strictEqual(o.destroyed, 0);
 
-    // ---- 虚拟列表（2026-10-01 实测 ChatGPT 长对话：固定总高度，只挂载附近几轮，轮次带 data-turn-key） ----
     const virtual = `<!doctype html><html><head><meta charset="utf-8"><style>
         body { margin:0; font:16px/26px sans-serif; }
         #pane { height:560px; overflow-y:auto; }
@@ -664,7 +629,6 @@
                 const r = pane.getBoundingClientRect();
                 const bounds = { left:r.left, right:r.left + pane.clientWidth, top:r.top + 16, bottom:r.bottom - 8 };
                 let nav = null;
-                // 只挂载视口附近的轮次；虚拟时间下没有滚动事件，滚动后手动重新渲染。
                 function render() {
                     const first = Math.max(0, Math.floor(pane.scrollTop / 400) - 1);
                     const last = Math.min(59, Math.floor((pane.scrollTop + 560) / 400) + 1);
@@ -683,7 +647,6 @@
                 render();
                 await wait(200);
                 out.initial = { mounted:qa('.bubble').length, ticks:ticks().length };
-                // 向上滚动：卸载的轮次保留刻度，总数不超过 20。
                 for (let i = 55; i >= 30; i -= 2) {
                     pane.scrollTop = i * 400 - 16;
                     render();
@@ -694,7 +657,6 @@
                 out.scrolled = { mounted:qa('.bubble').length, ticks:labels.length, first:labels[0], last:labels[labels.length - 1],
                     ordered:labels.every((l, i) => i === 0 || +l.split(' ')[1] > +labels[i - 1].split(' ')[1]),
                     current:text(ticks().findIndex(b => b.hasAttribute('aria-current'))) };
-                // 点击一个已卸载的刻度：滚到记录位置，站点挂载后按 key 对齐到顶部。
                 const targetIndex = labels.length - 1;
                 const targetText = labels[targetIndex];
                 out.targetMountedBefore = qa('.bubble').some(b => b.textContent === targetText);

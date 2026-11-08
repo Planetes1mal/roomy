@@ -21,7 +21,6 @@
         return (dictionary && dictionary[key] && dictionary[key].message) || chrome.i18n.getMessage(key) || fallback;
     }
 
-    // 文案与网站无关：{sites}、{required}、{optional}、{codeWrapSites} 按注册表和界面语言填入。
     function placeholders() {
         const language = t('localeCode', 'en');
         const names = list => sites.joinNames(list.map(site => site.name), language);
@@ -64,7 +63,6 @@
         }
         document.documentElement.lang = t('localeCode', 'en');
         const values = placeholders();
-        // 代码换行的说明只列出支持它的网站。
         document.querySelectorAll('[data-i18n]').forEach(element => {
             const key = element.dataset.i18n;
             const text = t(key, element.textContent);
@@ -80,7 +78,6 @@
         return { name: match ? names[match[1]] : 'Unknown', major: match ? Number(match[2]) : null };
     }
 
-    // 逐项构造每个网站的报告字段，避免把未来新增设置或用户自定义名称带入诊断。
     function siteReport(stored, site) {
         const settings = settingsUtils.normalizeSiteSettings(stored, site.id);
         const entry = {

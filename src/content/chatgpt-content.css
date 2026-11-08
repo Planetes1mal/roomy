@@ -1,28 +1,19 @@
-/* 沿用 ChatGPT 的原生 content -> body 宽度与 padding 计算链。
-   只在内容脚本识别并标记的当前可见宽度所有者（普通对话、Dots 消息列表与输入区、首页）上覆盖变量；
-   隐藏的旧路由、:root/body、全局 form、表格与浮层都不受影响。
-   显示消息导航且右侧空间不足时，--wg-chatgpt-nav-gutter 在两侧各留出所需宽度。 */
 :where(html.wider-chatgpt-width-active, html.wider-chatgpt-nav-gutter) [data-wgc-width] {
     --thread-content-responsive-max-width: min(var(--wg-chatgpt-width, 1000px),
         calc(var(--wg-chatgpt-available-width, 100%) - var(--thread-body-inline-padding, 0px) * 2 -
             var(--wg-chatgpt-nav-gutter, 0px) * 2)) !important;
 }
 
-/* 未登录前端（unauth-mweb）的对话 section 与输入区定位层直接写 max-width: 48rem（border-box，
-   含两侧 --mobile-thread-content-margin-inline）。改为设定的正文宽度加两侧原生内边距，二者保持原生对齐。 */
 :where(html.wider-chatgpt-width-active, html.wider-chatgpt-nav-gutter)
     :is(section[data-web-mobile-conversation], [data-composer-positioner])[data-wgc-width] {
     max-width: calc(min(var(--wg-chatgpt-width, 1000px), 100% - var(--mobile-thread-content-margin-inline, 0px) * 2 -
         var(--wg-chatgpt-nav-gutter, 0px) * 2) + var(--mobile-thread-content-margin-inline, 0px) * 2) !important;
 }
 
-/* 阅读排版：内容脚本为消息正文里的文字拥有者记录原生字号、行高与外边距，
-   这里只按比例改写。html 上没有 data-wgc-reading 时（默认值或暂停）完全保持原生。 */
 :where(html[data-wgc-reading~="font"]) [data-wgc-font] {
     font-size: calc(var(--wgc-font) * var(--wgc-font-scale, 1)) !important;
 }
 
-/* 代码行与表格行只随字号等比缩放，不参与密度压缩；显式行高也挡住父级覆盖的继承。 */
 :where(html:is([data-wgc-reading~="font"], [data-wgc-reading~="line"], [data-wgc-reading~="custom"]))
     [data-wgc-line="fixed"] {
     line-height: calc(var(--wgc-line) * var(--wgc-font-scale, 1)) !important;
@@ -33,13 +24,11 @@
         var(--wgc-font-scale, 1)) !important;
 }
 
-/* 只缩小正的原生间距，保留有意为之的负外边距。 */
 :where(html[data-wgc-reading~="space"]) [data-wgc-space] {
     margin-top: min(var(--wgc-mt), calc(var(--wgc-mt) * var(--wgc-space-scale, 1))) !important;
     margin-bottom: min(var(--wgc-mb), calc(var(--wgc-mb) * var(--wgc-space-scale, 1))) !important;
 }
 
-/* 手动间距优先于自动密度；0px 段距有效。 */
 :where(html[data-wgc-reading~="custom"]) [data-wgc-line="prose"] {
     line-height: var(--wgc-manual-line) !important;
 }
@@ -53,15 +42,12 @@
     margin-top: var(--wgc-manual-gap) !important;
 }
 
-/* 用户消息铺满对话列：仅在宽度生效时。内容脚本从气泡向上测量，标记比对话列窄的
-   气泡及其包装层；保留原生气泡外观与复制/编辑按钮，编辑中的消息保持原生。 */
 :where(html.wider-chatgpt-width-active[data-wgc-full])
     [data-wgc-full-path]:not(:has(textarea, [contenteditable="true"])) {
     width: 100% !important;
     max-width: 100% !important;
 }
 
-/* Dots 的气泡外层为 Reply / Reaction 按钮保留了约 73px，铺满时仍保留这段空间。 */
 :where(html.wider-chatgpt-width-active[data-wgc-full])
     [data-wgc-full-path="actions"]:not(:has(textarea, [contenteditable="true"])) {
     max-width: calc(100% - 73px) !important;

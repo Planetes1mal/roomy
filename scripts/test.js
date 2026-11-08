@@ -5,7 +5,6 @@
     const path = require('path');
     const { spawnSync } = require('child_process');
     const root = path.resolve(__dirname, '..');
-    // Internal iterations can skip ZIP creation; CI and releases keep the full default suite.
     const skipPackaging = process.argv.includes('--skip-packaging');
     const tests = fs.readdirSync(path.join(root, 'tests'))
         .filter(name => name.endsWith('.test.js') && (!skipPackaging || name !== 'release-package.test.js'))

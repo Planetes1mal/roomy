@@ -1,8 +1,6 @@
 (function () {
     'use strict';
 
-    // 浏览器启动时（如 PWA 冷启动）Gemini 页面可能先于扩展加载而错过声明式注入，
-    // 由 background.js 补注入本脚本；若本页已注入过则直接跳过，避免重复初始化。
     if (window.widerGeminiContentLoaded) return;
     window.widerGeminiContentLoaded = true;
 
@@ -20,7 +18,6 @@
     let isInitialized = false;
     let settingsLoaded = false;
     let readToken = 0;
-    // 原始存储值；首次读取完成前到达的变更暂存在 pendingSettingsChanges，读取后覆盖读取结果。
     let storedSettings = {};
     let pendingSettingsChanges = {};
     let siteEnabled = true;
@@ -35,7 +32,6 @@
     const WIDTH_RANGE_KEYS = ['widthMin', 'widthMax', 'widthPercentMin', 'widthPercentMax'];
     const widthStyleChanges = new Map();
 
-    // 只撤回仍由本扩展持有的值；网站后来写入的 inline 样式不能被暂停操作覆盖。
     function setWidthProperty(element, property, value, priority = 'important') {
         let properties = widthStyleChanges.get(element);
         if (!properties) {
@@ -70,7 +66,6 @@
         }
     }
 
-    // enabled 保留旧含义（宽度开关），供旧版 popup 使用；新字段区分整站暂停与仅宽度关闭。
     function getLayoutStatus() {
         const widthEnabled = currentRangeSettings.widthEnabled !== false;
         const supported = !!document.querySelector(WIDTH_LAYOUT_SELECTOR);
@@ -113,7 +108,6 @@
         { key: '.conversation-container user-query, conversation-container user-query', value: 'max-width: 100%', sleep: 0 },
         { key: 'input-container .input-area-container', value: 'max-width: {width}; margin-left: auto; margin-right: auto', sleep: 0 },
         { key: 'input-container input-area-v2', value: 'max-width: {width}; margin-left: auto; margin-right: auto', sleep: 0 },
-        // 外层保留原生间距所需的空间，宽度设置只约束消息和输入框内部。
         { key: '.chat-container', value: 'max-width: 100%; margin-left: auto; margin-right: auto', sleep: 0 },
         { key: '.chat-container.xap-drag-in-progress', value: 'max-width: 100%', sleep: 0 },
         { key: '.chat-container.xap-drag-in-progress > *', value: 'max-width: 100%', sleep: 0 },
@@ -181,7 +175,6 @@
             if (scope.nodeType !== 1) continue;
             if (scope.matches(`${READING_ROOT_SELECTOR}, ${READING_TEXT_SELECTOR}`)) add(scope);
             scope.querySelectorAll(`${READING_ROOT_SELECTOR}, ${READING_TEXT_SELECTOR}`).forEach(add);
-            // 插入/删除段落会改变相邻节点的 :first-child / :last-child 原生间距。
             if (scope.matches(READING_TEXT_SELECTOR) || scope.tagName === 'DIV') {
                 for (const sibling of [scope.previousElementSibling, scope.nextElementSibling]) {
                     if (sibling) measuredReadingNodes.delete(sibling);
@@ -191,13 +184,11 @@
         }
         for (const node of [...candidates]) {
             if (node.matches('.code-container, .formatted-code-block-internal-container')) continue;
-            add(node.parentElement); // 包含嵌套段落的容器，以及 flex/grid 的原生 row-gap。
+            add(node.parentElement);
         }
         const pending = [...candidates].filter(node => !measuredReadingNodes.has(node));
         if (!pending.length) return;
 
-        // 仅新节点采样时暂时关闭本扩展排版；同一任务内恢复，不观察 style/data 属性。
-        // 滑块更新只改根变量，不重新测量已有消息，更不会采到自己压缩后的值。
         const enabled = READING_CLASSES.filter(name => document.body.classList.contains(name));
         enabled.forEach(name => document.body.classList.remove(name));
         let measurements;
@@ -214,7 +205,6 @@
         for (const { node, font, line, top, bottom, gap, display } of measurements) {
             const isRoot = node.matches(READING_ROOT_SELECTOR);
             const text = node.matches(READING_TEXT_SELECTOR) || isRoot;
-            // 不从消息根给嵌入的 overlay 继承字号/行高，正文块仍各自应用。
             if (text && !node.querySelector(READING_EXCLUDED_SELECTOR) && Number.isFinite(font) && font > 0) {
                 node.style.setProperty('--wg-native-font-size', `${font}px`);
                 node.setAttribute('data-wg-typography', '');
@@ -243,7 +233,6 @@
         }
     }
 
-    // 暂停时撤回全部阅读标记和采样值；恢复时按当时的原生样式重新采样，避免沿用旧基准。
     function clearReadingLayout() {
         document.querySelectorAll(READING_MARKERS.map(name => `[${name}]`).join(', ')).forEach(node => {
             READING_MARKERS.forEach(name => node.removeAttribute(name));
@@ -309,7 +298,6 @@
             console.log('[Roomy] Deep Research page detected, using 1600px width');
             widthCssValue = '1600px';
         }
-        // 显示消息导航且对话几乎占满窗格时，两侧各留出导航条宽度；保存的宽度值不变。
         const scroller = navigationReserved && findChatScroller();
         if (scroller) widthCssValue = `min(${widthCssValue}, ${scroller.clientWidth - (NAV_GUTTER + 1) * 2}px)`;
 
@@ -357,7 +345,6 @@
                     }
                 });
             } catch (e) {
-                // Ignore selector errors
             }
         });
 
@@ -380,10 +367,6 @@
         }
     }
 
-    // 图片说明跟随图片左缘：图片在容器内居中显示，且 fit-content 会按图片
-    // 自然宽度（而非显示宽度）收缩，CSS 无法表达"对齐到图片左缘"。
-    // 直接测量 img 与说明行的实际渲染位置，给说明行设置等量左内边距。
-    // 幂等：每次先移除旧值再测量，可安全重复调用。
     function alignImageCaptions() {
         if (!widthActive) return;
         try {
@@ -414,7 +397,6 @@
             !!document.querySelector(WIDTH_LAYOUT_SELECTOR);
     }
 
-    // 首次读取、storage 事件与消息都进入同一个幂等应用路径。
     function applyAllSettings() {
         if (!settingsLoaded) return;
         currentRangeSettings = normalizeAllSettings(storedSettings);
@@ -438,8 +420,6 @@
         queueNavigation();
     }
 
-    // ---- 消息导航 ----
-
     const NAV_GUTTER = window.widerMessageNavigation ? window.widerMessageNavigation.RAIL_WIDTH : 24;
     let navigation = null;
     let navigationTimer = null;
@@ -451,21 +431,17 @@
         return rect.width > 0 && rect.height > 0;
     }
 
-    // 实际的纵向滚动容器是 chat-window 内的 infinite-scroller.chat-history。
     function findChatScroller() {
         return [...document.querySelectorAll('chat-window infinite-scroller.chat-history')].find(isVisible) || null;
     }
 
-    // 外层 user-query 与内层 user-query-content 只算一条；折叠的长消息定位到外层，不展开。
     const geminiPromptPreviews = new WeakMap();
 
     function geminiTurns(scroller) {
         return [...scroller.querySelectorAll('user-query')]
             .filter(query => !query.parentElement.closest('user-query'))
             .map(element => {
-                // 只取可见的提问行；.query-text 里还有屏幕阅读器用的“你说”标题及重复全文。
                 const lines = [...element.querySelectorAll('.query-text-line')];
-                // 原生编辑器临时移除正文行：保留已保存的提问，避免误显示为附件。
                 const editor = element.querySelector('textarea');
                 const text = lines.length ? lines.map(line => line.textContent).join(' ')
                     : editor ? (geminiPromptPreviews.get(element) ?? editor.value) : '';
@@ -474,7 +450,6 @@
             });
     }
 
-    // 宽度关闭时为导航留白：对话列表与输入区在原生内边距上对称增加同样宽度，二者保持对齐；撤销时恢复原值。
     function setNavigationGutter(scroller, amount) {
         const chat = scroller && scroller.closest('chat-window');
         const input = chat && chat.querySelector('input-container');
@@ -540,17 +515,14 @@
                 onStale: queueNavigation
             });
         }
-        // 使用滚动容器的 client box（左右滚动条占位都已扣除）。
         const rect = scroller.getBoundingClientRect();
         const left = rect.left + scroller.clientLeft;
         const right = left + scroller.clientWidth;
         const column = scroller.querySelector('.conversation-container, conversation-container');
         const free = () => (column ? right - column.getBoundingClientRect().right : Infinity);
-        // 宽度关闭且原生对话右侧不足 24px 时，只为导航留白：已加的留白使对话右缘左移等量，扣除即为原生余量。
         const nativeFree = free() - (navigationGutter.scroller === scroller ? navigationGutter.amount : 0);
         const amount = shown && !widthActive && nativeFree < NAV_GUTTER - 1 ? Math.ceil(NAV_GUTTER - nativeFree) + 1 : 0;
         setNavigationGutter(scroller, amount);
-        // 留白后仍放不下 24px 导航条时隐藏。
         const fits = free() >= NAV_GUTTER - 1;
         navigation.update(shown && fits ? {
             turns, scrollRoot: scroller,
@@ -562,10 +534,6 @@
         if (!retired && navigationTimer === null) navigationTimer = setTimeout(syncNavigation, 0);
     }
 
-    // ---- 扩展更新后的旧实例 ----
-    // 扩展更新或重新加载后，旧版本脚本仍留在已打开的页面里：chrome.* 已失效，却仍响应页面变化，
-    // 会多出一条导航条，并用旧设置改写样式。新实例启动时先广播接管事件；旧实例收到后（或自己发现
-    // 扩展上下文失效时）停止观察与监听，撤下自己的导航条和留白。宽度与阅读样式由新实例重新应用。
     const TAKEOVER_EVENT = 'wider-gemini-takeover';
     const listenerControl = new AbortController();
     let observer = null;
@@ -583,11 +551,9 @@
         navigation = null;
     }
 
-    // 先通知旧实例再登记自己的监听，不会收到自己发出的事件。
     document.dispatchEvent(new Event(TAKEOVER_EVENT));
     document.addEventListener(TAKEOVER_EVENT, retire, { signal: listenerControl.signal });
 
-    // 读取期间若收到更新的 storage 事件，旧读取结果作废（事件本身已合并）。
     function applySettings() {
         if (!isExtensionContextValid()) return;
         const token = ++readToken;
@@ -604,7 +570,6 @@
         }
     }
 
-    // 加载前的变更只暂存，不能单独把不完整的状态标记为已加载。
     function mergeSettings(values) {
         if (!settingsLoaded) {
             Object.assign(pendingSettingsChanges, values);
@@ -622,13 +587,11 @@
                 sendResponse(getLayoutStatus());
                 return;
             }
-            // v2：只通知重新读取已保存的设置，不回放 popup 捕获的旧值。
             if (['updateSiteEnabled', 'updateReadingSettings', 'refreshSettings'].includes(request.action)) {
                 if (settingsLoaded) applySettings();
                 sendResponse({ success: true, protocolVersion: settingsUtils.PROTOCOL_VERSION });
                 return;
             }
-            // 旧版 popup 的字段消息：只合并各自白名单字段，不影响总开关。
             const values = {};
             if (request.action === 'updateWidthSetting') {
                 values.chatWidthSetting = request.setting;
@@ -684,7 +647,6 @@
     }
 
     function init() {
-        // DOMContentLoaded 与 load 都会触发 init，只初始化一次
         if (isInitialized) return;
         isInitialized = true;
 
@@ -742,7 +704,6 @@
                 }
             });
 
-            // 暂停时新插入的内容保持原生，不做排版采样。
             if (readingPrepared) prepareReadingLayout(readingScopes);
             if (readingScopes.length || mutations.some(mutation => mutation.type === 'attributes')) queueNavigation();
             if (settingsLoaded && (shouldUpdate || widthActive !== isWidthEffective())) {
@@ -820,8 +781,6 @@
             }, 200);
         }, { capture: true, signal: listenerControl.signal });
 
-        // 图片异步加载，load 事件不冒泡，需捕获阶段监听；
-        // 窗口尺寸变化会改变图片居中位置，防抖后重新测量
         document.addEventListener('load', function (e) {
             if (e.target && e.target.matches && e.target.matches('single-image img')) {
                 alignImageCaptions();
@@ -856,7 +815,6 @@
             if (changes.chatWidth && !changes.chatWidthSetting) {
                 values.chatWidthSetting = { value: changes.chatWidth.newValue, unit: 'px' };
             }
-            // 更新的事件使进行中的读取作废；开关和宽度可能同一次写入，合并后一次应用。
             ++readToken;
             if (!settingsLoaded) applySettings();
             mergeSettings(values);

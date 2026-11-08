@@ -1,5 +1,3 @@
-// 网站设置页：宽度与预设、一键任务、文字与间距、消息导航、代码换行（按能力显示）。
-// 页面只显示 currentSite 这一个网站的设置；全局设置（界面语言）在列表页底部。
 const RANGE_MIN = settingsUtils.PX_RANGE.min;
 const RANGE_MAX = settingsUtils.PX_RANGE.max;
 const PERCENT_RANGE_MIN = settingsUtils.PERCENT_RANGE.min;
@@ -134,8 +132,6 @@ function getCurrentWidthSettings() {
 function clamp(val, min, max) {
     return Math.min(Math.max(Number(val), min), max);
 }
-
-// ---- 宽度预设 ----
 
 function renderPresetButtons(presets, widthMin, widthMax, currentSetting) {
     const container = document.getElementById('presetButtonsContainer');
@@ -287,8 +283,6 @@ managePresetsToggle.addEventListener('click', function () {
     }
 });
 
-// ---- 写入 ----
-
 function saveWidthSettings() {
     const site = currentSite;
     const settings = getCurrentWidthSettings();
@@ -301,7 +295,6 @@ function saveWidthSettings() {
     return writePatch(site, () => settingsUtils.getSiteWidthStoragePayload(settings, site), message);
 }
 
-// 阅读字段先读取最新已存值再合并，避免旧的 popup 快照覆盖较早的写入。
 function saveReading(site, edit) {
     return writePatch(site, async () => {
         const latest = await chrome.storage.sync.get(settingsUtils.getSiteStorageKeys(site));
@@ -309,7 +302,6 @@ function saveReading(site, edit) {
     }, { action: 'updateReadingSettings' });
 }
 
-// 执行依赖操作前先提交防抖中的编辑并等待写入完成；期间有失败则不继续。
 async function flushPendingChanges() {
     if (isEditMode) savePresetEdits();
     if (widthUpdateTimer !== null) updateWidthSetting(currentWidthSetting);
@@ -320,8 +312,6 @@ async function flushPendingChanges() {
         throw new Error('A pending settings write failed');
     }
 }
-
-// ---- 渲染 ----
 
 function syncRangeProgress(input) {
     if (!input) return;
@@ -336,7 +326,6 @@ function syncAllRangeProgress() {
     [widthSlider, compactnessSlider, lineHeightSlider, paragraphSpacingSlider, fontSizeSlider].forEach(syncRangeProgress);
 }
 
-// 整站暂停时所有设置仍可编辑；只有启用中且宽度关闭时才锁定宽度控件。
 function applyEnabledUi() {
     const settings = siteSettings[currentSite];
     const name = siteName(currentSite);
@@ -419,7 +408,6 @@ function applyFontSizeUi(fontSize) {
     renderReadingSummary();
 }
 
-// 折叠时在标题右侧显示当前值：“110% · 自动 0”或“110% · 自定义”。
 function renderReadingSummary() {
     const spacing = currentDensity.messageSpacingCustom
         ? t('customSpacing', 'Custom')
@@ -447,7 +435,6 @@ function renderPermission() {
         sitePermissionHint.textContent = fillTemplate(t('sitePermissionHint', '{site} access is optional. Allow access to apply these settings.'), { site: record.name });
         grantSitePermission.textContent = fillTemplate(t('grantSitePermission', 'Allow {site} access'), { site: record.name });
     }
-    // 在某个网站上直接进入设置页时，顶部一行提示其它新增的网站，点击进入列表。
     const fresh = introSites().filter(site => site !== currentSite).map(siteName);
     introLine.hidden = fresh.length === 0;
     if (fresh.length) {
@@ -474,8 +461,6 @@ function renderSite() {
 grantSitePermission.addEventListener('click', function () {
     requestSiteAccess(currentSite, grantSitePermission);
 });
-
-// ---- 任务预设与一步恢复 ----
 
 function updateTaskPreview() {
     const task = taskPresetSelect.value;
@@ -527,10 +512,8 @@ async function applyTask(site, task) {
     const previousUndo = taskUndo[site];
     const previous = previousUndo && !previousUndo.ambiguous && previousUndo.record.state === 'ready'
         ? previousUndo.record : null;
-    // 1. 先保存带“应用中”标记的撤销快照；失败则不应用任务。
     const pending = { state: 'applying', snapshot, previous, pending: { from: snapshot, to: values } };
     await chrome.storage.local.set({ [key]: pending });
-    // 2. 一次写入任务的全部设置；失败时恢复原撤销记录。
     const patch = settingsUtils.getTaskPatch(stored, site, values);
     try {
         await chrome.storage.sync.set(patch);
@@ -541,7 +524,6 @@ async function applyTask(site, task) {
     }
     Object.assign(storedSettings, patch);
     afterTaskWrite(site);
-    // 3. 标记撤销记录可用；失败只影响撤销记录，任务本身已生效。
     const ready = { state: 'ready', snapshot };
     try {
         await chrome.storage.local.set({ [key]: ready });
@@ -558,7 +540,6 @@ async function restoreTask(site) {
     const record = taskUndo[site].record;
     const stored = await readSite(site);
     const before = settingsUtils.getTaskManaged(settingsUtils.normalizeSiteSettings(stored, site), site);
-    // 按当前范围钳制快照宽度，保留用户之后设置的范围。
     const patch = settingsUtils.getTaskPatch(stored, site, record.snapshot);
     const target = settingsUtils.getTaskManaged(
         settingsUtils.normalizeSiteSettings({ ...stored, ...patch }, site), site);
@@ -580,7 +561,6 @@ async function restoreTask(site) {
         taskUndo[site] = null;
         return result;
     } catch (error) {
-        // 设置已恢复；撤销记录会在下次打开时按实际值清理，不会再次回放。
         taskUndo[site] = { record: { state: 'restoring' }, ambiguous: false };
         return t('taskUndoCleanupError', 'Settings restored, but the restore point could not be cleared.');
     }
@@ -614,7 +594,6 @@ taskPresetSelect.addEventListener('change', updateTaskPreview);
 applyTaskPreset.addEventListener('click', () => runTaskPreset(false));
 restoreTaskPreset.addEventListener('click', () => runTaskPreset(true));
 
-// 重新打开时核对未完成的任务记录：只改本地记录，不改同步设置，也不会自动重放恢复。
 async function loadTaskUndo(site, localValues) {
     const key = settingsUtils.TASK_UNDO_KEYS[site];
     const record = settingsUtils.readUndoRecord(localValues[key]);
@@ -626,8 +605,6 @@ async function loadTaskUndo(site, localValues) {
     }
     taskUndo[site] = result.record ? { record: result.record, ambiguous: !!result.ambiguous } : null;
 }
-
-// ---- 控件事件 ----
 
 siteEnabledToggle.addEventListener('change', function () {
     setSiteEnabled(currentSite, this.checked, this);
@@ -701,7 +678,6 @@ widthSlider.addEventListener('input', function () {
     widthUpdateTimer = setTimeout(() => updateWidthSetting(currentWidthSetting), 500);
 });
 
-// 松手时立即提交，避免关闭弹窗取消尚未执行的防抖回调。
 widthSlider.addEventListener('change', function () {
     updateWidthSetting(currentWidthSetting);
 });
@@ -757,7 +733,6 @@ document.getElementById('presetButtonsContainer').addEventListener('click', func
     updateWidthSetting(setting);
 });
 
-// 阅读控件：滑块防抖，编辑的站点和数值在入队时确定。
 function commitReadingEdit() {
     clearTimeout(readingUpdateTimer);
     readingUpdateTimer = null;
@@ -824,7 +799,6 @@ userFullWidthToggle.addEventListener('change', function () {
     scheduleReadingEdit({ userFullWidth: this.checked }, 0);
 });
 
-// 消息导航独立于宽度开关，不属于任务预设；暂停时保存也不会重新启用网站。
 navigationToggle.addEventListener('change', function () {
     const site = currentSite;
     const enabled = this.checked;

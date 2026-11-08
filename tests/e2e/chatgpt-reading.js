@@ -1,7 +1,3 @@
-// ChatGPT reading controls on synthetic, stripped ChatGPT markup with the real content CSS/JS and mocked
-// Chrome APIs. Covers font/density/manual spacing boundaries, user full width, pause restoration and
-// dynamic messages. This is not a live chatgpt.com check. Run: node tests/e2e/chatgpt-reading.js
-// WG_CHROME may point to another Chrome executable. Each run uses a disposable profile.
 (function () {
     'use strict';
 
@@ -72,7 +68,6 @@
                     </div>
                     <div data-toolbar><button>Copy</button></div>
                 </div></article>
-                <!-- 2026-09 登录后观察到的新版结构：无角色属性，正文与气泡用 data-* 标识。 -->
                 <section data-turn="user"><div class="uflex"><div class="uflex">
                     <div data-user-message-bubble class="max-w-(--user-chat-width,70%)" data-new-bubble>
                         <span data-new-user>New structure question</span></div>
@@ -134,7 +129,6 @@
                 out.defaultMarkers = document.querySelectorAll('[data-wgc-font],[data-wgc-line],[data-wgc-space]').length;
                 await reading({ messageFontSize:125 });
                 out.font = snapshot();
-                // 重复投递（storage + 消息）不能二次缩放。
                 window.deliver({ action:'updateReadingSettings' }, {}, r => { out.ack = r; });
                 window.deliverStorage({ chatgptReadingSettings:{ newValue:window.store.chatgptReadingSettings } }, 'sync');
                 await frames();
@@ -160,7 +154,6 @@
                     codeScroll:scrollport.scrollWidth > scrollport.clientWidth + 1 };
                 q('[data-pre]').classList.remove('whitespace-pre-wrap');
 
-                // 流式新增段落获得同样的设置。
                 const late = document.createElement('p');
                 late.dataset.late = '';
                 late.textContent = 'Streamed paragraph';
@@ -182,14 +175,12 @@
                 out.pausedNew = [px('[data-paused-new]','fontSize'), pausedNew.hasAttribute('data-wgc-font')];
                 window.deliver({ action:'getLayoutStatus' }, {}, r => { out.pausedStatus = r; });
 
-                // 暂停期间原生字号变化：恢复时重新采样，不沿用旧基准，也不叠加缩放。
                 const nativeChange = document.createElement('style');
                 nativeChange.textContent = '.markdown p { font-size:18px; }';
                 document.head.appendChild(nativeChange);
                 await save('chatgptEnabled', true);
                 out.resumed = snapshot();
                 window.deliver({ action:'getLayoutStatus' }, {}, r => { out.status = r; });
-                // 对话有内容但没有可识别的消息正文：阅读状态单独报告为 unsupported。
                 q('[data-thread-user-message-navigation-content]').innerHTML = '<div><div>Unknown message layout</div></div>';
                 window.deliver({ action:'getLayoutStatus' }, {}, r => { out.unknownStatus = r; });
 
@@ -221,7 +212,6 @@
         near(r.paused[key] ?? 0, key === 'p' ? n.p : n[key], `pause restores ${key}`);
     }
 
-    // 字号：各元素按原生比例缩放；控件、工具栏、输入框保持原生。
     for (const key of ['p', 'h', 'code', 'td', 'user', 'li', 'newP', 'newUser', 'newCode']) {
         near(r.font[key], n[key] * 1.25, `font ${key}`);
     }
@@ -234,20 +224,17 @@
     assert.deepStrictEqual(r.duplicate, r.font, 'duplicate storage/message delivery does not compound');
     assert.strictEqual(r.ack.protocolVersion, 2);
 
-    // 自动密度：只压缩正文行框和正的段距；代码与表格行不压缩。
     near(r.dense.pLine, Math.min(n.pLine, Math.max(n.p * 1.15, n.pLine * 0.82)), 'dense prose line');
     near(r.dense.pBottom, n.pBottom * 0.125, 'dense paragraph spacing');
     near(r.dense.preLine, n.preLine, 'density leaves code lines');
     near(r.dense.tdLine, n.tdLine, 'density leaves table rows');
 
-    // 手动间距优先于自动；0px 段距有效；不渗入代码/表格。
     near(r.custom.pLine, 1.3 * n.p, 'manual line height');
     near(r.custom.p2Top, 0, 'manual zero paragraph spacing');
     near(r.custom.pBottom, 0, 'manual spacing replaces native bottom margins of prose');
     near(r.custom.preLine, n.preLine, 'manual line height does not leak into code');
     near(r.custom.tdLine, n.tdLine, 'manual line height does not leak into tables');
 
-    // 用户消息铺满：依赖宽度生效；宽度关闭时保留偏好但不生效，阅读排版仍在。
     near(r.full.bubble, r.full.column, 'user bubble fills the conversation column');
     near(r.full.newBubble, r.full.column, 'new-structure user bubble fills the conversation column');
     assert(r.fullWidthOff.bubble < r.full.column - 100, 'full width is gated by effective width');

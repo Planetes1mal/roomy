@@ -1,4 +1,3 @@
-// 参考站点的适配器（只用于测试，不随扩展发布）：合成页面的结构见同目录的 page.html。
 window.widerRoomyCore.defineSite({
     id: 'reference',
     selectors: {
@@ -15,7 +14,6 @@ window.widerRoomyCore.defineSite({
         const column = ctx.findVisible(S.column);
         const composer = ctx.findVisible(S.composer);
         if (!column) {
-            // 首页只有输入区（data-placement="home"）；其它没有可识别对话的页面保持原生。
             if (composer && composer.getAttribute('data-placement') === 'home') return { kind: 'home', widthOwners: [composer] };
             return { kind: document.body.dataset.page === 'settings' ? 'notApplicable' : 'unknown' };
         }

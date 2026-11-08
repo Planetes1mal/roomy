@@ -1,6 +1,3 @@
-// @ts-check
-// 公共内核（消息导航）：把适配器给出的用户消息、滚动容器和边界交给 message-navigation.js；
-// 计算导航条的上下边界与留白。导航条本身（渲染、跳转、键盘）与网站无关。
 (function () {
     'use strict';
 
@@ -17,7 +14,6 @@
             return window.widerMessageNavigation.RAIL_WIDTH;
         }
 
-        // 当前对话里的用户消息：适配器可以自定义列表（含稳定 key）；默认按用户气泡的最外层去重。
         function turns() {
             const surface = ctx.surface;
             if (!surface.column) return [];
@@ -35,7 +31,6 @@
 
         function bounds() {
             const surface = ctx.surface;
-            // 使用滚动容器的 client box：scrollbar-gutter: stable both-edges 时两侧都有占位。
             const rect = surface.scroll.getBoundingClientRect();
             const left = rect.left + surface.scroll.clientLeft;
             const footerTop = surface.footer ? surface.footer.getBoundingClientRect().top : rect.bottom;
@@ -46,7 +41,6 @@
             };
         }
 
-        // 对话列与窗格右缘之间不足 24px 时，在宽度生效的前提下对称收窄对话列，为导航条留出空间。
         function neededGutter() {
             const column = ctx.surface.column;
             const pane = ctx.surface.pane || (column && column.parentElement);
@@ -56,7 +50,6 @@
             const setting = ctx.settings.chatWidthSetting;
             const requested = setting.unit === 'percent' ? innerWidth * setting.value / 100 : setting.value;
             const side = (available - Math.min(requested, available - padding * 2)) / 2;
-            // 多留 1px，抵消小数像素取整。
             return side >= railWidth() ? 0 : Math.max(0, Math.ceil(railWidth() - padding) + 1);
         }
 
@@ -65,7 +58,6 @@
                 ctx.isChatSurface() && Boolean(ctx.surface.scroll);
         }
 
-        // 内容实际右缘：当前对话中最右侧的消息正文；没有消息时取对话列内容框。
         function contentRight() {
             const column = ctx.surface.column;
             const roots = ctx.reading.MESSAGE_ROOT ? [...column.querySelectorAll(ctx.reading.MESSAGE_ROOT)].slice(-40) : [];
@@ -83,7 +75,6 @@
             }
             const current = turns();
             const paneBounds = bounds();
-            // 留白后仍放不下 24px 导航条（窗格过窄）时隐藏。
             const fits = paneBounds.right - contentRight() >= railWidth() - 1;
             if (!navigation) {
                 navigation = window.widerMessageNavigation.create({
@@ -98,7 +89,6 @@
                     onStale: queue
                 });
             }
-            // 站点浮窗里的对话：导航条挂进浮窗，避免被遮挡并随拖动移动。
             const container = ctx.surface.navigationContainer || null;
             navigation.update(fits ? { turns: current, scrollRoot: ctx.surface.scroll, bounds: paneBounds, container } : null);
         }

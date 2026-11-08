@@ -1,6 +1,3 @@
-// @ts-check
-// 公共内核（宽度）：只在适配器确认的宽度所有者上写标记；两种加宽策略（maxWidth 通用、variable 由适配器 CSS 接管）；
-// ResizeObserver 实测可用宽度并封顶；内容右侧不足 24px 时对称留白；暂停时只恢复仍由扩展持有的内联属性。
 (function () {
     'use strict';
 
@@ -8,7 +5,6 @@
     if (core.modules.width) return;
 
     const ACTIVE_CLASS = 'wider-width-active';
-    // 宽度关闭时只为消息导航留白（以原生内容宽度为上限）。
     const GUTTER_CLASS = 'wider-nav-gutter';
     const WIDTH_ATTR = 'data-wgx-width';
     const OWNER_PROPERTIES = ['--wgx-available', '--wgx-pad', '--wgx-box'];
@@ -33,7 +29,6 @@
             return element.clientWidth - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
         }
 
-        // 所有宽度所有者共用窗格（默认为对话列的父容器）的内容宽度，输入区与消息列始终按同一上限封顶、保持对齐。
         function paneOf(surface) {
             return surface.pane || (surface.column && surface.column.parentElement) || null;
         }
@@ -61,9 +56,6 @@
             module.active = ctx.siteActive && settings.widthEnabled !== false && owners.length > 0;
             const railWanted = navigation.wanted() && navigation.turns().length >= (window.widerMessageNavigation
                 ? window.widerMessageNavigation.MIN_TURNS : 2);
-            // 宽度关闭时先撤下本扩展为导航留白写入的标记与内边距，在同一任务内测量原生布局（不会闪烁）。
-            // 宽度规则同时要求所有者标记，撤下标记即可；html 的类留给下面按需切换：布局观察器监听它，
-            // 每次先删后加会让每一帧都再排一次同步。
             if (!module.active && markedOwners.length) {
                 markedOwners.forEach(owner => owner.removeAttribute(WIDTH_ATTR));
                 markedOwners = [];
@@ -74,14 +66,12 @@
                 module.columnWidth = surface.column.getBoundingClientRect().width -
                     parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
             }
-            // 宽度关闭但原生布局右侧不足 24px 时，只为导航留白：以原生内容宽度为上限，对称收窄，输入区保持对齐。
             const nativeFree = railWanted ? navigation.bounds().right - navigation.contentRight() : Infinity;
             const gutterOnly = !module.active && railWanted && owners.length > 0 && nativeFree < RAIL - 1;
             const reserve = module.active || gutterOnly;
             if (root.classList.contains(ACTIVE_CLASS) !== module.active) root.classList.toggle(ACTIVE_CLASS, module.active);
             if (root.classList.contains(GUTTER_CLASS) !== gutterOnly) root.classList.toggle(GUTTER_CLASS, gutterOnly);
 
-            // 宽度标记只写在当前界面已验证的所有者上，移走旧界面的标记。
             const marked = reserve ? owners : [];
             unmarkOwners(marked);
             surface.widthOwners.forEach(owner => {
@@ -89,7 +79,6 @@
             });
             markedOwners = marked;
 
-            // 窗格、滚动容器与宿主浮窗始终观察：尺寸变化后重新封顶与布局导航条。
             const parent = reserve ? paneOf(surface) : null;
             const observed = [...new Set([parent, surface.scroll, surface.host].filter(Boolean))];
             if (observed.length !== observedTargets.length || observed.some((el, i) => el !== observedTargets[i])) {
@@ -111,7 +100,6 @@
                 ownerRecords = owners.map((owner, i) => {
                     const records = ownerRecords[i] && ownerRecords[i][0] && ownerRecords[i][0].element === owner
                         ? ownerRecords[i] : (restoreOwnerRecords([ownerRecords[i] || []]), []);
-                    // maxWidth 策略：按所有者自己的内边距与盒模型换算；原生内边距不动，只替换宽度上限。
                     const style = getComputedStyle(owner);
                     const pad = (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
                     const box = style.boxSizing === 'border-box' ? pad : 0;
@@ -124,7 +112,6 @@
                     ctx.reading.markFullPaths(surface.column.querySelectorAll(ctx.reading.USER_BUBBLE));
                 }
             }
-            // 导航需要的留白：宽度生效时按设定宽度计算；只为导航留白时补足原生缺口。
             const gutter = !railWanted ? 0 : module.active ? navigation.neededGutter()
                 : gutterOnly ? Math.ceil(RAIL - nativeFree) + 1 : 0;
             if (gutter) {
@@ -137,7 +124,6 @@
             module.gutterOnly = gutterOnly;
         }
 
-        // 退出时只断开观察；宽度标记与变量留给新实例重新应用。
         function retire() {
             availableWidthObserver.disconnect();
         }

@@ -4,8 +4,6 @@ const { spawnSync } = require('child_process');
 
 const root = path.join(__dirname, '..');
 
-// 仓库只放扩展本身、测试、构建脚本和公开文档。
-// 笔记、截图、工具等本地文件放在被忽略的 local/ 目录，不进入 GitHub。
 const PUBLIC = [
     /^\.gitattributes$/,
     /^\.gitignore$/,
@@ -21,7 +19,6 @@ const PUBLIC = [
     /^docs\/(PRIVACY\.md|engineering\.md|guides\/reading-layout(\.zh-TW)?\.md|i18n\/README\.zh-TW\.md|images\/conversation-(before|after)\.png)$/
 ];
 
-// 从源码 ZIP 等没有 git 的环境运行时跳过。
 const listed = spawnSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' });
 if (listed.error || listed.status !== 0) {
     console.log('Skipping repository file check: git is unavailable');

@@ -1,5 +1,3 @@
-// 站点注册表的一致性：manifest 的权限与静态脚本、文件存在、存储键互不冲突、加入版本、任务预设、
-// 内核网站的测试页面，以及 storage.sync 的体积估算都由注册表推导并在这里核对。
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
@@ -15,16 +13,13 @@ vm.runInNewContext(read('src/shared/settings-utils.js'), sandbox, { filename: 's
 const registry = sandbox.widerRoomySites;
 const utils = sandbox.widerGeminiSettings;
 const sites = registry.sites;
-// vm 里的数组与本进程的原型不同，比较前先转成普通值。
 const plain = value => JSON.parse(JSON.stringify(value));
 const exists = file => fs.existsSync(path.join(root, file));
-// 打包规则（scripts/package.ps1）：src/ 下的 js/css/html 全部进 ZIP。
 const packaged = file => /^src\/.+\.(js|css|html)$/.test(file);
 
 assert.ok(sites.length >= 2, 'the registry lists the supported sites');
 assert.ok(sites.some(site => site.id === 'gemini') && sites.some(site => site.id === 'chatgpt'));
 
-// ---- 字段完整、id 唯一 ----
 const ids = sites.map(site => site.id);
 assert.deepStrictEqual([...new Set(ids)], plain(ids), 'site ids are unique');
 for (const site of sites) {
@@ -36,7 +31,6 @@ for (const site of sites) {
     assert.ok(registry.matchesUrl(site.matches[0], site.url), `${site.id}: url matches its own pattern`);
     assert.ok(['required', 'optional'].includes(site.access), `${site.id}: access`);
     assert.match(site.since, /^\d+\.\d+\.\d+$/, `${site.id}: since`);
-    // 版本号在发布时才改：开发中的网站 since 最多是下一个次版本（x.y+1.0），不能更晚。
     const [major, minor] = manifest.version.split('.').map(Number);
     assert.ok(registry.compareVersions(site.since, `${major}.${minor + 1}.0`) <= 0, `${site.id}: since ${site.since} is later than the next release ${major}.${minor + 1}.0`);
     assert.ok(['core', 'legacy'].includes(site.runtime), `${site.id}: runtime`);
@@ -70,7 +64,6 @@ for (const site of sites) {
 }
 for (const file of [...registry.CORE_JS, ...registry.CORE_CSS]) assert.ok(exists(file) && packaged(file), `core file ${file}`);
 
-// ---- manifest：必需/可选主机、静态内容脚本与注册表一致，没有 tabs ----
 assert.deepStrictEqual(manifest.host_permissions, plain(registry.required().flatMap(site => site.matches)), 'required hosts');
 assert.deepStrictEqual(manifest.optional_host_permissions, plain(registry.optional().flatMap(site => site.matches)), 'optional hosts');
 assert.ok(!manifest.permissions.includes('tabs'), 'tabs permission would add a browsing-history warning');
@@ -82,7 +75,6 @@ assert.deepStrictEqual(manifest.content_scripts, plain(registry.required().map(s
 assert.strictEqual(registry.required().length, 1, 'only Gemini is a required site');
 assert.strictEqual(registry.required()[0].id, 'gemini');
 
-// ---- 网址识别 ----
 for (const site of sites) {
     assert.strictEqual(registry.forUrl(site.url), site);
     assert.strictEqual(registry.forUrl(`${site.url}chat/abc?x=1#y`), site);
@@ -94,7 +86,6 @@ assert.strictEqual(registry.forUrl(undefined), null);
 assert.ok(registry.matchesUrl('https://*.example.com/*', 'https://a.b.example.com/x'));
 assert.ok(!registry.matchesUrl('https://*.example.com/*', 'https://example.org/'));
 
-// ---- 存储键互不重复，也不与全局键和 Gemini 顶层键冲突 ----
 const GLOBAL_KEYS = ['uiLanguage'];
 const geminiTopLevel = utils.getSiteStorageKeys('gemini');
 const syncKeys = [];
@@ -132,7 +123,6 @@ assert.strictEqual(utils.CHATGPT_READING_KEY, 'chatgptReadingSettings');
 assert.strictEqual(utils.TASK_UNDO_KEYS.gemini, 'taskPresetUndo', 'Gemini keeps its legacy undo key');
 assert.strictEqual(utils.TASK_UNDO_KEYS.chatgpt, 'chatgptTaskPresetUndo');
 
-// ---- 每个网站在设置层里独立：默认值、暂停、写入互不影响 ----
 for (const site of sites) {
     const defaults = utils.normalizeSiteSettings({}, site.id);
     assert.strictEqual(defaults.siteEnabled, true);
@@ -166,7 +156,6 @@ for (const site of sites) {
     }
 }
 
-// ---- storage.sync 体积估算：按最长的预设名估算每个网站的对象，总量低于 80 KB ----
 const longName = 'x'.repeat(40);
 let total = 0;
 for (const site of sites) {
@@ -187,7 +176,6 @@ for (const site of sites) {
 }
 assert.ok(total < 80 * 1024, `storage.sync estimate ${total} bytes stays under 80 KB`);
 
-// ---- 版本比较与新网站提示 ----
 assert.ok(registry.compareVersions('3.1.0', '3.0.1') > 0);
 assert.ok(registry.compareVersions('3.0.1', '3.1.0') < 0);
 assert.strictEqual(registry.compareVersions('3.1', '3.1.0'), 0);

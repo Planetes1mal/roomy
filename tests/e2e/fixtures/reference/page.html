@@ -2,14 +2,11 @@
 <html>
 <head>
 <meta charset="utf-8">
-<!-- 参考站点：合成的通用对话页面（固定 max-width 的消息列与输入区，普通方向的滚动容器）。
-     它不对应任何真实网站，只用来验证公共内核本身；真实网站的页面从线上采集还原。 -->
 <style>
     *, ::before, ::after { box-sizing: border-box; }
     body { margin: 0; font: 16px/26px sans-serif; }
     main { display: flex; flex-direction: column; height: 100vh; }
     .topbar { height: 56px; flex: 0 0 auto; }
-    /* 和 Claude 一样，对话区与输入区两侧都保留滚动条槽：Windows 的常规滚动条下两者仍然对齐。 */
     .scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-gutter: stable both-edges; }
     .column { max-width: 768px; width: 100%; margin: 0 auto; padding: 0 16px; }
     .composer-wrap { flex: 0 0 auto; padding: 8px 0 16px; overflow: hidden; scrollbar-gutter: stable both-edges; }

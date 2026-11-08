@@ -1,8 +1,3 @@
-// The two-level popup (site list + site settings page) with a fake registry of several sites, in an isolated
-// headless Chrome profile with the real popup code: list grouping and order, New markers from intro flags,
-// the Allow button requesting only that site's origins synchronously, capability-gated controls on the site
-// page, the intro line, pause from the list, and six languages fitting the 400px popup, with screenshots.
-// Usage: node tests/e2e/popup-sites.js <extension-source-directory> <screenshot-directory>
 (function () {
     'use strict';
 
@@ -19,15 +14,12 @@
     const dictionaries = Object.fromEntries(LOCALES.map(locale => [locale,
         JSON.parse(fs.readFileSync(path.join(source, '_locales', locale, 'messages.json'), 'utf8'))]));
 
-    // 假注册表：真实的 Gemini、ChatGPT 之外再加两个虚构网站（一个有阅读能力，一个只有宽度与导航）。
     const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'wg-popup-sites-'));
     const extension = path.join(temp, 'extension');
     fs.cpSync(source, extension, {
         recursive: true,
         filter: file => !/(^|[\\/])(\.git|\.claude|local|tests|node_modules)([\\/]|$)/.test(path.relative(source, file))
     });
-    // 弹窗测试不加载后台：后台在“安装”时写入的提示标记、角标和自动弹出的弹窗会与测试写入的标记竞争
-    // （Windows CI 上后台启动较慢时，安装标记晚于测试写入，覆盖了 alpha 的“新”标记）。后台行为由 background.test.js 覆盖。
     const extensionManifestPath = path.join(extension, 'manifest.json');
     const extensionManifest = JSON.parse(fs.readFileSync(extensionManifestPath, 'utf8'));
     delete extensionManifest.background;
@@ -121,7 +113,6 @@
                     }
                     return result.result.value;
                 }
-                // 等到设置加载完、控件开放后再检查；语言切换会重新加载弹窗，期间的上下文错误忽略。
                 async function ready(extra = 'true') {
                     let state = null;
                     for (let attempt = 0; attempt < 100; attempt++) {
@@ -189,7 +180,6 @@
 
     (async () => {
         await withBrowser(async ({ openPopup }) => {
-            // 1. 列表页：分组与顺序；版本号；没有提示标记时没有“新”。
             let popup = await openPopup();
             await popup.ready("!document.getElementById('siteListView').hidden");
             let list = await popup.evaluate(LIST_STATE);
@@ -205,7 +195,6 @@
             assert.strictEqual(list.states.alpha, dictionaries.en.siteAccessNeeded.message);
             assert.strictEqual(list.version, manifest.version);
             assert(list.fits, 'list fits the popup width');
-            // 新网站提示标记：update 的网站带“新”，install 的不带；打开后标记与角标被清除。
             await popup.evaluate(`chrome.storage.local.set({ alphaIntroPending: 'update', betaIntroPending: 'install' })`);
             await popup.close();
             popup = await openPopup();
@@ -214,7 +203,6 @@
             assert.deepStrictEqual(list.fresh, ['alpha'], 'only update-introduced sites get the New marker');
             const flagsAfter = await popup.evaluate(`chrome.storage.local.get(['alphaIntroPending', 'betaIntroPending'])`);
             assert.deepStrictEqual(flagsAfter, {}, 'opening the popup clears the intro flags');
-            // 2. “允许”按钮：在点击的同步调用链里请求，且只请求该网站的域名。
             const request = await popup.evaluate(`(() => {
                 window.requests = [];
                 let inClick = false;
@@ -225,7 +213,6 @@
             })()`, true);
             assert.deepStrictEqual(request, [{ origins: ['https://alpha.example/*', 'https://www.alpha.example/*'], sync: true }],
                 'Allow requests only that site, synchronously within the click');
-            // 3. 从列表暂停 Gemini：状态词变为“已暂停”，存储写入 geminiEnabled=false。
             await popup.evaluate(`(() => { const input = document.querySelector('.site-row[data-site="gemini"] input'); input.checked = false;
                 input.dispatchEvent(new Event('change', { bubbles: true })); })()`, true);
             await popup.ready(`document.querySelector('.site-row[data-site="gemini"] .site-state').textContent === ${JSON.stringify(dictionaries.en.sitePaused.message)}`);
@@ -234,7 +221,6 @@
             await popup.evaluate(`(() => { const input = document.querySelector('.site-row[data-site="gemini"] input'); input.checked = true;
                 input.dispatchEvent(new Event('change', { bubbles: true })); })()`, true);
             await popup.ready(`document.querySelector('.site-row[data-site="gemini"] .site-state').textContent === ${JSON.stringify(dictionaries.en.stateEnabled.message)}`);
-            // 4. 点击未授权网站的行：进入设置页，顶部是授权卡；返回回到列表。
             await popup.evaluate(`document.querySelector('.site-row[data-site="alpha"] .site-open').click()`, true);
             await popup.ready("!document.getElementById('siteView').hidden");
             let site = await popup.evaluate(SITE_STATE);
@@ -249,13 +235,11 @@
             await popup.evaluate(`document.getElementById('backToSites').click()`, true);
             await popup.ready("!document.getElementById('siteListView').hidden");
             await popup.close();
-            // 5. 直接打开某个网站：能力决定控件；Gemini 有代码换行与四个任务；Beta 没有阅读能力。
             popup = await openPopup('?site=beta');
             await popup.ready("!document.getElementById('siteView').hidden");
             site = await popup.evaluate(SITE_STATE);
             assert.deepStrictEqual([site.title, site.codeWrap, site.userFullWidth, site.tasks], ['Beta', false, false, ['reading', 'wide']]);
             await popup.close();
-            // 提示行：在某个网站上打开且还有其它新网站时，顶部一行“新增 … 支持”，点击进入列表。
             popup = await openPopup('?site=gemini');
             await popup.ready("!document.getElementById('siteView').hidden");
             await popup.evaluate(`chrome.storage.local.set({ alphaIntroPending: 'update' })`);
@@ -275,7 +259,6 @@
             await popup.close();
             console.log('PASS: list grouping, intro markers, Allow request, list pause, capability-gated site page, intro line');
 
-            // 6. 六种语言：列表页与两个设置页都不横向溢出；每种语言截图。
             for (const locale of LOCALES) {
                 popup = await openPopup('?view=list');
                 await popup.ready("!document.getElementById('siteListView').hidden");
@@ -298,7 +281,6 @@
                 }
                 console.log(`PASS: ${locale} list and site pages fit 400px`);
             }
-            // 回到跟随浏览器。
             popup = await openPopup('?view=list');
             await popup.ready("!document.getElementById('siteListView').hidden");
             await popup.evaluate(`(() => { const select = document.getElementById('uiLanguageSelect'); select.value = 'auto';

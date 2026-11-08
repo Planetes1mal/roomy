@@ -50,8 +50,6 @@ function createClassList() {
     };
 }
 
-// 模拟一个 Gemini 页面的扩展隔离世界；readyState 决定内容脚本是等待 DOMContentLoaded 还是立即初始化。
-// 传入 sharedPage 时与它共用同一个 document，模拟扩展更新后新旧两个隔离世界作用于同一页面。
 function createPage(readyState, { supported = true, deferStorage = false, stored = {}, sharedPage = null } = {}) {
     const rootStyles = new Map();
     const rootPriorities = new Map();
@@ -223,7 +221,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     };
 }
 
-// 场景 1：声明式 content_scripts 在 document_start 注入，DOMContentLoaded 后只初始化一次
 {
     const page = createPage('loading');
     page.runContentScript();
@@ -241,7 +238,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     assert.strictEqual(page.counts.storageGet, 1, 'load must not initialize the content script a second time');
     assert.strictEqual(page.counts.observerStart, 1, 'load must not attach duplicate observers');
 
-    // background.js 补注入时脚本会再次执行；已注入的页面必须是空操作
     page.runContentScript();
     page.document.dispatch('DOMContentLoaded');
     page.sandbox.dispatch('load');
@@ -251,7 +247,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     assert.strictEqual(page.counts.storageChangeListeners, 1, 're-injection must not register duplicate storage listeners');
 }
 
-// 场景 2：PWA 冷启动错过了声明式注入，background.js 在浏览器启动后补注入到已加载完成的页面
 {
     const page = createPage('complete');
     page.runContentScript();
@@ -266,7 +261,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     assert.ok(page.document.body.classList.contains('code-wrap-enabled'));
 }
 
-// 扩展更新：旧实例失去扩展上下文仍留在页面里；新实例在新的隔离世界启动后接管，旧实例不再改写样式。
 {
     const oldPage = createPage('complete');
     oldPage.runContentScript();
@@ -287,7 +281,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     assert.strictEqual(oldPage.rootStyles.get('--gemini-chat-width'), '900px', 'the old instance no longer writes its stale width');
 }
 
-// 扩展停用或卸载（没有新实例接管）：旧实例在下一次页面变化时自行停止。
 {
     const page = createPage('complete');
     page.runContentScript();
@@ -297,7 +290,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     assert.strictEqual(page.counts.observerStop, 1, 'an orphaned instance stops observing on its own');
 }
 
-// 暂停/恢复与未知布局不需要重新注入，且不会清掉阅读偏好。
 {
     const page = createPage('complete');
     page.runContentScript();
@@ -321,7 +313,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     assert.strictEqual(page.rootStyles.get('--gemini-chat-width'), '1500px', 'known layouts resume after SPA navigation');
 }
 
-// 慢 storage 回调不能把用户刚暂停的拓宽重新打开。
 {
     const page = createPage('complete', { deferStorage: true });
     page.runContentScript();
@@ -335,7 +326,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     assert.strictEqual(page.rootStyles.get('--gemini-chat-width'), '1200px', 'late storage retains the saved width');
 }
 
-// 整站暂停：保存的 geminiEnabled:false 优先于早到的宽度消息，所有效果（含默认代码不换行）撤回。
 {
     const page = createPage('complete', { deferStorage: true, stored: { geminiEnabled: false } });
     page.runContentScript();
@@ -360,7 +350,6 @@ function createPage(readyState, { supported = true, deferStorage = false, stored
     assert.strictEqual(page.rootStyles.get('--gemini-chat-width'), '1400px', 'resume applies the latest width');
     assert.ok(page.document.body.classList.contains('code-wrap-enabled'));
 
-    // 仅关闭宽度：阅读效果与代码换行仍生效。
     page.change({ widthEnabled: { newValue: false } });
     assert.ok(page.document.documentElement.classList.contains('wider-gemini-active'));
     assert.strictEqual(page.rootStyles.get('--gemini-font-scale'), '1');

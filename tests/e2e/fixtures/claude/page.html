@@ -2,9 +2,6 @@
 <html data-theme="claude" data-mode="dark">
 <head>
 <meta charset="utf-8">
-<!-- Claude（claude.ai）对话页的精简结构，按 2026-10-26 的只读结构采集还原（标签、data-testid、类名片段、
-     盒模型与宽度链）；文字一律是中性占位。只保留与宽度、阅读排版、消息导航有关的层级。
-     桌面（≥48rem）且顶栏带 data-title-row-ruled 时，chat-column 的上限是 --transcript-width + 1.5rem。 -->
 <style>
     html { --transcript-width: calc(768 / 16 * 1rem); --frame-row-h: 45px; }
     *, ::before, ::after { box-sizing: border-box; }
@@ -54,7 +51,6 @@
     .composer-field { padding: 6px 36px 6px 0; }
     [data-testid="chat-input"] { min-height: 21px; font-size: 15px; outline: none; }
     button { font: inherit; font-size: 13px; }
-    /* 首页（/new）：只有输入区；卡片槽是 display: contents，限宽层是它的第一个子元素（41rem）。 */
     .home { display: flex; height: 100%; flex-direction: column; }
     [data-new-page-scroll-column] { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable both-edges; }
     .home-container { position: relative; display: flex; width: 100%; flex: 1; flex-direction: column; align-items: center; max-width: 1280px; margin: 24px auto 0; padding: 0 56px; }

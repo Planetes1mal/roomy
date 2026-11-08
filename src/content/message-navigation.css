@@ -1,5 +1,3 @@
-/* 消息导航条：对话窗格右侧的一列短刻度。当前项更亮更长；命中区域 24×24px。
-   --wg-nav-ink / --wg-nav-surface / --wg-nav-font 由脚本取自宿主页面，因此深浅主题都与原站一致。 */
 .wg-nav {
     position: fixed;
     z-index: 30;
@@ -7,7 +5,6 @@
     box-sizing: border-box;
 }
 
-/* 挂在站点浮窗内时相对浮窗定位：浮窗拖动或缩放时导航条与预览随之移动，且与浮窗处于同一层叠上下文。 */
 .wg-nav.wg-nav--hosted,
 .wg-nav-preview.wg-nav--hosted {
     position: absolute;
@@ -19,7 +16,6 @@
     display: none !important;
 }
 
-/* 所有刻度同时可见：列表高度固定为窗格可用高度，刻度按脚本计算的位置绝对定位，不内部滚动。 */
 .wg-nav-list {
     position: relative;
     cursor: pointer;
@@ -65,7 +61,6 @@
     outline-offset: -2px;
 }
 
-/* 更早的消息：顶部三个小点，点击滚到开头，让网站载入下一批。 */
 .wg-nav-older {
     all: unset;
     display: flex;
@@ -96,7 +91,6 @@
     outline-offset: -2px;
 }
 
-/* 预览沿用宿主的表面色、文字色与字体，只做轻微抬升；不另加品牌色。 */
 .wg-nav-preview {
     position: fixed;
     z-index: 31;

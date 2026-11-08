@@ -1,10 +1,3 @@
-// Generic checks for every core-runtime site: each site's stripped fixture page (tests/e2e/fixtures/<id>/) is
-// loaded with the real shared scripts, core modules and that site's adapter, plus mocked Chrome APIs. The same
-// scenario runs for each site: px/% widening, available-width capping, composer alignment, font/density/manual
-// spacing, protected code/table/controls, user full width gated by width, streamed content, pause and resume,
-// old-instance takeover, navigation rail placement and jumps, gutters, home and unrecognized surfaces.
-// A synthetic "reference" site exercises the core itself. Site-specific checks live in fixtures/<id>/extra.js.
-// Not a live-site check. Run: node tests/e2e/sites.js [site-id ...]   (WG_CHROME may point to another Chrome)
 (function () {
     'use strict';
 
@@ -40,7 +33,6 @@
     const runtimeScripts = ['src/content/message-navigation.js', ...registry.CORE_JS];
     const sharedStyles = ['src/content/message-navigation.css', ...registry.CORE_CSS];
 
-    // 页面内通用：模拟扩展存储与消息，记录每个 defineSite 返回的上下文，脚本异常时也输出报告。
     const harness = id => `
         window.store = {};
         window.contexts = [];
@@ -59,7 +51,6 @@
             document.body.appendChild(pre);
         }
     `;
-    // 内核加载后包一层 defineSite，记录上下文以便检查接管。
     const hookCore = `
         (() => { const core = window.widerRoomyCore; const define = core.defineSite;
             core.defineSite = definition => { const ctx = define(definition); if (ctx) window.contexts.push(ctx); return ctx; }; })();
@@ -105,12 +96,10 @@
             await wait(150);
             const out = { errors:window.pageErrors || [] };
             try {
-                // 1. 宽度关闭：原生布局与状态。
                 out.native = snapshot();
                 out.nativeStatus = status();
                 out.nativeMarkers = { owners:qa('[data-wgx-width]').length, attrs:root.hasAttribute('data-wgx-reading'), markers:markers(),
                     site:root.getAttribute('data-wgx-site'), active:root.classList.contains('wider-core-active') };
-                // 2. px 与 % 宽度；输入区与消息列对齐；超出可用宽度时封顶。
                 await width({ widthEnabled:true });
                 out.px1000 = snapshot();
                 out.px1000Status = status();
@@ -121,7 +110,6 @@
                 out.capped = snapshot();
                 out.cappedGutter = root.style.getPropertyValue('--wgx-gutter');
                 await width({ chatWidthSetting:{ value:1000, unit:'px' } });
-                // 3. 阅读排版。
                 out.defaultMarkers = markers();
                 await reading({ messageFontSize:125 });
                 out.font = snapshot();
@@ -143,14 +131,12 @@
                 const pre = probe('pre');
                 out.geometry = { tableScroll:tableScroll.scrollWidth > tableScroll.clientWidth, codeScroll:pre.scrollWidth > pre.clientWidth,
                     pageOverflow:root.scrollWidth - innerWidth };
-                // 4. 流式新增段落获得同样的设置。
                 const late = document.createElement('p');
                 late.dataset.probe = 'late';
                 late.textContent = 'Streamed paragraph';
                 probe('markdown').insertBefore(late, probe('ul'));
                 await wait();
                 out.late = px('late','fontSize');
-                // 5. 消息导航：刻度数、跳转、键盘、留白。
                 out.nav = { ticks:qa('.wg-nav-tick').length, rails:rails(), status:status().capabilities.navigation };
                 const scroller = scrollEl();
                 const turns = window.contexts[0].navigation.turns();
@@ -174,7 +160,6 @@
                 out.navOff = { gutter:root.style.getPropertyValue('--wgx-gutter'), rails:qa('.wg-nav').length, width:status().capabilities.width };
                 await save(K.navigation, true);
                 await width({ chatWidthSetting:{ value:1000, unit:'px' } });
-                // 6. 宽度关闭的窄窗格：原生列占满时只为导航留白，列与输入区仍对齐。
                 const narrow = q(EXPECTED.narrowPane.selector);
                 const narrowBefore = narrow.style.cssText;
                 narrow.style.cssText = EXPECTED.narrowPane.style;
@@ -190,7 +175,6 @@
                     rail:!!offNav, railLeft:offNav && offNav.left, paneRight:paneRight(), contentRight:window.contexts[0].navigation.contentRight(),
                     column:contentWidth('column'), composer:rect('composer').width, columnLeft:rect('column').left, composerLeft:rect('composer').left,
                     width:status().capabilities.width };
-                // 稳定状态下再同步一次布局不改写 html 的 class：布局观察器监听它，改写会让每一帧都再排一次同步。
                 const classRecords = new MutationObserver(() => {});
                 classRecords.observe(root, { attributes:true, attributeFilter:['class'] });
                 status();
@@ -201,7 +185,6 @@
                 await save(K.navigation, true);
                 narrow.style.cssText = narrowBefore;
                 await width({ widthEnabled:true });
-                // 7. 未识别的可见对话：保持原生；标记恢复后重新识别。
                 const unknownEl = q(EXPECTED.unknown.selector);
                 const unknownValue = unknownEl.getAttribute(EXPECTED.unknown.attribute);
                 unknownEl.removeAttribute(EXPECTED.unknown.attribute);
@@ -213,7 +196,6 @@
                 s = status();
                 await wait();
                 out.recovered = { surface:s.surface.kind, owners:qa('[data-wgx-width]').length, font:px('p1','fontSize'), column:contentWidth('column') };
-                // 8. 首页（只有输入区）与不适用的页面：按 expected.json 的描述切换页面状态。
                 const applyState = state => {
                     const undo = [];
                     for (const el of state.hide ? qa(state.hide) : []) { undo.push(() => { el.hidden = false; }); el.hidden = true; }
@@ -240,7 +222,6 @@
                 s = status();
                 await wait();
                 out.back = { surface:s.surface.kind, column:contentWidth('column') };
-                // 9. 暂停：导航条移除，全部标记撤回；暂停期间新增内容保持原生；恢复时重新采样。
                 await save(K.enabled, false);
                 out.paused = snapshot();
                 out.pausedState = { markers:markers(), owners:qa('[data-wgx-width]').length, rails:qa('.wg-nav, .wg-nav-preview').length,
@@ -261,7 +242,6 @@
                 out.resumedStatus = status();
                 nativeChange.remove();
                 await wait();
-                // 10. 旧实例接管：同一页面再注入一次，只剩一条导航条，旧实例退出。
                 const railsBefore = rails();
                 delete window.widerCoreContentLoaded;
                 delete window.widerRoomyCore;
@@ -272,7 +252,6 @@
                 out.takeover = { railsBefore, rails:rails(), contexts:window.contexts.length, oldRetired:window.contexts[0].retired,
                     newRetired:window.contexts[1] && window.contexts[1].retired, font:px('p1','fontSize'), column:contentWidth('column'),
                     owners:qa('[data-wgx-width]').length };
-                // 11. 默认字号与间距下的用户消息铺满：网站换掉对话元素（切换对话）而窗格与滚动区不变时，新对话同样铺满。
                 await reading({ userFullWidth:true });
                 const conversation = window.contexts[window.contexts.length - 1].surface.root;
                 const fresh = conversation.cloneNode(true);
@@ -281,7 +260,6 @@
                     Array.from(el.style).filter(name => name.startsWith('--wgx')).forEach(name => el.style.removeProperty(name));
                 }
                 conversation.replaceWith(fresh);
-                // 同步识别新对话（与排队的布局帧相同），在任何后续布局同步之前读取结果。
                 s = status();
                 out.switched = { root:window.contexts[window.contexts.length - 1].surface.root === fresh, bubble:rect('bubble').width,
                     column:contentWidth('column'), fullWidth:s.capabilities.fullWidth };
@@ -342,10 +320,8 @@
         assert.strictEqual(r.nativeMarkers.active, true, label('site-active class is set'));
         assert(n.column < 900, label(`fixture: native column is narrow (${n.column})`));
 
-        // 宽度：px、%、封顶、对齐、无横向溢出。
         near(r.px1000.column, 1000, label('1000px widens the column'), 1);
         near(r.px1000.composerOuter, r.px1000.columnOuter, label('composer matches the column width'), 1);
-        // 与原生的相对位置比较：Windows 的常规滚动条会让原生对话列和输入区本来就错开半个滚动条宽。
         near(r.px1000.composerLeft - r.px1000.columnLeft, n.composerLeft - n.columnLeft, label('composer keeps its native alignment at 1000px'), 1);
         assert.strictEqual(r.px1000Status.status, 'active');
         assert.strictEqual(r.px1000Status.capabilities.width, 'active');
@@ -356,7 +332,6 @@
             label(`a width beyond the pane is capped to the available width: ${JSON.stringify(r.capped)}`));
         assert(r.capped.pageOverflow <= 0 && r.px1000.pageOverflow <= 0, label('no page horizontal overflow'));
 
-        // 阅读排版。
         assert.strictEqual(r.defaultMarkers, 0, label('default reading settings do not sample text metrics'));
         for (const key of ['p', 'h', 'code', 'td', 'user', 'li']) near(r.font[key], n[key] * 1.25, label(`font ${key}`));
         near(r.font.inline, r.font.p * 0.875, label('inline code keeps its em ratio'));
@@ -384,7 +359,6 @@
         assert(r.geometry.pageOverflow <= 0, label('no page horizontal overflow with reading'));
         near(r.late, n.p * 1.25, label('streamed paragraph receives settings'));
 
-        // 导航。
         assert.strictEqual(r.nav.ticks, expected.turns, label('one tick per user message'));
         assert.strictEqual(r.nav.rails, 1);
         assert.strictEqual(r.nav.status, 'active');
@@ -401,13 +375,11 @@
         assert.strictEqual(r.navOff.gutter, '', label('navigation off releases the gutter'));
         assert.strictEqual(r.navOff.rails, 0);
         if (r.widthOffNative.free < 23) {
-            // 原生列占满窄窗格：只为导航留白，列与输入区对称收窄、仍然对齐。
             assert.deepStrictEqual([r.widthOff.gutterClass, r.widthOff.activeClass, r.widthOff.rail, r.widthOff.width], [true, false, true, 'off'],
                 label(`width off keeps a navigation-only gutter: ${JSON.stringify(r.widthOff)}`));
             near(r.widthOff.composerLeft - r.widthOff.columnLeft, r.widthOffNative.composerLeft - r.widthOffNative.columnLeft,
                 label('composer keeps its native alignment with the column'), 1);
         } else {
-            // 原生布局本来就留有导航条的位置：不收窄，列与输入区保持原生宽度。
             assert.deepStrictEqual([r.widthOff.gutterClass, r.widthOff.activeClass, r.widthOff.rail, r.widthOff.width], [false, false, true, 'off'],
                 label(`width off needs no gutter when the native layout leaves room: ${JSON.stringify(r.widthOff)}`));
             near(r.widthOff.column, r.widthOffNative.column, label('native column width is kept'), 1);
@@ -418,7 +390,6 @@
         assert.strictEqual(r.widthOff.classMutations, 0, label('a settled layout sync with width off leaves html classes untouched'));
         assert.deepStrictEqual([r.widthOffNavOff.gutterClass, r.widthOffNavOff.owners], [false, 0], label('navigation off releases it'));
 
-        // 界面识别。
         assert.deepStrictEqual([r.unknown.surface, r.unknown.status, r.unknown.owners, r.unknown.markers, r.unknown.rails],
             ['unknown', 'unsupported', 0, 0, 0], label('unknown visible chat stays native'));
         near(r.unknown.column, n.column, label('unknown structure keeps the native column'), 1);
@@ -433,7 +404,6 @@
         assert.strictEqual(r.back.surface, 'chat');
         near(r.back.column, 1000, label('chat resumes after a native-only page'), 1);
 
-        // 暂停、恢复、接管。
         for (const key of ['p', 'pLine', 'pBottom', 'h', 'code', 'preLine', 'td', 'user']) near(r.paused[key], n[key], label(`pause restores ${key}`));
         near(r.paused.column, n.column, label('pause restores the native column'), 1);
         assert.deepStrictEqual([r.pausedState.markers, r.pausedState.owners, r.pausedState.rails], [0, 0, 0], label('pause removes markers, owners and the rail'));
@@ -451,7 +421,6 @@
         near(r.takeover.font, n.p * 1.25, label('the new instance reapplies reading'));
         near(r.takeover.column, 1000, label('the new instance reapplies width'), 1);
 
-        // 默认字号与间距下切换对话：用户消息铺满不依赖阅读采样。
         assert.strictEqual(r.switched.root, true, label('the replaced conversation is recognized'));
         near(r.switched.bubble, r.switched.column, label(`user bubble fills a replaced conversation at default text settings: ${JSON.stringify(r.switched)}`), 1);
         assert.strictEqual(r.switched.fullWidth, 'active');

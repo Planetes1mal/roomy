@@ -11,7 +11,6 @@ const sitesSource = read('src/shared/sites.js');
 const declared = manifest.content_scripts[0];
 const plain = value => JSON.parse(JSON.stringify(value));
 
-// 注册表与 manifest 的一致性由 sites.test.js 核对；这里只确认后台依赖的前提。
 assert.strictEqual(manifest.background.service_worker, 'src/background.js');
 assert.ok(manifest.permissions.includes('scripting'), 'scripting permission is required for executeScript/insertCSS');
 assert.deepStrictEqual(manifest.host_permissions, manifest.content_scripts.flatMap(script => script.matches),
@@ -20,7 +19,7 @@ assert.ok(!manifest.permissions.includes('tabs'), 'tabs permission would add a b
 assert.ok(manifest.permissions.includes('activeTab'), 'toolbar popup must recognize an ungranted optional site tab');
 assert.deepStrictEqual(manifest.host_permissions, ['https://gemini.google.com/*']);
 assert.strictEqual(manifest.content_scripts.length, 1, 'optional sites must not have a static content script');
-assert.ok(backgroundSource.startsWith("// Service worker") && backgroundSource.includes("importScripts('shared/sites.js')"),
+assert.ok(backgroundSource.startsWith("importScripts('shared/sites.js')"),
     'background loads the registry');
 assert.ok(read('src/content/gemini-content.js').includes('window.widerGeminiContentLoaded = true'),
     'Gemini content script must set the loaded flag');
@@ -34,7 +33,6 @@ assert.ok(optional.length >= 1 && optional[0].id === 'chatgpt', 'ChatGPT is the 
 const scriptFor = site => plain(registry.getContentScript(site.id));
 const introKey = site => registry.getStorageKeys(site.id).intro;
 
-// 标签页：Gemini 各种状态，每个可选网站一个未加载和一个已加载的页面，加一个无关网站。
 const tabs = [
     { id: 1, url: 'https://gemini.google.com/app', loaded: false },
     { id: 2, url: 'https://gemini.google.com/app/abc123', loaded: true },
@@ -121,7 +119,6 @@ const sandbox = {
                 const tab = tabsById.get(injection.target.tabId);
 
                 if (injection.func) {
-                    // func 会在页面的隔离世界中执行：只有本站脚本的标记取决于页面状态，其它网站的标记无意义。
                     const flags = { widerGeminiContentLoaded: tab.site ? true : tab.loaded };
                     for (const site of optional) flags[scriptFor(site).loadedFlag] = tab.site === site.id ? tab.loaded : true;
                     sandbox.window = flags;
@@ -170,7 +167,6 @@ function filesFor(tabId, type) {
     assert.strictEqual(registered.length, 0);
     for (const site of optional) assert.deepStrictEqual(typesFor(siteTabs[site.id][0]), [], `${site.id} stays native`);
 
-    // 错过声明式注入的页面：先检查标记，再按 manifest 顺序注入 CSS 与 JS
     assert.deepStrictEqual(typesFor(1), ['check', 'css', 'js']);
     const css = calls.find(call => call.tabId === 1 && call.type === 'css');
     const js = calls.find(call => call.tabId === 1 && call.type === 'js');
@@ -178,16 +174,12 @@ function filesFor(tabId, type) {
     assert.deepStrictEqual(js.files, declared.js);
     assert.strictEqual(js.immediate, true, 'injection must not wait for document_idle');
 
-    // 已注入的页面只检查，不重复注入
     assert.deepStrictEqual(typesFor(2), ['check']);
 
-    // 被丢弃的标签页跳过
     assert.deepStrictEqual(typesFor(3), []);
 
-    // 某个标签页注入失败不影响其他标签页，也不抛出
     assert.deepStrictEqual(typesFor(4), ['check']);
 
-    // 授权一个网站后注册未来导航，并立即补注入已打开的页面，不刷新；其它网站不受影响。
     for (const site of optional) {
         calls.length = 0;
         granted[site.id] = true;
@@ -221,7 +213,6 @@ function filesFor(tabId, type) {
     await listeners.onAdded();
     assert.strictEqual(registered.length, 1);
 
-    // 再次触发（如扩展更新）时，已补注入的页面不再重复注入
     calls.length = 0;
     const before = registrations;
     await listeners.onInstalled();
@@ -230,7 +221,6 @@ function filesFor(tabId, type) {
     await listeners.onStartup();
     assert.strictEqual(registrations, before, 'startup and install registration must be idempotent');
 
-    // 重启时缺失注册会补回；撤销后注销，不再补注入。
     registered = [];
     await listeners.onStartup();
     assert.strictEqual(registrations, before + 1);
@@ -244,7 +234,6 @@ function filesFor(tabId, type) {
     assert.strictEqual(popupOpens, 0, 'restoring scripts alone must not open the popup');
     assert.strictEqual(badgeText, '');
 
-    // 键名与弹窗共用的常量一致。
     const settingsSandbox = { globalThis: {} };
     settingsSandbox.globalThis = settingsSandbox;
     vm.runInNewContext(sitesSource, settingsSandbox);
@@ -252,7 +241,6 @@ function filesFor(tabId, type) {
     assert.strictEqual(settingsSandbox.widerGeminiSettings.CHATGPT_INTRO_KEY, introKey(optional[0]));
     assert.strictEqual(introKey(optional[0]), 'chatgptIntroPending', 'ChatGPT keeps the 3.0 intro key');
 
-    // 提示矩阵：从旧版本更新时，只提示加入版本晚于旧版本、且尚未授权的网站；只加角标，不弹窗。
     const flagged = () => plain(optional.filter(site => localStore[introKey(site)]).map(site => site.id));
     const clearFlags = () => optional.forEach(site => delete localStore[introKey(site)]);
     const since = version => plain(registry.addedSince(version).map(site => site.id));
@@ -262,7 +250,6 @@ function filesFor(tabId, type) {
     assert.strictEqual(badgeText, 'NEW');
     assert.strictEqual(popupOpens, 0, 'updates must not open the popup');
 
-    // 浏览器重启后角标重新显示；授权一个网站后清除它的提示，角标只在还有未授权的提示时保留。
     badgeText = '';
     await listeners.onStartup();
     assert.strictEqual(badgeText, 'NEW');
@@ -276,21 +263,18 @@ function filesFor(tabId, type) {
     assert.deepStrictEqual(flagged(), [], 'granting every site clears every flag');
     assert.strictEqual(badgeText, '');
 
-    // 已授权时，新装或更新都不再提示。
     await listeners.onInstalled({ reason: 'install' });
     assert.strictEqual(popupOpens, 0);
     assert.strictEqual(badgeText, '');
     for (const site of optional) granted[site.id] = false;
     await listeners.onRemoved();
 
-    // 从 3.0.x 更新：只提示 3.0 之后加入的网站；同版本之间、缺少旧版本号和浏览器更新都不提示。
     await listeners.onInstalled({ reason: 'update', previousVersion: '3.0.1' });
     assert.deepStrictEqual(flagged(), since('3.0.1'), 'updating from 3.0.1 flags only sites added later');
     assert.strictEqual(badgeText, flagged().length ? 'NEW' : '');
     assert.strictEqual(popupOpens, 0);
     clearFlags();
     badgeText = '';
-    // 开发中的网站 since 可能已经是下一个版本：以 manifest 与所有 since 里最新的版本作为“当前版本”。
     const current = optional.reduce((latest, site) => registry.compareVersions(site.since, latest) > 0 ? site.since : latest, manifest.version);
     for (const details of [{ reason: 'update', previousVersion: current },
         { reason: 'update', previousVersion: '99.0.0' }, { reason: 'update' }, { reason: 'chrome_update' }]) {
@@ -299,14 +283,12 @@ function filesFor(tabId, type) {
     assert.deepStrictEqual(flagged(), []);
     assert.strictEqual(badgeText, '');
 
-    // 新装：从工具栏弹出扩展弹窗，所有可选网站都带标记（标记值为 install），同时保留角标。
     await listeners.onInstalled({ reason: 'install' });
     assert.strictEqual(popupOpens, 1);
     assert.deepStrictEqual(flagged(), plain(optional.map(site => site.id)));
     assert.ok(flagged().every(id => localStore[introKey({ id })] === 'install'));
     assert.strictEqual(badgeText, 'NEW');
 
-    // 无法弹出（例如窗口未激活）时仍保留角标，并完成补注入。
     clearFlags();
     badgeText = '';
     popupFails = true;

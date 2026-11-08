@@ -1,5 +1,3 @@
-// 网站列表：按注册表顺序分成“你的网站”（必需或已授权）和“可添加的网站”（未授权）两组。
-// 行上显示状态词、当前网页标记和新网站标记；已授权的网站有启用开关，未授权的有“允许”按钮。
 const siteRows = {};
 
 function siteStateText(site) {
@@ -90,7 +88,6 @@ function renderSiteList() {
         if (siteRows[site.id].row.parentElement !== target) target.appendChild(siteRows[site.id].row);
         renderSiteRow(site.id);
     }
-    // 两组都按注册表顺序排列。
     for (const list of [yours, addable]) {
         const order = siteRegistry.sites.map(site => site.id);
         [...list.children].sort((a, b) => order.indexOf(a.dataset.site) - order.indexOf(b.dataset.site))
@@ -100,7 +97,6 @@ function renderSiteList() {
     document.getElementById('yourSitesGroup').hidden = yours.children.length === 0;
 }
 
-// 列表与设置页共用：总开关关闭时所有设置仍可编辑，整站保持原生。
 async function setSiteEnabled(site, enabled, input) {
     if (!settingsLoaded || taskBusy) {
         input.checked = !enabled;

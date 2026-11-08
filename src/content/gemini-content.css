@@ -1,4 +1,3 @@
-/* 暂停或尚未识别页面结构时不启用宽度规则；:where 保留既有选择器优先级。 */
 :root:where(.wider-gemini-width-enabled) {
     --gemini-chat-width: 1000px;
 }
@@ -27,7 +26,6 @@ html:where(.wider-gemini-width-enabled) {
     }
 }
 
-/* Remove outer container width constraints */
 :where(html.wider-gemini-width-enabled) .content-wrapper:has(chat-window),
 :where(html.wider-gemini-width-enabled) .main-content:has(chat-window),
 :where(html.wider-gemini-width-enabled) .content-container:has(chat-window),
@@ -61,7 +59,6 @@ html:where(.wider-gemini-width-enabled) {
     width: 100% !important;
 }
 
-/* User query containers */
 :where(html.wider-gemini-width-enabled) .user-query-bubble-container,
 :where(html.wider-gemini-width-enabled) .user-query-container,
 :where(html.wider-gemini-width-enabled) user-query-content,
@@ -74,7 +71,6 @@ html:where(.wider-gemini-width-enabled) {
     margin-right: auto !important;
 }
 
-/* Model response containers */
 :where(html.wider-gemini-width-enabled) model-response,
 :where(html.wider-gemini-width-enabled) .response-container,
 :where(html.wider-gemini-width-enabled) .presented-response-container,
@@ -87,7 +83,6 @@ html:where(.wider-gemini-width-enabled) {
     margin-right: auto !important;
 }
 
-/* Table containers */
 :where(html.wider-gemini-width-enabled) table-block,
 :where(html.wider-gemini-width-enabled) .table-block,
 :where(html.wider-gemini-width-enabled) .table-block.new-table-style,
@@ -110,31 +105,22 @@ html:where(.wider-gemini-width-enabled) {
 :where(html.wider-gemini-width-enabled) .table-block .table-content {
     width: 100% !important;
     overflow-x: auto !important;
-    /* Gemini 自带 24px 左右内边距（border-box），table 的 width:100% 只填满
-       内边距盒（实测 611px < 容器 659px），视觉比正文窄。清零水平内边距让表格铺满 */
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
 
-/* 表格底部行（导出/溢出菜单按钮）同样自带 24px 水平内边距，
-   清零让按钮与表格左边缘对齐 */
 :where(html.wider-gemini-width-enabled) table-block .table-footer,
 :where(html.wider-gemini-width-enabled) .table-block .table-footer {
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
 
-/* luminous 表格的横向滚动由内部 .table-content 承担；外层 .horizontal-scroll-wrapper
-   的出血式布局（overflow: scroll + margin-inline:-20px + padding-inline:20px）
-   会多出一条不贴边的滚动条（2026-09 实测 scrollLeft=0 时滑块仍缩进），禁用之 */
 :where(html.wider-gemini-width-enabled) .horizontal-scroll-wrapper:has(table-block) {
     overflow: visible !important;
     margin-inline: 0 !important;
     padding-inline: 0 !important;
 }
 
-/* 表格横向滚动条：Gemini 默认轨道透明、只剩 4px 滑块，视觉上"对不齐"。
-   画出通栏轨道作参照，滑块静止时贴左边缘 */
 :where(html.wider-gemini-width-enabled) table-block .table-content::-webkit-scrollbar,
 :where(html.wider-gemini-width-enabled) .table-block .table-content::-webkit-scrollbar {
     height: 4px !important;
@@ -142,8 +128,6 @@ html:where(.wider-gemini-width-enabled) {
 
 :where(html.wider-gemini-width-enabled) table-block .table-content::-webkit-scrollbar-track,
 :where(html.wider-gemini-width-enabled) .table-block .table-content::-webkit-scrollbar-track {
-    /* Gemini 给轨道加了 margin-inline: var(--gem-sys-spacing--xxl)（约 48px），
-       与内容内边距配套；内边距已清零，轨道 margin 同步清零才能通栏贴边 */
     margin-inline: 0 !important;
     background: rgba(128, 128, 128, 0.15) !important;
     border-radius: 999px !important;
@@ -156,8 +140,6 @@ html:where(.wider-gemini-width-enabled) {
     border-radius: 999px !important;
 }
 
-/* Input area — keep input-container full width so notebook Sources chip keeps native spacing.
-   Do not constrain overlays/dialogs here (Drive picker fix: 9029e1c). */
 :where(html.wider-gemini-width-enabled) input-container {
     max-width: none !important;
     width: 100% !important;
@@ -172,7 +154,6 @@ html:where(.wider-gemini-width-enabled) {
     margin-bottom: 10px !important;
 }
 
-/* File upload area — scope to input-container; width comes from input-area-v2 parent */
 :where(html.wider-gemini-width-enabled) input-container upload-card,
 :where(html.wider-gemini-width-enabled) input-container .upload-card {
     max-width: 100% !important;
@@ -185,7 +166,6 @@ html:where(.wider-gemini-width-enabled) {
     max-width: 100% !important;
 }
 
-/* Nested element width limits */
 :where(html.wider-gemini-width-enabled) user-query,
 :where(html.wider-gemini-width-enabled) user-query > *,
 :where(html.wider-gemini-width-enabled) user-query > * > *,
@@ -203,8 +183,6 @@ html:where(.wider-gemini-width-enabled) {
     max-width: var(--gemini-chat-width) !important;
 }
 
-/* 新版回复正文可能嵌套超过两层。仅解除通往正文的布局容器及正文自身的限宽，
-   保留图片、按钮、引用卡片等内容的原生尺寸；弹窗和菜单不参与正文路径匹配。 */
 :where(html.wider-gemini-width-enabled) :is(model-response, response-container)
     :is(div, structured-content-container):has(
         :is(message-content, .message-content):not(
@@ -223,10 +201,6 @@ html:where(.wider-gemini-width-enabled) {
     max-width: 100% !important;
 }
 
-/* Gemini "luminous" 可读性排版（enable-luminous-content-width）会给文字级元素
-   单独设置阅读宽度上限（2026-09 实测 p 被限制在约 70ch ≈ 708px），与容器宽度无关，
-   导致容器已加宽而正文仍窄。解除回复/提问正文内文字元素的限宽；
-   代码块、图片、按钮等保持原生行为。 */
 :where(html.wider-gemini-width-enabled) :is(model-response, response-container, .response-container, .presented-response-container)
     :is(.markdown, .markdown-main-panel)
     :is(p, li, ul, ol, blockquote, h1, h2, h3, h4, h5, h6):not(
@@ -244,9 +218,6 @@ html:where(.wider-gemini-width-enabled) {
     max-width: 100% !important;
 }
 
-/* luminous 同样给回复操作栏（点赞/重新生成等）设了阅读宽度上限并自动居中，
-   导致按钮相对左对齐的正文缩进（2026-09 实测 message-actions 被限 708px、
-   margin-left auto ≈ 84px）。解除限宽并去掉居中，让按钮栏与正文左对齐。 */
 :where(html.wider-gemini-width-enabled) model-response message-actions,
 :where(html.wider-gemini-width-enabled) response-container message-actions,
 :where(html.wider-gemini-width-enabled) .response-container message-actions,
@@ -257,10 +228,6 @@ html:where(.wider-gemini-width-enabled) {
     margin-right: 0 !important;
 }
 
-/* luminous 给回复区子容器（头部状态栏、thinking-overlay 思考层、底部区、
-   操作栏外层）统一加了 24px 水平外边距（--gem-sys-spacing--xxl 体系，
-   2026-09 实测 margin-left: 24px，宽度 611px < 容器 659px），
-   清零并恢复自动宽度，让它们与正文同宽对齐 */
 :where(html.wider-gemini-width-enabled) model-response .response-container-header,
 :where(html.wider-gemini-width-enabled) response-container .response-container-header,
 :where(html.wider-gemini-width-enabled) model-response thinking-overlay,
@@ -271,15 +238,10 @@ html:where(.wider-gemini-width-enabled) {
 :where(html.wider-gemini-width-enabled) response-container .response-container-footer {
     margin-left: 0 !important;
     margin-right: 0 !important;
-    /* 不能用 width:auto：这些元素在 flex 布局中会收缩到内容宽度并被挤到
-       一侧（2026-09 实测 thinking-overlay 的思考文字被顶到最右），显式撑满 */
     width: 100% !important;
     max-width: 100% !important;
 }
 
-/* 独立加载态：thinking-dots-animation 是 pending-request（column flex 且子项居中）
-   的弹性子项，width:auto 会收缩到内容宽度并水平居中（2026-09 实测被挤到列中央
-   left:606）。显式撑满整列，让三个点回到列左缘 */
 :where(html.wider-gemini-width-enabled) pending-request > thinking-dots-animation {
     margin-left: 0 !important;
     margin-right: 0 !important;
@@ -288,9 +250,6 @@ html:where(.wider-gemini-width-enabled) {
     align-self: stretch !important;
 }
 
-/* 思考文字态：dots 与 .thinking-container 是 thinking-overlay（row flex）内的兄弟，
-   保持 100% 宽度会把文字挤到右缘（2026-09 实测 dots 占 531px、文字 left:831）。
-   恢复内容宽度并禁止拉伸 */
 :where(html.wider-gemini-width-enabled) model-response thinking-overlay > thinking-dots-animation,
 :where(html.wider-gemini-width-enabled) response-container thinking-overlay > thinking-dots-animation {
     width: auto !important;
@@ -298,9 +257,6 @@ html:where(.wider-gemini-width-enabled) {
     flex: 0 0 auto !important;
 }
 
-/* thinking-overlay 撑满后是 flex 容器，且 Gemini 设了 direction: rtl
-   （2026-09 实测子元素 .thinking-container 贴右缘 left:798 = 容器右缘-自身宽度），
-   flex 起点被翻到右侧。改回 ltr 并强制整链左对齐 */
 :where(html.wider-gemini-width-enabled) model-response thinking-overlay,
 :where(html.wider-gemini-width-enabled) response-container thinking-overlay {
     direction: ltr !important;
@@ -315,18 +271,12 @@ html:where(.wider-gemini-width-enabled) {
     margin-right: auto !important;
 }
 
-/* 图片说明对齐：说明文字自身的 16px margin 清零，对齐到图片左缘的偏移量
-   由内容脚本 alignImageCaptions() 测量实际渲染位置后设置
-   （fit-content 会按图片自然宽度而非显示宽度收缩，CSS 方案不可行） */
 :where(html.wider-gemini-width-enabled) model-response single-image .hero-caption-row .caption,
 :where(html.wider-gemini-width-enabled) response-container single-image .hero-caption-row .caption {
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
 
-/* luminous 用 response-element 包裹代码块等块级元素并设阅读宽度上限
-   （2026-09 实测 max-width: 740px），导致代码框不随列加宽。
-   解除限宽，框体铺满列宽；内部 pre 的横向滚动不受影响。 */
 :where(html.wider-gemini-width-enabled) model-response response-element,
 :where(html.wider-gemini-width-enabled) response-container response-element,
 :where(html.wider-gemini-width-enabled) .response-container response-element,
@@ -335,12 +285,6 @@ html:where(.wider-gemini-width-enabled) {
     max-width: 100% !important;
 }
 
-/* luminous 会给回复正文路径上的各类包装容器统一加阅读宽度上限
-   （2026-09 实测 p≈708px、response-element=740px、.attachment-container=708px），
-   逐组件点名会持续漏网，统一解除正文 markdown 内所有元素的限宽。
-   生成图片按容器宽度显示，不能只排除 img：还需保留图片附件和组件子树的原生上限
-   （2026-10 实测附件与 generated-image 均为 708px），否则图片也会随正文放大。
-   代码、表格附件继续解锁；媒体、表单控件与浮层菜单保留原生布局。 */
 :where(html.wider-gemini-width-enabled) :is(model-response, response-container, .response-container, .presented-response-container)
     :is(.markdown, .markdown-main-panel)
     :not(
@@ -352,8 +296,6 @@ html:where(.wider-gemini-width-enabled) {
     max-width: 100% !important;
 }
 
-/* 图片附件保留原生宽度，但加宽时与正文左缘对齐。
-   移动整块附件，让图片说明与悬停按钮沿用组件内部定位；暂停后恢复原生自动外边距。 */
 :where(html.wider-gemini-width-enabled) :is(model-response, response-container, .response-container, .presented-response-container)
     .attachment-container:has(generated-image) {
     margin-left: 0 !important;
@@ -364,10 +306,6 @@ html:where(.wider-gemini-width-enabled) {
     display: none !important;
 }
 
-/* User message full-width (optional) — bubble fills the row and left-aligns,
-   matching the AI response width while keeping its background.
-   Scoped to conversation containers so the bottom input composer
-   (in input-container, outside the conversation) is never affected. */
 :where(html.wider-gemini-width-enabled) body.wider-gemini-user-full-width .conversation-container .user-query-bubble-container,
 :where(html.wider-gemini-width-enabled) body.wider-gemini-user-full-width .conversation-container .user-query-container,
 :where(html.wider-gemini-width-enabled) body.wider-gemini-user-full-width .conversation-container user-query-content,
@@ -390,7 +328,6 @@ html:where(.wider-gemini-width-enabled) {
     box-sizing: border-box !important;
 }
 
-/* Reading styles use native metrics captured once for each supported message node. */
 :root {
     --gemini-density-progress: 0;
     --gemini-density-spacing-scale: 1;
@@ -399,7 +336,6 @@ html:where(.wider-gemini-width-enabled) {
     --gemini-message-paragraph-spacing: 12px;
 }
 
-/* Font scaling is independent of spacing. Keep each heading/code/body font's native proportions. */
 body.wider-gemini-font-enabled [data-wg-typography] {
     font-size: calc(var(--wg-native-font-size) * var(--gemini-font-scale)) !important;
 }
@@ -410,8 +346,6 @@ body:is(.wider-gemini-font-enabled, .wider-gemini-density-enabled) [data-wg-line
     line-height: var(--wg-reading-line) !important;
 }
 
-/* Scale existing margins, including nested paragraphs, without inventing a fixed native gap.
-   Keep intentionally negative margins unchanged. Subpixel values preserve the low-density steps. */
 body.wider-gemini-density-enabled [data-wg-spacing] {
     margin-top: min(var(--wg-native-margin-top),
         calc(var(--wg-native-margin-top) * var(--gemini-density-spacing-scale))) !important;
@@ -423,13 +357,11 @@ body.wider-gemini-density-enabled [data-wg-gap] {
     row-gap: calc(var(--wg-native-row-gap) * var(--gemini-density-spacing-scale)) !important;
 }
 
-/* Manual spacing is an explicit override; 0px stays zero, independent of the density slider. */
 body.wider-gemini-spacing-custom [data-wg-typography]:not([data-wg-line="fixed"], [data-wg-line="inline"]) {
     --wg-reading-line: calc(var(--wg-native-font-size) * var(--gemini-font-scale) * var(--gemini-message-line-height));
     line-height: var(--gemini-message-line-height) !important;
 }
 
-/* Code blocks and table cells scale their native line height; inline code follows prose. */
 body:is(.wider-gemini-font-enabled, .wider-gemini-density-enabled) [data-wg-line="fixed"] {
     --wg-reading-line: calc(var(--wg-native-line-height) * var(--gemini-font-scale)) !important;
 }
@@ -451,7 +383,6 @@ body.wider-gemini-spacing-custom [data-wg-gap] {
     row-gap: 0 !important;
 }
 
-/* Code wrap enabled — every code-wrap branch, including the default nowrap override, requires the site-active class. */
 :where(html.wider-gemini-active) body.code-wrap-enabled pre,
 :where(html.wider-gemini-active) body.code-wrap-enabled pre code {
     white-space: pre-wrap !important;
@@ -480,7 +411,6 @@ body.wider-gemini-spacing-custom [data-wg-gap] {
     white-space: pre-wrap !important;
 }
 
-/* Code wrap disabled (default) */
 :where(html.wider-gemini-active) body:not(.code-wrap-enabled) pre,
 :where(html.wider-gemini-active) body:not(.code-wrap-enabled) pre code {
     white-space: pre !important;

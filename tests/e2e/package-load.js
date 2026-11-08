@@ -1,5 +1,3 @@
-// Smoke-test an already extracted release ZIP in an isolated, headless Chrome profile.
-// Usage: node tests/e2e/package-load.js <extracted-extension-directory>
 (function () {
     'use strict';
 
@@ -51,8 +49,6 @@
     }
 
     async function waitForPage(sessionId, expression, message) {
-        // createTarget returns before navigation finishes; the initial document may be about:blank.
-        // Pages in a freshly started Chrome on a CI runner can take several seconds to load.
         for (let attempt = 0; attempt < 300; attempt++) {
             const result = await send('Runtime.evaluate', { expression, returnByValue: true }, sessionId);
             assert(!result.exceptionDetails, JSON.stringify(result.exceptionDetails));
@@ -64,7 +60,6 @@
 
     (async () => {
         try {
-            // The first command also waits for Chrome itself to start, which is slow on a fresh Windows runner.
             const { id } = await send('Extensions.loadUnpacked', { path: extension }, undefined, 90000);
             assert(id, 'Chrome should accept the release manifest and files');
             const { targetId } = await send('Target.createTarget', {

@@ -8,31 +8,23 @@
     const WIDTH_KEY = settingsUtils.CHATGPT_WIDTH_KEY;
     const STORAGE_KEYS = settingsUtils.getSiteStorageKeys('chatgpt');
     const ACTIVE_CLASS = 'wider-chatgpt-width-active';
-    // 宽度关闭时只为消息导航留白（以原生内容宽度为上限）。
     const GUTTER_CLASS = 'wider-chatgpt-nav-gutter';
     const NATIVE_WIDTH = '[class~="max-w-(--thread-body-max-width)"]';
     const HOME_OWNER = `${NATIVE_WIDTH}:has(form[data-chatgpt-composer][data-composer-placement="home"])`;
     const EXCLUDED = '[role="dialog"], [role="menu"], dialog, [data-composer-overlay-floating-ui]';
-    // 结构变化时重新识别当前可见的对话界面（普通对话、Dots、Page 浮动对话、Space/Page 文档）。
     const SURFACE_MARKERS = '[data-thread-user-message-navigation-content], [data-pip-obstacle], ' +
         'form[data-chatgpt-composer], .messaging-root, .message-list, [data-role="messages-scroll"], ' +
         '[data-codex-composer-root], [data-page-document-selection], main, ' +
         '[data-web-mobile-conversation], [data-composer-positioner]';
 
-    // 阅读排版只作用于消息正文里的文字拥有者，不给正文根设字号，
-    // 以免 font: inherit 的复制/展开按钮、引用标签跟着变大。
-    // 新版正文与气泡用 data-* 标识；旧版按角色；Dots 两种角色都用同一渲染器，角色由外层行决定。
-    // 未登录前端（unauth-mweb）的正文是 [data-assistant-markdown]，用户气泡同样是 [data-user-message-bubble]。
     const ASSISTANT_ROOT = ':is([data-markdown-text-style="assistant-message"], ' +
         '[data-message-author-role="assistant"] .markdown, [data-assistant-markdown])';
     const DOTS_USER_ROW = 'article.message-row.self:has(.message-surface)';
     const USER_BUBBLE = ':is([data-user-message-bubble], [data-message-author-role="user"] .user-message-bubble-color, ' +
         '[data-message-author-role="user"] .whitespace-pre-wrap, article.message-row.self .message-surface > .message-bubble)';
     const MESSAGE_ROOT = `:is(${ASSISTANT_ROOT}, ${USER_BUBBLE})`;
-    // Dots 的代码块没有 pre：代码表面 [data-markdown-copy="code-block"] 内是显式 12px/20px 的块级 code。
     const BLOCK_CODE = '[data-markdown-copy="code-block"] code';
     const FONT_TARGET = `p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th, pre code, ${BLOCK_CODE}`;
-    // 密度只压缩正文行框；代码、表格行保持原生行高，只随字号等比缩放。
     const PROSE_LINE = 'p, li, h1, h2, h3, h4, h5, h6, blockquote';
     const FIXED_LINE = `pre, td, th, ${BLOCK_CODE}`;
     const BLOCK_SPACING = 'p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6, hr';
@@ -77,7 +69,6 @@
         }
     }
 
-    // 只恢复仍由本脚本持有的属性；不覆盖网页在启用期间写入的新值。
     function writeProperty(record, element, property, value) {
         if (!record || record.element !== element) {
             restoreProperty(record);
@@ -99,9 +90,6 @@
         else record.element.style.removeProperty(record.property);
     }
 
-    // ---- 当前对话界面识别 ----
-
-    // 路由切换后旧对话仍连接在文档里，但尺寸为 0；只接受真正可见的节点。
     function isVisible(element) {
         if (!element || element.closest('[inert], [hidden]')) return false;
         const rect = element.getBoundingClientRect();
@@ -114,8 +102,6 @@
 
     const nativeOwner = node => node.matches(NATIVE_WIDTH) && !node.closest(EXCLUDED);
 
-    // 排除对话框/菜单/编辑区；唯一的例外是已确认的 Page 浮动对话根本身，其内部的浮层仍被排除。
-    // 未登录前端的用户气泡本身是 button（点击打开复制菜单）：越过它继续检查外层。
     function isExcluded(node) {
         const hit = node.closest(READING_EXCLUDED);
         if (hit && hit.matches('button[data-user-message-bubble]')) {
@@ -132,10 +118,6 @@
         return null;
     }
 
-    /**
-     * 返回当前可见对话的边界：root（阅读与导航范围）、column（对话列）、scroll（滚动容器）、
-     * widthOwners（原生宽度变量所有者）。未知结构保持原生。
-     */
     function isChatSurface() {
         return Boolean(surface.root) && ['chat', 'dots', 'quickChat'].includes(surface.kind);
     }
@@ -144,7 +126,6 @@
         const dotsList = findVisible('.messaging-root .thread-pane .message-list', document, nativeOwner);
         if (dotsList) {
             const pane = dotsList.closest('.thread-pane');
-            // 点 Reply 后输入区移入回复对话框（保持原生），主消息列表仍单独拓宽。
             const composer = findVisible(`[data-codex-composer-root] ${NATIVE_WIDTH}`, pane, nativeOwner);
             return {
                 kind: 'dots', root: dotsList, column: dotsList,
@@ -161,7 +142,6 @@
                 footer, widthOwners: footer ? [transcript, footer] : []
             };
         }
-        // Page 关联的浮动对话：宽度由宿主窗口决定，不改；有消息时对其正文做阅读排版与导航。
         const quickChat = findVisible('section[data-pip-obstacle="quick-chat"]');
         if (quickChat) {
             const transcript = findVisible('[data-thread-user-message-navigation-content]', quickChat);
@@ -172,7 +152,6 @@
                 footer, widthOwners: []
             };
         }
-        // 未登录前端：对话 section 与输入区定位层各自以 48rem 为上限，没有 thread 宽度变量。
         const loggedOut = findVisible('section[data-web-mobile-conversation][data-conversation-id]');
         if (loggedOut) {
             const footer = findVisible('[data-swipable-detail-footer]');
@@ -186,7 +165,6 @@
         const home = findVisible(`main ${HOME_OWNER}`, document, nativeOwner) ||
             findVisible('main[data-default-home] [data-composer-positioner]');
         if (home) return { kind: 'home', root: null, widthOwners: [home] };
-        // 普通对话的 main 也带 data-app-shell-main-surface，只能用 Page 文档或 Space 路由正向判断。
         if (findVisible('[data-page-document-selection]') || /^\/space(\/|$)/.test(location.pathname)) {
             return { kind: 'notApplicable', root: null, widthOwners: [] };
         }
@@ -207,7 +185,6 @@
         surface = next;
         widthActive = siteActive && settings.widthEnabled !== false && surface.widthOwners.length > 0;
         const railWanted = navigationWanted() && userTurns().length >= window.widerMessageNavigation.MIN_TURNS;
-        // 宽度关闭时先撤下本扩展为导航留白写入的标记与内边距，在同一任务内测量原生布局（不会闪烁）。
         if (!widthActive && markedOwners.length) {
             markedOwners.forEach(owner => owner.removeAttribute(WIDTH_ATTR));
             markedOwners = [];
@@ -221,7 +198,6 @@
             columnWidth = surface.column.getBoundingClientRect().width -
                 parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
         }
-        // 宽度关闭但原生布局右侧不足 24px 时，只为导航留白：以原生内容宽度为上限，对称收窄，输入区保持对齐。
         const nativeFree = railWanted ? navigationBounds().right - contentRight() : Infinity;
         const gutterOnly = !widthActive && railWanted && surface.widthOwners.length > 0 &&
             nativeFree < window.widerMessageNavigation.RAIL_WIDTH - 1;
@@ -229,13 +205,11 @@
         if (root.classList.contains(ACTIVE_CLASS) !== widthActive) root.classList.toggle(ACTIVE_CLASS, widthActive);
         if (root.classList.contains(GUTTER_CLASS) !== gutterOnly) root.classList.toggle(GUTTER_CLASS, gutterOnly);
 
-        // 宽度标记只写在当前界面已验证的所有者上，移走旧界面的标记。
         const owners = reserve ? surface.widthOwners : [];
         markedOwners.filter(owner => !owners.includes(owner)).forEach(owner => owner.removeAttribute(WIDTH_ATTR));
         owners.forEach(owner => owner.setAttribute(WIDTH_ATTR, ''));
         markedOwners = owners;
 
-        // 滚动容器与 Page 浮窗始终观察：浮窗缩放后导航条按新边界重新布局。
         const parent = reserve && surface.column ? surface.column.parentElement : null;
         const observed = [parent, surface.scroll, surface.host].filter(Boolean);
         if (observed.length !== observedTargets.length || observed.some((el, i) => el !== observedTargets[i])) {
@@ -252,7 +226,6 @@
         } else {
             rootProperty = writeProperty(rootProperty, root, '--wg-chatgpt-width', widthActive
                 ? settingsUtils.getWidthCssValue(settings.chatWidthSetting) : `${columnWidth}px`);
-            // 滚动区的双侧 gutter 不计入正文父容器，绝对定位的 footer/输入区却跨过 gutter。
             const available = parent ? `${parent.clientWidth}px` : null;
             const extra = surface.widthOwners.slice(1);
             ownerProperties.slice(extra.length).forEach(restoreProperty);
@@ -262,7 +235,6 @@
                 markFullPaths(surface.column.querySelectorAll(USER_BUBBLE));
             }
         }
-        // 导航需要的留白：宽度生效时按设定宽度计算；只为导航留白时补足原生缺口。
         const gutter = !railWanted ? 0 : widthActive ? neededGutter()
             : gutterOnly ? Math.ceil(window.widerMessageNavigation.RAIL_WIDTH - nativeFree) + 1 : 0;
         if (gutter) {
@@ -271,7 +243,6 @@
             restoreProperty(gutterProperty);
             gutterProperty = null;
         }
-        // Page 浮动对话没有原生宽度所有者：只在对话内容里补足右内边距（原生值加缺口），不改浮窗尺寸。
         if (railWanted && surface.kind === 'quickChat' && nativeFree < window.widerMessageNavigation.RAIL_WIDTH - 1) {
             const nativePadding = parseFloat(getComputedStyle(surface.column).paddingInlineEnd) || 0;
             insetProperty = writeProperty(null, surface.column, 'padding-inline-end',
@@ -308,8 +279,6 @@
         window.addEventListener('resize', queueLayout, options);
     }
 
-    // ---- 阅读排版 ----
-
     function outerBubble(node) {
         let bubble = node.closest(USER_BUBBLE);
         while (bubble && bubble.parentElement && bubble.parentElement.closest(USER_BUBBLE)) {
@@ -318,7 +287,6 @@
         return bubble;
     }
 
-    // 用户气泡内部的类名在不同版本间变化，按“直接包含文字的元素”识别文字拥有者。
     function collectUserText(bubble, add) {
         const walker = document.createTreeWalker(bubble, NodeFilter.SHOW_TEXT);
         for (let text = walker.nextNode(); text; text = walker.nextNode()) {
@@ -343,7 +311,6 @@
             }
         };
         for (const scope of scopes) {
-            // 只处理当前可见对话里的节点，隐藏的旧路由不参与。
             if (!scope || scope.nodeType !== 1 || !scope.isConnected || !readingScope.contains(scope)) continue;
             if (scope.closest(USER_BUBBLE)) {
                 addBubble(scope);
@@ -353,7 +320,6 @@
             const inside = scope.closest(ASSISTANT_ROOT);
             add(scope);
             scope.querySelectorAll(inside ? READING_TARGET : `${ASSISTANT_ROOT} :is(${READING_TARGET})`).forEach(add);
-            // 新增或移除段落会改变相邻块的 :first-child / :last-child 原生外边距。
             if (inside) {
                 for (const sibling of [scope.previousElementSibling, scope.nextElementSibling]) {
                     if (sibling) measuredNodes.delete(sibling);
@@ -364,8 +330,6 @@
         return { nodes: [...nodes].filter(node => !measuredNodes.has(node)), bubbles: [...bubbles] };
     }
 
-    // 用户消息铺满：从气泡向上逐级测量，标记所有比对话列窄的祖先（跳过 display:contents），
-    // 直到遇到与列同宽的容器。Dots 气泡外层保留原生的消息操作空间。
     function markFullPaths(bubbles) {
         if (!(columnWidth > 0) || !surface.column) return;
         for (const node of bubbles) {
@@ -391,7 +355,6 @@
         }
     }
 
-    // 采样前临时撤下本扩展的排版规则，同一任务内恢复；先批量读取再批量写入。
     function measureReading(scopes) {
         if (!readingScope || (settings.messageFontSize === 100 && settings.messageCompactness === 0 &&
             !settings.messageSpacingCustom)) return;
@@ -446,8 +409,6 @@
 
     function startReading() {
         if (readingObserver || !document.body) return;
-        // 流式输出主要追加文本节点；只处理新增/移除的元素所在范围，不整页重扫。
-        // 在观察回调里同步采样，新块在首次绘制前即获得设置（后台标签页也不依赖 rAF）。
         readingObserver = new MutationObserver(function (mutations) {
             if (!isExtensionContextValid()) {
                 retire();
@@ -459,7 +420,6 @@
             for (const mutation of mutations) {
                 if (!readingScope.contains(mutation.target)) continue;
                 for (const node of mutation.addedNodes) {
-                    // 起初为空的文字拥有者后来才得到文字节点：以其父元素为范围重新识别。
                     if (node.nodeType === 1) scopes.push(node);
                     else if (node.nodeType === 3 && node.parentElement) scopes.push(node.parentElement);
                 }
@@ -475,7 +435,6 @@
         readingObserver.observe(document.body, { childList: true, subtree: true });
     }
 
-    // 暂停时撤回所有标记与采样值，释放节点记录；恢复时重新按原生样式采样。
     function stopReading() {
         if (readingObserver) readingObserver.disconnect();
         readingObserver = null;
@@ -495,14 +454,12 @@
             return;
         }
         startReading();
-        // 对话界面变化（包括返回缓存的旧对话）时撤回旧标记，按新界面的原生样式重新采样。
         const scope = isChatSurface() ? surface.root : null;
         if (scope !== readingScope) {
             clearReadingMarkers();
             readingScope = scope;
             if (scope) measureReading([scope]);
         } else if (scope && !root.hasAttribute(READING_ATTR)) {
-            // 默认排版不采样；首次开启阅读设置时补测当前正文。
             measureReading([scope]);
         }
         const progress = settings.messageCompactness / 100;
@@ -512,7 +469,6 @@
         if (custom) tokens.push('custom');
         else if (progress > 0) tokens.push('line', 'space');
         else if (settings.messageFontSize !== 100) tokens.push('line');
-        // 默认值（100%、自动 0、手动关闭）不产生任何排版覆盖。
         root.style.setProperty('--wgc-font-scale', String(settings.messageFontSize / 100));
         root.style.setProperty('--wgc-density', String(progress));
         root.style.setProperty('--wgc-space-scale', String(1 - 0.875 * progress));
@@ -520,19 +476,15 @@
         root.style.setProperty('--wgc-manual-gap', `${settings.messageParagraphSpacing}px`);
         if (tokens.length) root.setAttribute(READING_ATTR, tokens.join(' '));
         else root.removeAttribute(READING_ATTR);
-        // 用户消息铺满还依赖有效宽度（CSS 同时要求宽度生效类）。
         if (settings.userFullWidth) root.setAttribute(FULL_ATTR, '');
         else root.removeAttribute(FULL_ATTR);
     }
-
-    // ---- 消息导航 ----
 
     function userTurns() {
         if (!surface.column) return [];
         const elements = surface.kind === 'dots'
             ? [...surface.column.querySelectorAll(DOTS_USER_ROW)]
             : [...new Set([...surface.column.querySelectorAll(USER_BUBBLE)].map(outerBubble))];
-        // 稳定标识：普通对话与 Page 的轮次 data-turn-key（站点卸载屏外轮次后仍可重新定位），Dots 的 data-message-id。
         return elements.filter(element => element && !isExcluded(element)).map(element => {
             const text = (element.querySelector('.message-text') || element).textContent.replace(/\s+/g, ' ').trim();
             const owner = element.closest('[data-turn-key], [data-message-id]');
@@ -542,7 +494,6 @@
     }
 
     function navigationBounds() {
-        // 使用滚动容器的 client box：scrollbar-gutter: stable both-edges 时两侧都有占位。
         const rect = surface.scroll.getBoundingClientRect();
         const left = rect.left + surface.scroll.clientLeft;
         const footerTop = surface.footer ? surface.footer.getBoundingClientRect().top : rect.bottom;
@@ -550,7 +501,6 @@
         return { left, right: left + surface.scroll.clientWidth, top, bottom: Math.min(rect.bottom, footerTop) - 8 };
     }
 
-    // 对话列与窗格右缘之间不足 24px 时，在宽度生效的前提下对称收窄对话列，为导航条留出空间。
     function neededGutter() {
         if (!surface.column || !surface.column.parentElement) return 0;
         const available = surface.column.parentElement.clientWidth;
@@ -558,7 +508,6 @@
         const setting = settings.chatWidthSetting;
         const requested = setting.unit === 'percent' ? innerWidth * setting.value / 100 : setting.value;
         const side = (available - Math.min(requested, available - padding * 2)) / 2;
-        // 多留 1px，抵消小数像素取整。
         return side >= window.widerMessageNavigation.RAIL_WIDTH ? 0
             : Math.max(0, Math.ceil(window.widerMessageNavigation.RAIL_WIDTH - padding) + 1);
     }
@@ -568,7 +517,6 @@
             isChatSurface() && Boolean(surface.scroll);
     }
 
-    // 内容实际右缘：当前对话中最右侧的消息正文；没有消息时取对话列内容框。
     function contentRight() {
         const roots = [...surface.column.querySelectorAll(MESSAGE_ROOT)].slice(-40);
         if (roots.length) return Math.max(...roots.map(node => node.getBoundingClientRect().right));
@@ -585,7 +533,6 @@
         }
         const turns = userTurns();
         const bounds = navigationBounds();
-        // 留白后仍放不下 24px 导航条（窗格过窄）时隐藏。
         const fits = bounds.right - contentRight() >= window.widerMessageNavigation.RAIL_WIDTH - 1;
         if (!navigation) {
             navigation = window.widerMessageNavigation.create({
@@ -600,7 +547,6 @@
                 onStale: queueNavigation
             });
         }
-        // Page 浮窗在站点的高层 portal 中：导航条挂进浮窗，避免被遮挡并随拖动移动。
         const container = surface.kind === 'quickChat'
             ? (surface.host !== surface.scroll ? surface.host : surface.host.parentElement) : null;
         navigation.update(fits ? { turns, scrollRoot: surface.scroll, bounds, container } : null);
@@ -610,10 +556,6 @@
         if (!retired && navigationTimer === null) navigationTimer = setTimeout(syncNavigation, 0);
     }
 
-    // ---- 扩展更新后的旧实例 ----
-    // 扩展更新或重新加载后，旧版本脚本仍留在已打开的页面里：chrome.* 已失效，却仍响应页面变化，
-    // 会多出一条导航条，并用旧设置改写宽度标记。新实例启动时先广播接管事件；旧实例收到后（或自己
-    // 发现扩展上下文失效时）停止观察与监听，撤下自己的导航条和 Page 浮窗内边距；宽度与阅读样式由新实例重新应用。
     const TAKEOVER_EVENT = 'wider-chatgpt-takeover';
     const listenerControl = new AbortController();
     let layoutObserver = null;
@@ -631,18 +573,14 @@
         layoutFrame = null;
         clearTimeout(navigationTimer);
         navigationTimer = null;
-        // 内边距是真实的布局属性：不撤回的话，新实例会把它当作原生值再叠加一次。
         restoreProperty(insetProperty);
         insetProperty = null;
         if (navigation) navigation.destroy();
         navigation = null;
     }
 
-    // 先通知旧实例再登记自己的监听，不会收到自己发出的事件。
     document.dispatchEvent(new Event(TAKEOVER_EVENT));
     document.addEventListener(TAKEOVER_EVENT, retire, { signal: listenerControl.signal });
-
-    // ---- 设置与协议 ----
 
     function applyAllSettings() {
         if (!settingsLoaded) return;
@@ -653,7 +591,6 @@
         queueNavigation();
     }
 
-    // 读取期间收到更新的 storage 事件时，旧读取结果作废。
     function readSettings() {
         if (!isExtensionContextValid()) return;
         const token = ++readToken;
@@ -666,10 +603,6 @@
         });
     }
 
-    /**
-     * enabled 保留旧含义（宽度开关）；pauseReason 区分整站暂停与仅宽度关闭。
-     * capabilities 分别报告宽度、阅读、用户消息铺满与导航在当前可见界面上的状态。
-     */
     function getLayoutStatus() {
         syncLayout();
         const widthEnabled = settings.widthEnabled !== false;
@@ -680,7 +613,6 @@
         const status = !settingsLoaded ? 'loading' : pauseReason === 'site' ? 'sitePaused'
             : pauseReason === 'width' ? 'paused' : supported ? 'active' : nativeOnly ? 'notApplicable'
                 : document.readyState === 'loading' ? 'loading' : 'unsupported';
-        // 阅读识别与宽度识别分开：对话已有内容却找不到任何消息正文时，阅读设置不会生效。
         const messages = Boolean(readingScope && readingScope.querySelector(MESSAGE_ROOT));
         const conversation = Boolean(chatSurface && surface.root.textContent.trim());
         const readingStatus = !settingsLoaded ? 'loading' : !settings.siteEnabled ? 'paused'
@@ -729,11 +661,9 @@
         if (request.action === 'getLayoutStatus') {
             sendResponse(getLayoutStatus());
         } else if (['updateSiteEnabled', 'updateReadingSettings', 'refreshSettings'].includes(request.action)) {
-            // v2：重新读取已保存设置，而不是回放 popup 捕获的值。
             if (settingsLoaded) readSettings();
             sendResponse({ success: true, protocolVersion: settingsUtils.PROTOCOL_VERSION });
         } else if (request.action === 'updateWidthEnabled' || request.action === 'updateWidthSetting') {
-            // 旧版 popup：只合并宽度字段；未加载前由 storage 事件与首次读取负责，不能提前标记已加载。
             if (settingsLoaded) {
                 const width = settingsUtils.normalizeSiteWidthSettings(storedSettings, 'chatgpt');
                 if (typeof request.enabled === 'boolean') width.widthEnabled = request.enabled;
@@ -747,7 +677,6 @@
         }
     });
 
-    // 未识别结构时不启用宽度 CSS；后续 SPA 挂载或替换已知容器会重新识别。
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observeLayout, { once: true });
     else observeLayout();
     readSettings();

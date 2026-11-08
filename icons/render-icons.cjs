@@ -1,7 +1,3 @@
-/* Render the vector masters. Pass a Sharp module path when it is not on NODE_PATH.
- * node icons/render-icons.cjs [path/to/sharp]
- * No runtime dependency is added to the extension.
- */
 'use strict';
 
 const fs = require('node:fs');
@@ -16,7 +12,6 @@ async function renderIcons() {
     const master = fs.readFileSync(path.join(iconDirectory, 'icon.svg'));
     const small = fs.readFileSync(path.join(iconDirectory, 'icon16.svg'));
 
-    // Each size has an intentional footprint; the toolbar gets its own optical master.
     await sharp(small).png().toFile(path.join(iconDirectory, 'icon16.png'));
     await sharp(master, { density: 288 })
         .extract({ left: 64, top: 64, width: 384, height: 384 })
@@ -25,7 +20,6 @@ async function renderIcons() {
         .png().toFile(path.join(iconDirectory, 'icon48.png'));
     await sharp(master).png().toFile(path.join(iconDirectory, 'icon128.png'));
 
-    // A static comparison sheet shows the actual toolbar sizes on both themes.
     const sheet = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720">
       <rect width="1200" height="720" fill="#F1F3F8"/>
       <rect x="600" width="600" height="720" fill="#151923"/>

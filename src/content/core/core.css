@@ -1,30 +1,18 @@
-/* 公共内核的通用样式：只依赖内核写入的 data-wgx-* 标记与 --wgx-* 变量，不含任何网站选择器。
-   宽度：内核只在适配器确认的当前可见宽度所有者上写 data-wgx-width；隐藏的旧路由、:root/body、
-   表格与浮层都不受影响。显示消息导航且右侧空间不足时，--wgx-gutter 在两侧各留出所需宽度。 */
-
-/* maxWidth 策略（默认）：用设定宽度与可用宽度取小者替换所有者原本的 max-width，再加回它自己的原生内边距
-   （border-box 时 --wgx-box 等于两侧内边距之和，content-box 时为 0）。--wgx-available 由内核实测写入。 */
 :where(html.wider-width-active, html.wider-nav-gutter) [data-wgx-width="maxWidth"] {
     max-width: calc(min(var(--wgx-width, 1000px),
         var(--wgx-available, 100%) - var(--wgx-pad, 0px) - var(--wgx-gutter, 0px) * 2) + var(--wgx-box, 0px)) !important;
 }
 
-/* width 策略：网站用固定 width 而不是 max-width 限宽时，同时改写两者。 */
 :where(html.wider-width-active, html.wider-nav-gutter) [data-wgx-width="width"] {
     width: calc(min(var(--wgx-width, 1000px),
         var(--wgx-available, 100%) - var(--wgx-pad, 0px) - var(--wgx-gutter, 0px) * 2) + var(--wgx-box, 0px)) !important;
     max-width: none !important;
 }
 
-/* variable 策略：网站用 CSS 变量算宽度时由适配器自带的 CSS 只改变量，这里不写规则。 */
-
-/* 阅读排版：内核为消息正文里的文字拥有者记录原生字号、行高与外边距，这里只按比例改写。
-   html 上没有 data-wgx-reading 时（默认值或暂停）完全保持原生。 */
 :where(html[data-wgx-reading~="font"]) [data-wgx-font] {
     font-size: calc(var(--wgx-font) * var(--wgx-font-scale, 1)) !important;
 }
 
-/* 代码行与表格行只随字号等比缩放，不参与密度压缩；显式行高也挡住父级覆盖的继承。 */
 :where(html:is([data-wgx-reading~="font"], [data-wgx-reading~="line"], [data-wgx-reading~="custom"]))
     [data-wgx-line="fixed"] {
     line-height: calc(var(--wgx-line) * var(--wgx-font-scale, 1)) !important;
@@ -35,13 +23,11 @@
         var(--wgx-font-scale, 1)) !important;
 }
 
-/* 只缩小正的原生间距，保留有意为之的负外边距。 */
 :where(html[data-wgx-reading~="space"]) [data-wgx-space] {
     margin-top: min(var(--wgx-mt), calc(var(--wgx-mt) * var(--wgx-space-scale, 1))) !important;
     margin-bottom: min(var(--wgx-mb), calc(var(--wgx-mb) * var(--wgx-space-scale, 1))) !important;
 }
 
-/* 手动间距优先于自动密度；0px 段距有效。 */
 :where(html[data-wgx-reading~="custom"]) [data-wgx-line="prose"] {
     line-height: var(--wgx-manual-line) !important;
 }
@@ -55,8 +41,6 @@
     margin-top: var(--wgx-manual-gap) !important;
 }
 
-/* 用户消息铺满对话列：仅在宽度生效时。内核从气泡向上测量，标记比对话列窄的气泡及其包装层；
-   保留原生气泡外观与复制/编辑按钮，编辑中的消息保持原生。适配器可为特定层另加规则。 */
 :where(html.wider-width-active[data-wgx-full])
     [data-wgx-full-path]:not(:has(textarea, [contenteditable="true"])) {
     width: 100% !important;

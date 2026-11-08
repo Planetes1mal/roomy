@@ -1,4 +1,3 @@
-# Builds the same extension ZIP locally and in CI. Requires Windows PowerShell 5.1 or PowerShell 7.
 [CmdletBinding()]
 param(
     [string]$OutputDirectory,
@@ -34,7 +33,6 @@ if ($Tag -and $Tag -cne "v$releaseVersion") {
     throw "Tag '$Tag' does not match release version 'v$releaseVersion'."
 }
 
-# Match a whole dated heading: 2.6.0 must never select 2.6.0-rc.1, nor rc.1 select rc.10.
 $changelog = Get-Content -LiteralPath (Join-Path $repoRoot 'CHANGELOG.md') -Raw -Encoding UTF8
 $heading = '(?ms)^## ' + [regex]::Escape($releaseVersion) + ' \([0-9]{4}-[0-9]{2}-[0-9]{2}\)\r?\n(.*?)(?=^## |\z)'
 $sections = [regex]::Matches($changelog, $heading)
@@ -43,9 +41,6 @@ if ($sections.Count -ne 1 -or [string]::IsNullOrWhiteSpace($sections[0].Groups[1
 }
 $releaseNotes = $sections[0].Groups[1].Value.Trim()
 
-# Directory rules: the manifest, the license, every js/css/html file under src/, each locale dictionary and the
-# three PNG icons. Source docs, tests, scripts, SVG sources and promotional images stay outside the ZIP.
-# Entry names use forward slashes so the ZIP is identical on Windows and on Unix PowerShell.
 function Get-PackageFiles([string]$root) {
     $list = [System.Collections.Generic.List[string]]::new()
     $list.Add('manifest.json')
@@ -98,7 +93,6 @@ try {
     }
     Move-Item -LiteralPath $temporaryZip -Destination $archivePath -Force
 } finally {
-    # Both paths are direct children of the resolved output directory; only remove our temporary file.
     if (Test-Path -LiteralPath $temporaryZip -PathType Leaf) {
         Remove-Item -LiteralPath $temporaryZip -Force
     }

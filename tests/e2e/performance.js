@@ -1,6 +1,3 @@
-// Synthetic long-conversation baseline. No extension installation or signed-in site is used.
-// Run: node tests/e2e/performance.js [output.json] [samples=5]
-// WG_CHROME selects Chrome; each run uses a temporary profile and keeps its generated fixtures.
 (function () {
     'use strict';
 

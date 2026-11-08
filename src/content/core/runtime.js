@@ -1,8 +1,3 @@
-// @ts-check
-// 公共内核（运行时）：生命周期、设置同步、协议、状态报告与界面变化监听。
-// 每个内核网站只写一个适配器（src/content/sites/<id>.js），负责“在这个网站上，对话、消息、滚动区、
-// 输入框分别是哪个元素”；宽度、阅读排版、消息导航在 width.js / reading.js / navigation.js 里实现一次。
-// 注入顺序：sites.js → settings-utils.js → message-navigation.js → core/*.js → 适配器（最后调用 defineSite）。
 (function () {
     'use strict';
 
@@ -23,7 +18,6 @@
         }
     }
 
-    // 只恢复仍由本脚本持有的属性；不覆盖网页在启用期间写入的新值。
     function writeProperty(record, element, property, value) {
         if (!record || record.element !== element) {
             restoreProperty(record);
@@ -45,7 +39,6 @@
         else record.element.style.removeProperty(record.property);
     }
 
-    // 路由切换后旧对话仍连接在文档里，但尺寸为 0；只接受真正可见的节点。
     function isVisible(element) {
         if (!element || element.closest('[inert], [hidden]')) return false;
         const rect = element.getBoundingClientRect();
@@ -60,7 +53,6 @@
         return Array.from(scope.querySelectorAll(selector)).filter(isVisible);
     }
 
-    // 实际滚动的祖先：overflow-y 为 auto/scroll 且内容超出。
     function scrollOwner(node, limit) {
         for (let el = node.parentElement; el && el !== (limit ? limit.parentElement : null); el = el.parentElement) {
             const overflow = getComputedStyle(el).overflowY;
@@ -69,10 +61,6 @@
         return null;
     }
 
-    /**
-     * 从正文向上找限制宽度的祖先：各层计算出的 max-width 小于父元素内容宽度的第一个元素。
-     * 测量时暂时撤下本扩展的宽度规则，比较的是网站原生的限制。类名随构建变化的网站可以靠它找宽度所有者。
-     */
     function findWidthOwner(start, boundary) {
         const root = document.documentElement;
         const classes = ['wider-width-active', 'wider-nav-gutter'].filter(name => root.classList.contains(name));
@@ -129,10 +117,6 @@
         return typeof value === 'function' ? value(...args) : value;
     }
 
-    /**
-     * 适配器入口。definition 见 docs/engineering.md 的“Core runtime and site adapters”。
-     * 同一隔离世界里只运行一次；新版本注入到同一页面时先广播接管事件，旧实例退出。
-     */
     function defineSite(definition) {
         if (window[LOADED_FLAG]) return null;
         window[LOADED_FLAG] = true;
@@ -147,7 +131,6 @@
         let storedSettings = {};
         let pendingSettingsChanges = {};
 
-        /** 模块共享的上下文：设置、当前界面、状态标志与辅助函数。 */
         const ctx = {
             site,
             settingsUtils,
@@ -181,7 +164,6 @@
         }
         ctx.isChatSurface = isChatSurface;
 
-        // 排除对话框/菜单/编辑区；适配器可以通过 hooks.isExcluded 放行自己的浮层（如宿主浮窗本身）。
         function isExcluded(node) {
             const hit = node.closest(ctx.reading.EXCLUDED);
             if (site.hooks.isExcluded) return site.hooks.isExcluded(node, hit, ctx);
@@ -197,7 +179,6 @@
                 column: next.column || next.root || null,
                 scroll: next.scroll || null,
                 footer: next.footer || null,
-                // 可用宽度所在的窗格：默认是对话列的父元素；对话列外还有限宽容器的网站另行指定。
                 pane: next.pane || null,
                 host: next.host || null,
                 navigationContainer: next.navigationContainer || null,
@@ -252,10 +233,6 @@
             window.addEventListener('resize', queueLayout, options);
         }
 
-        // ---- 扩展更新后的旧实例 ----
-        // 扩展更新或重新加载后，旧版本脚本仍留在已打开的页面里：chrome.* 已失效，却仍响应页面变化。
-        // 新实例启动时先广播接管事件；旧实例收到后（或自己发现扩展上下文失效时）停止观察与监听，
-        // 撤下自己的导航条和写入的内边距；宽度与阅读样式由新实例重新应用。
         function retire() {
             if (ctx.retired) return;
             ctx.retired = true;
@@ -269,11 +246,8 @@
             if (site.hooks.retire) site.hooks.retire(ctx);
         }
 
-        // 先通知旧实例再登记自己的监听，不会收到自己发出的事件。
         document.dispatchEvent(new Event(TAKEOVER_EVENT));
         document.addEventListener(TAKEOVER_EVENT, retire, { signal: listenerControl.signal });
-
-        // ---- 设置与协议 ----
 
         function applyAllSettings() {
             if (!ctx.settingsLoaded) return;
@@ -289,7 +263,6 @@
             ctx.navigation.queue();
         }
 
-        // 读取期间收到更新的 storage 事件时，旧读取结果作废。
         function readSettings() {
             if (!isExtensionContextValid()) return;
             const token = ++readToken;
@@ -302,10 +275,6 @@
             });
         }
 
-        /**
-         * enabled 保留旧含义（宽度开关）；pauseReason 区分整站暂停与仅宽度关闭。
-         * capabilities 分别报告宽度、阅读、用户消息铺满与导航在当前可见界面上的状态。
-         */
         function getLayoutStatus() {
             syncLayout();
             const settings = ctx.settings;
@@ -318,7 +287,6 @@
             const status = !ctx.settingsLoaded ? 'loading' : pauseReason === 'site' ? 'sitePaused'
                 : pauseReason === 'width' ? 'paused' : supported ? 'active' : nativeOnly ? 'notApplicable'
                     : document.readyState === 'loading' ? 'loading' : 'unsupported';
-            // 阅读识别与宽度识别分开：对话已有内容却找不到任何消息正文时，阅读设置不会生效。
             const messages = ctx.reading.hasMessages();
             const conversation = Boolean(chatSurface && surface.root.textContent.trim());
             const readingStatus = !ctx.settingsLoaded ? 'loading' : !settings.siteEnabled ? 'paused'
@@ -368,11 +336,9 @@
             if (request.action === 'getLayoutStatus') {
                 sendResponse(getLayoutStatus());
             } else if (['updateSiteEnabled', 'updateReadingSettings', 'refreshSettings'].includes(request.action)) {
-                // v2：重新读取已保存设置，而不是回放 popup 捕获的值。
                 if (ctx.settingsLoaded) readSettings();
                 sendResponse({ success: true, protocolVersion: settingsUtils.PROTOCOL_VERSION });
             } else if (request.action === 'updateWidthEnabled' || request.action === 'updateWidthSetting') {
-                // 旧版 popup：只合并宽度字段；未加载前由 storage 事件与首次读取负责，不能提前标记已加载。
                 if (ctx.settingsLoaded) {
                     const width = settingsUtils.normalizeSiteWidthSettings(storedSettings, site.id);
                     if (typeof request.enabled === 'boolean') width.widthEnabled = request.enabled;
@@ -387,7 +353,6 @@
             }
         });
 
-        // 未识别结构时不启用宽度 CSS；后续 SPA 挂载或替换已知容器会重新识别。
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observeLayout, { once: true });
         else observeLayout();
         readSettings();

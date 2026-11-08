@@ -8,7 +8,6 @@ const utilsPath = path.join(__dirname, '..', 'src/shared/settings-utils.js');
 const source = fs.readFileSync(utilsPath, 'utf8');
 const sandbox = { console, Object, Array, Number, Math, parseInt, parseFloat, isFinite: Number.isFinite };
 sandbox.globalThis = sandbox;
-// 设置层由站点注册表驱动：先加载注册表，再加载设置层。
 vm.runInNewContext(fs.readFileSync(sitesPath, 'utf8'), sandbox, { filename: 'sites.js' });
 vm.runInNewContext(source, sandbox, { filename: 'settings-utils.js' });
 
@@ -248,7 +247,6 @@ assert.ok(utils, 'settings utils are exposed');
     assert.strictEqual(invalid.presetsByUnit.px.length, 5);
 }
 
-// 总开关与 ChatGPT 阅读设置：旧的宽度关闭不迁移为总开关关闭，新阅读默认值等同原生。
 {
     const legacy = { widthEnabled: false, messageFontSize: 120, codeWrap: true,
         [utils.CHATGPT_WIDTH_KEY]: { widthEnabled: false, chatWidthSetting: { value: 1200, unit: 'px' } } };
@@ -267,7 +265,6 @@ assert.ok(utils, 'settings utils are exposed');
     assert.strictEqual(utils.normalizeSiteSettings({ chatgptEnabled: false }, 'gemini').siteEnabled, true);
     assert.deepStrictEqual(Object.keys(utils.getSiteEnabledPatch('chatgpt', false)), ['chatgptEnabled']);
 
-    // 读→改→写：宽度写入不碰阅读对象，阅读写入保留已存阅读字段并排除 codeWrap。
     const stored = { ...legacy, [utils.CHATGPT_READING_KEY]: { messageFontSize: 130, userFullWidth: true } };
     const readingPatch = utils.getSiteReadingPatch(stored, 'chatgpt', { messageCompactness: 40, codeWrap: true });
     assert.deepStrictEqual(Object.keys(readingPatch), [utils.CHATGPT_READING_KEY]);
@@ -288,7 +285,6 @@ assert.ok(utils, 'settings utils are exposed');
         ['messageCompactness', 'messageLineHeight', 'messageParagraphSpacing', 'messageSpacingCustom']);
 }
 
-// 任务：预览值即实际写入值；恢复只改受管字段；未完成记录按实际值对账。
 {
     const stored = {
         [utils.CHATGPT_WIDTH_KEY]: { widthEnabled: false, widthPercentMax: 80,
@@ -328,7 +324,6 @@ assert.ok(utils, 'settings utils are exposed');
     assert.strictEqual(utils.reconcileUndoRecord(restoring, values, 'chatgpt').record.state, 'ready');
 }
 
-// 消息导航：按网站独立、默认开启，不进入任务预设的受管字段。
 {
     assert.strictEqual(utils.normalizeSiteSettings({}, 'gemini').navigationEnabled, true);
     assert.strictEqual(utils.normalizeSiteSettings({ chatgptMessageNavigationEnabled: false }, 'chatgpt').navigationEnabled, false);

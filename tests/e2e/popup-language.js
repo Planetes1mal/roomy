@@ -1,5 +1,3 @@
-// Targeted popup localization and native picker check in isolated, headless Chrome profiles.
-// Usage: node tests/e2e/popup-language.js <extension-source-or-extracted-directory> <screenshot-directory>
 (function () {
     'use strict';
 
@@ -24,9 +22,6 @@
 
     async function checkBrowser(browserLanguage, check) {
         const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'wg-popup-language-'));
-        // Chrome on macOS ignores --lang and takes its UI language from AppleLanguages, which a Cocoa
-        // user-defaults argument overrides for this process only. Chrome also reads that "(locale)" value
-        // as a page to open, so it starts without a window instead of opening about:blank.
         const languageArgs = process.platform === 'darwin'
             ? ['--no-startup-window', '-AppleLanguages', `(${browserLanguage})`]
             : [`--lang=${browserLanguage}`, 'about:blank'];
@@ -103,7 +98,6 @@
                                     fits: row.scrollWidth <= row.clientWidth + 0.5 })) };
                         })()`);
                     } catch (error) {
-                        // A real popup reload can destroy the previous execution context during this load poll.
                         if (!/Execution context was destroyed|Cannot find context|Inspected target navigated/.test(error.message)) {
                             throw error;
                         }
@@ -114,7 +108,6 @@
                     await new Promise(resolve => setTimeout(resolve, 100));
                 }
                 assert(state, `Popup loads for ${selection}`);
-                // Chrome may canonicalize a profile language (for example es-ES to es).
                 assert.strictEqual(state.browser.split('-')[0], browserLanguage.split('-')[0],
                     'Actual Chrome UI language matches the test profile language');
                 assert.strictEqual(state.selected, selection);

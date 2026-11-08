@@ -1,5 +1,3 @@
-// 弹窗的多语言：手动语言字典 → chrome.i18n（浏览器语言）→ 硬编码兜底。
-// 文案与网站无关；需要列出网站时用 {sites} 占位符，由 formatSites 按界面语言连接网站名。
 let i18nDictionary = null;
 
 function t(id, fallback) {
@@ -10,7 +8,6 @@ function t(id, fallback) {
     return (msg || fallback || '');
 }
 
-// 手动覆盖语言时预加载对应 messages.json；auto 模式清空字典
 function loadLanguageDictionary(language) {
     if (language === 'auto') {
         i18nDictionary = null;
@@ -30,7 +27,6 @@ function loadLanguageDictionary(language) {
         });
 }
 
-// 带 data-i18n 的元素填文字；data-i18n-label 填 aria-label。
 function localizeHtmlPage() {
     document.documentElement.lang = t('localeCode', 'en');
     document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -45,7 +41,6 @@ function fillTemplate(template, values) {
     return Object.keys(values).reduce((text, key) => text.split(`{${key}}`).join(values[key]), template);
 }
 
-// 按界面语言把网站名连成一句（“Gemini、ChatGPT 和 Claude”）。
 function formatSites(names) {
     return window.widerRoomySites.joinNames(names, t('localeCode', 'en'));
 }
