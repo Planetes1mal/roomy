@@ -59,6 +59,19 @@
             capabilities: ['width', 'navigation', 'reading', 'userFullWidth'],
             tasks: ['reading', 'wide', 'large'],
             adapter: { js: 'src/content/sites/claude.js', css: 'src/content/sites/claude.css' }
+        },
+        {
+            id: 'deepseek',
+            name: 'DeepSeek',
+            url: 'https://chat.deepseek.com/',
+            matches: ['https://chat.deepseek.com/*'],
+            access: 'optional',
+            since: '3.2.0',
+            runtime: 'core',
+            storage: 'default',
+            capabilities: ['width', 'navigation', 'reading', 'userFullWidth'],
+            tasks: ['reading', 'wide', 'large'],
+            adapter: { js: 'src/content/sites/deepseek.js', css: 'src/content/sites/deepseek.css' }
         }
     ];
 

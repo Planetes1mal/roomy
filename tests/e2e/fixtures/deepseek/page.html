@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en" class="notranslate">
+<head>
+<meta charset="utf-8">
+<style>
+    :root { --message-list-max-width: 840px; --message-list-padding-horizontal: 44px; --sider-width: 261px; }
+    *, ::before, ::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; font: 14px/normal sans-serif; background: #292a2d; color: #eee; overflow: hidden; }
+    .app { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .frame { display: flex; flex: 1; min-height: 0; align-items: stretch; }
+    .sider { width: var(--sider-width); flex-shrink: 0; background: #212327; }
+    .main { display: flex; flex: 1; min-width: 384px; }
+    .chat { position: relative; display: flex; flex: 1; max-width: 100%; flex-direction: column; overflow: hidden; }
+    .chat-header { height: 60px; flex-shrink: 0; }
+    .ds-virtual-list { position: relative; z-index: 0; display: flex; flex: 1; min-width: 1px; min-height: 0; flex-direction: column; overflow-y: auto; }
+    .ds-virtual-list-items { margin: 0 var(--message-list-padding-horizontal); }
+    .ds-virtual-list-visible-items { position: relative; }
+    .item-user { display: flex; flex-direction: column; align-items: flex-end; padding-bottom: 50px; }
+    .item-assistant { position: relative; padding-bottom: 50px; }
+    .user-message { display: flex; width: 100%; flex-direction: column; align-items: flex-end; }
+    .user-bubble { position: relative; max-width: calc(100% - 88px); padding: 10px 16px; border-radius: 14px; background: #414158;
+        font-size: 16px; line-height: 24px; white-space: pre-wrap; }
+    .ds-collapsible-text { overflow-x: hidden; }
+    .ds-markdown { font-size: 16px; line-height: 28px; overflow-wrap: break-word; }
+    .ds-markdown > :first-child { margin-top: 0; }
+    .ds-markdown h2 { margin: 0 0 16px; font-size: 22px; line-height: 32px; }
+    .ds-markdown p { margin: 16px 0; }
+    .ds-markdown ul { margin: 16px 0; padding-left: 24px; }
+    .ds-markdown li { margin: 4px 0; }
+    .ds-markdown blockquote { margin: 16px 0; padding-left: 12px; border-left: 2px solid #555; }
+    .ds-markdown code { font-family: monospace; font-size: .875em; }
+    .md-code-block { position: relative; margin: 16px 0 11px; border-radius: 12px; background: #181818; }
+    .md-code-block-banner-wrap { position: sticky; top: 0; }
+    .md-code-block-banner { display: flex; padding: 6px; font-size: 13px; line-height: 20px; }
+    .ds-button { display: inline-flex; align-items: center; padding: 0 6px; font-size: 13px; line-height: 20px; cursor: pointer; }
+    .md-code-block pre { margin: 0; padding: 16px; overflow-x: auto; font: 13px/22px monospace; white-space: pre-wrap; overflow-wrap: normal; }
+    .md-code-block pre code { font-size: inherit; }
+    .ds-scroll-area { position: relative; overflow-x: auto; }
+    .ds-markdown table { min-width: 2400px; font-size: 16px; line-height: 28px; }
+    .message-actions { display: flex; gap: 10px; margin-top: 8px; }
+    .answer-filler { min-height: 420px; }
+    .composer-dock { position: sticky; bottom: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; margin: 0 32px;
+        padding-left: calc((100% - var(--message-list-max-width)) / 2); padding-right: calc((100% - var(--message-list-max-width)) / 2); }
+    .composer-card { position: relative; display: flex; width: 100%; flex-direction: column; padding: 12px; border-radius: 24px; background: #404045; }
+    .composer-card textarea { width: 100%; min-height: 48px; border: 0; padding: 0; background: transparent; color: inherit; font: 16px/24px sans-serif; resize: none; }
+    .home { position: relative; display: flex; flex: 1; flex-direction: column; overflow: hidden; }
+    .home-wrap { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; }
+    .home-dock { width: 100%; max-width: var(--message-list-max-width); padding: 0 32px; }
+</style>
+</head>
+<body class="dark">
+<div class="app"><div class="frame">
+    <div class="sider"></div>
+    <div class="main" data-probe="main">
+        <div class="chat" data-probe="chat-body">
+            <div class="chat-header"></div>
+            <div class="ds-virtual-list ds-scroll-area" tabindex="0" data-probe="scroll" style="display: flex; flex-direction: column;">
+                <div class="ds-virtual-list-items" data-probe="list" style="box-sizing: content-box; padding-top: 0px; padding-left: calc((100% - var(--message-list-max-width)) / 2); padding-right: calc((100% - var(--message-list-max-width)) / 2); flex-shrink: 0; flex-grow: 1;">
+                    <div class="ds-virtual-list-visible-items" data-probe="column">
+                        <div class="item-user" data-virtual-list-item-key="1">
+                            <div class="ds-message user-message"><div class="user-bubble" data-probe="bubble">
+                                <div class="ds-collapsible-text"><div><span data-probe="user">Short user question</span></div></div>
+                            </div></div>
+                            <div class="message-actions"><div class="ds-button" role="button">Edit</div></div>
+                        </div>
+                        <div class="item-assistant" data-virtual-list-item-key="2">
+                            <div class="ds-message">
+                                <div class="ds-markdown ds-assistant-message-main-content" data-probe="markdown">
+                                    <h2 data-probe="h">Heading</h2>
+                                    <p class="ds-markdown-paragraph" data-probe="p1">First paragraph <code data-probe="inline">inline</code>
+                                        <span class="katex" data-probe="katex" style="font-size:1.21em;line-height:1.2">x</span></p>
+                                    <p class="ds-markdown-paragraph" data-probe="p2">Second paragraph</p>
+                                    <ul data-probe="ul"><li data-probe="li">Item</li></ul>
+                                    <blockquote><p class="ds-markdown-paragraph">Quoted line</p></blockquote>
+                                    <div class="md-code-block md-code-block-dark">
+                                        <div class="md-code-block-banner-wrap"><div class="md-code-block-banner md-code-block-banner-lite">
+                                            <div>python</div><div class="ds-button" role="button" data-probe="copy">Copy</div>
+                                        </div></div>
+                                        <pre data-probe="pre"><code data-probe="code">long_code_without_spaces_long_code_without_spaces_long_code_without_spaces_long_code_without_spaces_long_code_without_spaces_long_code_without_spaces_long_code_without_spaces_long_code_without_spaces_long_code_without_spaces_long_code_without_spaces_</code></pre>
+                                    </div>
+                                    <div class="ds-scroll-area ds-scroll-area--enabled" data-probe="table-scroll"><table><tbody>
+                                        <tr><td data-probe="td">wide cell wide cell wide cell wide cell wide cell wide cell</td></tr></tbody></table></div>
+                                    <div class="answer-filler"></div>
+                                </div>
+                            </div>
+                            <div class="message-actions"><div class="ds-button" role="button">Copy</div><div class="ds-button" role="button">Retry</div></div>
+                        </div>
+                        <div class="item-user" data-virtual-list-item-key="3">
+                            <div class="ds-message user-message"><div class="user-bubble">
+                                <div class="ds-collapsible-text"><div><span>Second question</span></div></div>
+                            </div></div>
+                        </div>
+                        <div class="item-assistant" data-virtual-list-item-key="4">
+                            <div class="ds-message"><div class="ds-markdown ds-assistant-message-main-content">
+                                <p class="ds-markdown-paragraph">Second answer</p><div class="answer-filler"></div>
+                            </div></div>
+                        </div>
+                        <div class="item-user" data-virtual-list-item-key="5">
+                            <div class="ds-message user-message"><div class="user-bubble">
+                                <div class="ds-collapsible-text"><div><span>Third question</span></div></div>
+                            </div></div>
+                        </div>
+                        <div class="item-assistant" data-virtual-list-item-key="6">
+                            <div class="ds-message"><div class="ds-markdown ds-assistant-message-main-content">
+                                <p class="ds-markdown-paragraph">Third answer</p><div class="answer-filler"></div>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-bottom: 24px;"></div>
+                <div class="composer-dock" data-probe="footer">
+                    <div class="composer-card" data-probe="composer"><textarea rows="2" data-probe="composer-input"></textarea></div>
+                </div>
+            </div>
+        </div>
+        <div class="home" id="home" hidden>
+            <div class="chat-header"></div>
+            <div class="home-wrap"><div class="home-dock" data-probe="home-composer">
+                <div class="composer-card"><textarea rows="2"></textarea></div>
+            </div></div>
+        </div>
+    </div>
+</div></div>
+</body>
+</html>

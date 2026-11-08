@@ -1,0 +1,4 @@
+:where(html.wider-width-active, html.wider-nav-gutter) .ds-virtual-list[data-wgx-width="variable"] {
+    --message-list-max-width: min(calc(var(--wgx-width, 1000px) + var(--message-list-padding-horizontal, 44px) * 2),
+        calc(100% - var(--wgx-gutter, 0px) * 2)) !important;
+}

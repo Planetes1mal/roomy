@@ -321,13 +321,13 @@
         assert(n.column < 900, label(`fixture: native column is narrow (${n.column})`));
 
         near(r.px1000.column, 1000, label('1000px widens the column'), 1);
-        near(r.px1000.composerOuter, r.px1000.columnOuter, label('composer matches the column width'), 1);
+        near(r.px1000.composerOuter - r.px1000.columnOuter, n.composerOuter - n.columnOuter, label('composer keeps its native width relative to the column'), 1);
         near(r.px1000.composerLeft - r.px1000.columnLeft, n.composerLeft - n.columnLeft, label('composer keeps its native alignment at 1000px'), 1);
         assert.strictEqual(r.px1000Status.status, 'active');
         assert.strictEqual(r.px1000Status.capabilities.width, 'active');
         assert.deepStrictEqual([...r.owners].sort(), [...(expected.widthOwners || ['column', 'composer'])].sort(), label('width owners'));
         assert(r.pct90.column > r.px1000.column + 100 && r.pct90.column <= r.pct90.paneRight, label(`90% is wider and inside the pane: ${JSON.stringify(r.pct90)}`));
-        near(r.pct90.composerOuter, r.pct90.columnOuter, label('composer follows the % width'), 1);
+        near(r.pct90.composerOuter - r.pct90.columnOuter, n.composerOuter - n.columnOuter, label('composer follows the % width'), 1);
         assert(r.capped.column > r.pct90.column - 1 && r.capped.column <= r.capped.paneRight - r.capped.columnLeft + 1,
             label(`a width beyond the pane is capped to the available width: ${JSON.stringify(r.capped)}`));
         assert(r.capped.pageOverflow <= 0 && r.px1000.pageOverflow <= 0, label('no page horizontal overflow'));
@@ -371,7 +371,7 @@
         assert.strictEqual(r.gutter.visible, 1, label('rail stays visible at 100% width'));
         assert(r.gutter.railRight <= r.gutter.paneRight + 0.5 && r.gutter.railLeft >= r.gutter.contentRight - 0.5,
             label(`rail fits between column and pane edge: ${JSON.stringify(r.gutter)}`));
-        near(r.gutter.composer, r.gutter.column, label('composer stays aligned with the gutter'), 1);
+        near(r.gutter.composer - r.gutter.column, n.composerOuter - n.columnOuter, label('composer stays aligned with the gutter'), 1);
         assert.strictEqual(r.navOff.gutter, '', label('navigation off releases the gutter'));
         assert.strictEqual(r.navOff.rails, 0);
         if (r.widthOffNative.free < 23) {

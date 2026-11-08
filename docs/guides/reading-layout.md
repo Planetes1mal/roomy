@@ -2,7 +2,7 @@
 
 [繁體中文](./reading-layout.zh-TW.md)
 
-The steps below use Gemini as the example; the ChatGPT and Claude sections at the end cover what differs on those sites. Open a conversation on **gemini.google.com**, then open Roomy from Chrome's extensions menu or its pinned toolbar icon. Keep an existing answer visible while changing a setting: you do not need to ask Gemini to generate it again. Changes are saved and applied to open Gemini tabs; cross-device synchronization depends on your browser's sync settings.
+The steps below use Gemini as the example; the ChatGPT, Claude and DeepSeek sections at the end cover what differs on those sites. Open a conversation on **gemini.google.com**, then open Roomy from Chrome's extensions menu or its pinned toolbar icon. Keep an existing answer visible while changing a setting: you do not need to ask Gemini to generate it again. Changes are saved and applied to open Gemini tabs; cross-device synchronization depends on your browser's sync settings.
 
 The steps below use individual controls. They also work when your installed version does not have newer task presets or help features. Suggested values are starting points, not a claim that one layout suits every screen.
 
@@ -105,3 +105,15 @@ Open Claude's page in the popup (from the site list, or directly when claude.ai 
 | Large text | 1000 px | 140% |
 
 Roomy adjusts Claude's conversation pages and the new-chat page. When the Artifacts panel is open, the conversation is capped at the space left beside the panel; the panel itself and its content are not changed. Projects, settings, Claude Code and shared pages keep their native layout, and the popup says so.
+
+## DeepSeek
+
+Open DeepSeek's page in the popup (from the site list, or directly when chat.deepseek.com is the current tab), then click **Allow DeepSeek access** and confirm Chrome's prompt if access has not been granted yet. Width, font size, reading density, Advanced spacing, full-width user messages and message navigation work as described above, with separate saved values for DeepSeek. Density and manual spacing change prose only: code lines, table rows and formulas keep DeepSeek's own spacing. DeepSeek wraps long code lines itself, so there is no code-wrap control.
+
+| Task | Requested width | Font |
+|---|---|---|
+| Long reading | 1000 px | 110% |
+| Wide (tables & code) | 90% | 100% |
+| Large text | 1000 px | 140% |
+
+Roomy adjusts DeepSeek's conversation pages and the new-chat page; the composer widens together with the conversation. The reasoning shown above an answer follows the same text settings as the answer.

@@ -7,7 +7,7 @@ Bug reports, translations, and focused fixes are welcome. Start with a reproduci
 1. Clone this repository.
 2. Open `chrome://extensions/` in Chrome and enable **Developer mode**.
 3. Choose **Load unpacked** and select the repository folder.
-4. Open [Gemini](https://gemini.google.com/), [ChatGPT](https://chatgpt.com/) or [Claude](https://claude.ai/). After changing extension files, reload the extension and then reload the affected page.
+4. Open [Gemini](https://gemini.google.com/), [ChatGPT](https://chatgpt.com/), [Claude](https://claude.ai/) or [DeepSeek](https://chat.deepseek.com/). After changing extension files, reload the extension and then reload the affected page.
 
 The extension uses vanilla JavaScript, HTML, and CSS. There is no build step or npm install.
 
@@ -48,7 +48,7 @@ node tests/e2e/popup-sites.js . local/popup-sites-check
 
 These use isolated browser profiles. Despite its name, `package-load.js` accepts any unpacked extension directory, including the source tree; the language and site-list checks store diagnostic screenshots under the ignored `local/` folder. None of these commands builds a ZIP.
 
-For layout changes, also try the affected flow on the real Gemini, ChatGPT or Claude website. Record the site, browser, OS, extension version, and steps in the PR. The existing Gemini fixtures do not establish ChatGPT compatibility, compatibility with every live site rollout, or macOS acceptance. See [engineering and compatibility notes](docs/engineering.md) for the supported boundaries and manual scenarios.
+For layout changes, also try the affected flow on the real Gemini, ChatGPT, Claude or DeepSeek website. Record the site, browser, OS, extension version, and steps in the PR. The existing Gemini fixtures do not establish ChatGPT compatibility, compatibility with every live site rollout, or macOS acceptance. See [engineering and compatibility notes](docs/engineering.md) for the supported boundaries and manual scenarios.
 
 ## Keep a change focused
 

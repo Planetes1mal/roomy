@@ -1,0 +1,27 @@
+{
+    "viewport": [
+        1600,
+        1000
+    ],
+    "turns": 3,
+    "scrollInset": 16,
+    "unknown": {
+        "selector": "[data-probe=\"column\"]",
+        "attribute": "class"
+    },
+    "narrowPane": {
+        "selector": "[data-probe=\"main\"]",
+        "style": "flex:none;width:1040px"
+    },
+    "home": {
+        "hide": "[data-probe=\"chat-body\"]",
+        "show": "#home",
+        "composerProbe": "home-composer"
+    },
+    "notApplicable": {
+        "hide": "[data-probe=\"chat-body\"]"
+    },
+    "widthOwners": [
+        "scroll"
+    ]
+}

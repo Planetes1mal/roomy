@@ -120,7 +120,11 @@ const sandbox = {
 
                 if (injection.func) {
                     const flags = { widerGeminiContentLoaded: tab.site ? true : tab.loaded };
-                    for (const site of optional) flags[scriptFor(site).loadedFlag] = tab.site === site.id ? tab.loaded : true;
+                    for (const site of optional) {
+                        const flag = scriptFor(site).loadedFlag;
+                        if (tab.site === site.id) flags[flag] = tab.loaded;
+                        else if (!(flag in flags)) flags[flag] = true;
+                    }
                     sandbox.window = flags;
                     const result = injection.func(...injection.args);
                     delete sandbox.window;

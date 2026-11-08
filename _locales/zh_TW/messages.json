@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy：Gemini、ChatGPT 與 Claude 寬版閱讀"
+    "message": "Roomy：Gemini、ChatGPT、Claude 與 DeepSeek 寬版閱讀"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "分別加寬 Gemini、ChatGPT 和 Claude 的對話區域，依網站調整字型大小與閱讀密度，並可隨時暫停任一網站。"
+    "message": "分別加寬 Gemini、ChatGPT、Claude 和 DeepSeek 的對話區域，依網站調整字型大小與閱讀密度，並可隨時暫停任一網站。"
   },
   "widthLabel": {
     "message": "對話區域寬度"

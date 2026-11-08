@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy: Wide Mode for Gemini, ChatGPT & Claude"
+    "message": "Roomy: Wide Mode for Gemini, ChatGPT, Claude & DeepSeek"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Widen Gemini, ChatGPT and Claude, adjust font size and reading density per site, and pause any site at any time."
+    "message": "Widen Gemini, ChatGPT, Claude and DeepSeek, adjust font size and reading density per site, and pause any site at any time."
   },
   "widthLabel": {
     "message": "Chat Width"

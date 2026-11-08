@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy：Gemini・ChatGPT・Claude をワイド表示"
+    "message": "Roomy：Gemini・ChatGPT・Claude・DeepSeek をワイド表示"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Gemini・ChatGPT・Claude の会話エリアを個別に広げ、サイトごとに文字サイズと文章の密度を調整。いつでも一時停止できます。"
+    "message": "Gemini・ChatGPT・Claude・DeepSeek の会話エリアを個別に広げ、サイトごとに文字サイズと文章の密度を調整。いつでも一時停止できます。"
   },
   "widthLabel": {
     "message": "会話の幅"
