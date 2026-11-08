@@ -7,7 +7,7 @@
 一个用来调整 Gemini、ChatGPT、Claude 和 DeepSeek 对话宽度与阅读排版的 Chrome 扩展。每个网站分别记住各自的设置。
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-安装-4285F4)](https://chromewebstore.google.com/detail/apadogadaahdjhhmbdhkmdecbobijoed?utm_source=github&utm_medium=readme&utm_campaign=zh-cn)
-[![GitHub Release 3.1.0](https://img.shields.io/badge/release-v3.1.0-blue)](https://github.com/Planetes1mal/roomy/releases/tag/v3.1.0)
+[![GitHub Release 3.2.0](https://img.shields.io/badge/release-v3.2.0-blue)](https://github.com/Planetes1mal/roomy/releases/tag/v3.2.0)
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 同一段完整的 Gemini 对话、同样的窗口大小：使用 Roomy 将对话宽度分别设为 700px 和 1200px。
@@ -33,7 +33,7 @@
 
 在 [Chrome 应用商店](https://chromewebstore.google.com/detail/apadogadaahdjhhmbdhkmdecbobijoed?utm_source=github&utm_medium=readme&utm_campaign=zh-cn)点击 **添加至 Chrome** 即可安装。已经在用 Wider Gemini 的话，Chrome 会自动更新为 Roomy，并保留你的设置。
 
-GitHub 版本与 Chrome 应用商店的更新时间可能不同。若要使用 3.1.0，请按下方方式安装对应的 GitHub 正式版。
+GitHub 版本与 Chrome 应用商店的更新时间可能不同。若要使用 3.2.0，请按下方方式安装对应的 GitHub 正式版。
 
 <details>
 <summary>手动安装</summary>

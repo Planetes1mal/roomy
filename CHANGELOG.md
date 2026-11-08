@@ -4,6 +4,23 @@ All notable changes to Roomy (formerly Wider Gemini) are documented in this file
 
 Release notes on GitHub are generated from the matching `## <release-version>` section when a `v<release-version>` tag is pushed. Candidate versions such as `2.6.0-rc.1` are marked as prereleases.
 
+## 3.2.0 (2026-11-08)
+
+Roomy now works on DeepSeek as well as Gemini, ChatGPT and Claude. DeepSeek access is optional: updating adds no permission warning, and Chrome asks for DeepSeek access only after you click **Allow** next to DeepSeek in the popup.
+
+### Features
+
+- DeepSeek support (chat.deepseek.com): conversation and composer width, font size, reading density, manual line height and paragraph spacing, full-width user messages, message navigation, and task presets (Long reading, Wide for tables and code, Large text). Text settings also apply to the reasoning shown above an answer. Message navigation keeps a tick for every message you have scrolled past, even after DeepSeek unloads it. On the new-chat page only the composer widens.
+
+### Changes
+
+- The store title is now "Roomy: Wide Mode for Gemini, ChatGPT, Claude & DeepSeek", translated for each interface language.
+
+### Fixes
+
+- On Claude, full-width user messages now stay full width after you switch conversations with the default text size and spacing.
+- On Claude, turning off widening while message navigation stays on no longer keeps the page recalculating its layout on every frame when the rail needs extra room.
+
 ## 3.1.0 (2026-10-27)
 
 Roomy now works on Claude as well as Gemini and ChatGPT. Claude access is optional: updating adds no permission warning, and Chrome asks for Claude access only after you click **Allow** next to Claude in the popup.
