@@ -168,6 +168,12 @@
                     code:px('#dots-code','fontSize'), codeLine:px('#dots-code','lineHeight'), codeLabel:px('#code-label','fontSize'),
                     codeScrolls:q('#code-scroll').scrollWidth > q('#code-scroll').clientWidth,
                     navVisible:!q('.wg-nav').hidden, reading:s.capabilities.reading, navigation:s.capabilities.navigation };
+                const composerHost = q('#dots-composer-host');
+                composerHost.className = 'composer-wrap';
+                composerHost.firstElementChild.removeAttribute('data-codex-composer-root');
+                s = status();
+                out.dotsComposer = { marked:q('#dots-composer').hasAttribute('data-wgc-width'),
+                    composer:rect('#dots-composer').width, list:rect('#dots-list').width };
                 await save('chatgptReadingSettings', { messageFontSize:125, userFullWidth:true });
                 const row = q('#dots-list .message-row.self');
                 const wrap = row.querySelector('.message-bubble-wrap');
@@ -332,6 +338,8 @@
     assert.deepStrictEqual([c.widthOffNavOff.gutterClass, c.widthOffNavOff.owners], [false, 0], 'navigation off releases it');
     assert.strictEqual(c.dots.surface, 'dots');
     assert.deepStrictEqual(c.dots.owners.sort(), ['dots-composer', 'dots-list'], 'only the visible Dots owners are marked');
+    assert(c.dotsComposer.marked, 'current Dots footer composer is marked');
+    near(c.dotsComposer.composer, c.dotsComposer.list, 'current Dots composer follows transcript width');
     near(c.dots.font, 20, 'Dots prose scales from its own 16px baseline');
     near(c.dots.line, 27.5, 'Dots prose keeps its own 22px line ratio');
     assert.strictEqual(c.dots.hiddenMarked, 0, 'hidden ordinary route is not styled');

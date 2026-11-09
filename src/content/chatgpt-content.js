@@ -14,7 +14,7 @@
     const EXCLUDED = '[role="dialog"], [role="menu"], dialog, [data-composer-overlay-floating-ui]';
     const SURFACE_MARKERS = '[data-thread-user-message-navigation-content], [data-pip-obstacle], ' +
         'form[data-chatgpt-composer], .messaging-root, .message-list, [data-role="messages-scroll"], ' +
-        '[data-codex-composer-root], [data-page-document-selection], main, ' +
+        '[data-codex-composer-root], .composer-wrap, [data-page-document-selection], main, ' +
         '[data-web-mobile-conversation], [data-composer-positioner]';
 
     const ASSISTANT_ROOT = ':is([data-markdown-text-style="assistant-message"], ' +
@@ -126,7 +126,8 @@
         const dotsList = findVisible('.messaging-root .thread-pane .message-list', document, nativeOwner);
         if (dotsList) {
             const pane = dotsList.closest('.thread-pane');
-            const composer = findVisible(`[data-codex-composer-root] ${NATIVE_WIDTH}`, pane, nativeOwner);
+            const composer = findVisible(`[data-codex-composer-root] ${NATIVE_WIDTH}, ` +
+                `.conversation-footer .composer-wrap ${NATIVE_WIDTH}:has([contenteditable="true"])`, pane, nativeOwner);
             return {
                 kind: 'dots', root: dotsList, column: dotsList,
                 scroll: dotsList.closest('[data-role="messages-scroll"]') || pane,
