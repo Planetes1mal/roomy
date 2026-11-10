@@ -37,6 +37,8 @@
         .markdown pre.whitespace-pre-wrap { white-space:pre-wrap; overflow-wrap:anywhere; }
         .markdown pre code { font-size:inherit; }
         .markdown td { font-size:14px; }
+        [data-d-component="table"] { width:calc(100% + 100px); margin-inline:-50px; }
+        [data-d-table-viewport] { overflow-x:auto; padding-inline:12px; }
         .markdown table { min-width:2400px; }
         button { font:inherit; }
         [data-copy], [data-table-btn], [data-toolbar] { font-size:13px; }
@@ -62,7 +64,7 @@
                             <div class="chatgpt-code-scrollport" style="overflow-x:auto" data-scrollport>
                                 <pre data-pre><code data-code>${'long_code_without_spaces_'.repeat(60)}</code></pre>
                             </div></div>
-                        <div data-table-block><div style="overflow-x:auto" data-scroller><div><table><tbody>
+                        <div data-table-block data-d-component="table"><div data-d-table-viewport data-scroller><div><table><tbody>
                             <tr><td data-td>${'wide cell '.repeat(40)}</td></tr></tbody></table></div></div>
                             <button data-table-btn>Copy table</button></div>
                     </div>
@@ -146,7 +148,10 @@
 
                 const scroller = q('[data-scroller]');
                 const scrollport = q('[data-scrollport]');
-                out.geometry = { tableScroll:scroller.scrollWidth > scroller.clientWidth,
+                scroller.scrollLeft = 150;
+                out.geometry = { tableInset:q('[data-table-block]').getBoundingClientRect().left - q('[data-md]').getBoundingClientRect().left,
+                    viewportWidth:scroller.getBoundingClientRect().width, bodyWidth:q('[data-md]').getBoundingClientRect().width,
+                    scrollLeft:scroller.scrollLeft, tableScroll:scroller.scrollWidth > scroller.clientWidth,
                     tableOverflow:getComputedStyle(scroller).overflowX, codeScroll:scrollport.scrollWidth > scrollport.clientWidth,
                     pageOverflow:document.documentElement.scrollWidth - innerWidth };
                 q('[data-pre]').classList.add('whitespace-pre-wrap');
@@ -241,6 +246,9 @@
     assert(r.fullWidthOff.newBubble < r.full.column - 100, 'new-structure full width is gated by effective width');
     near(r.widthOffFont, n.p * 1.25, 'reading stays active with width off');
 
+    near(r.geometry.tableInset, 0, 'table starts at the message edge');
+    near(r.geometry.viewportWidth, r.geometry.bodyWidth, 'table viewport stays in the message');
+    assert(r.geometry.scrollLeft > 0, 'wide table can scroll horizontally');
     assert(r.geometry.tableScroll && r.geometry.tableOverflow === 'auto', 'table keeps native inner scroll');
     assert(r.geometry.codeScroll, 'code keeps native horizontal scroll');
     assert(r.geometry.pageOverflow <= 0, 'no page horizontal overflow');

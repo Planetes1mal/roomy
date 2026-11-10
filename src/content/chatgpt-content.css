@@ -10,6 +10,17 @@
         var(--wg-chatgpt-nav-gutter, 0px) * 2) + var(--mobile-thread-content-margin-inline, 0px) * 2) !important;
 }
 
+:where(html.wider-chatgpt-width-active) [data-wgc-width] [data-d-component="table"]:has(> [data-d-table-viewport]) {
+    width: 100% !important;
+    margin-inline: 0 !important;
+}
+
+:where(html.wider-chatgpt-width-active) [data-wgc-width] [data-d-component="table"] > [data-d-table-viewport] {
+    box-sizing: border-box;
+    max-width: 100%;
+    padding-inline: 0 !important;
+}
+
 :where(html[data-wgc-reading~="font"]) [data-wgc-font] {
     font-size: calc(var(--wgc-font) * var(--wgc-font-scale, 1)) !important;
 }
