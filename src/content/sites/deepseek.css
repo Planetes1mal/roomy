@@ -2,3 +2,10 @@
     --message-list-max-width: min(calc(var(--wgx-width, 1000px) + var(--message-list-padding-horizontal, 44px) * 2),
         calc(100% - var(--wgx-gutter, 0px) * 2)) !important;
 }
+
+:where(html.wider-width-active) .ds-virtual-list[data-wgx-width] .ds-markdown .ds-scroll-area:has(> table) {
+    box-sizing: border-box;
+    width: 100% !important;
+    margin-inline: 0 !important;
+    padding-inline: 0 !important;
+}

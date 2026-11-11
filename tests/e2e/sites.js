@@ -129,7 +129,10 @@
                 await width({ widthEnabled:true });
                 const tableScroll = probe('table-scroll');
                 const pre = probe('pre');
-                out.geometry = { tableScroll:tableScroll.scrollWidth > tableScroll.clientWidth, codeScroll:pre.scrollWidth > pre.clientWidth,
+                tableScroll.scrollLeft = 150;
+                out.geometry = { tableLeft:rect('table-scroll').left, tableRight:rect('table-scroll').right,
+                    messageLeft:rect('markdown').left, messageRight:rect('markdown').right, scrollLeft:tableScroll.scrollLeft,
+                    tableScroll:tableScroll.scrollWidth > tableScroll.clientWidth, codeScroll:pre.scrollWidth > pre.clientWidth,
                     pageOverflow:root.scrollWidth - innerWidth };
                 const late = document.createElement('p');
                 late.dataset.probe = 'late';
@@ -354,6 +357,9 @@
         assert.strictEqual(r.fullStatus, 'active');
         assert(r.fullWidthOff.bubble < r.full.column - 100, label('full width is gated by effective width'));
         near(r.fullWidthOff.p, n.p * 1.25, label('reading stays active with width off'));
+        assert(r.geometry.tableLeft >= r.geometry.messageLeft - 1 && r.geometry.tableRight <= r.geometry.messageRight + 1,
+            label(`table viewport fits its message: ${JSON.stringify(r.geometry)}`));
+        assert(r.geometry.scrollLeft > 0, label('wide table scrolls inside its viewport'));
         assert(r.geometry.tableScroll, label('table keeps native inner scroll'));
         assert(r.geometry.codeScroll, label('code keeps native horizontal scroll'));
         assert(r.geometry.pageOverflow <= 0, label('no page horizontal overflow with reading'));
