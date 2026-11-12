@@ -66,7 +66,7 @@
                 module.columnWidth = surface.column.getBoundingClientRect().width -
                     parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
             }
-            const nativeFree = railWanted ? navigation.bounds().right - navigation.contentRight() : Infinity;
+            const nativeFree = railWanted ? navigation.freeSpace(navigation.bounds()) : Infinity;
             const gutterOnly = !module.active && railWanted && owners.length > 0 && nativeFree < RAIL - 1;
             const reserve = module.active || gutterOnly;
             if (root.classList.contains(ACTIVE_CLASS) !== module.active) root.classList.toggle(ACTIVE_CLASS, module.active);

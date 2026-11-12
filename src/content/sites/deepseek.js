@@ -50,7 +50,7 @@
             const item = element.closest(selectors.item);
             return item ? item.getAttribute('data-virtual-list-item-key') : null;
         },
-        navigation: { topInset: 8, bottomInset: 8, scrollInset: 16 },
+        navigation: { side: 'left', topInset: 8, bottomInset: 8, scrollInset: 16 },
         watch: {
             markers: selectors.markers,
             attributes: ['data-virtual-list-item-key']

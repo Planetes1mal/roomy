@@ -101,6 +101,7 @@
             turnKey: definition.turnKey || null,
             turnText: definition.turnText || selectors.turnText || null,
             navigation: {
+                side: navigation.side || 'right',
                 topInset: navigation.topInset === undefined ? 56 : navigation.topInset,
                 bottomInset: navigation.bottomInset === undefined ? 8 : navigation.bottomInset,
                 scrollInset: navigation.scrollInset === undefined ? 72 : navigation.scrollInset

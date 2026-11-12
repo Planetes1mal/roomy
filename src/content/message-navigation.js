@@ -42,6 +42,7 @@
 
     function create(options) {
         const labels = options.labels;
+        const onLeft = options.side === 'left';
         const rail = document.createElement('nav');
         rail.className = 'wg-nav';
         rail.setAttribute('aria-label', labels.rail);
@@ -126,7 +127,7 @@
             const height = pitch * (n - 1) + MAX_PITCH;
             const total = height + (olderShown ? OLDER_SIZE : 0);
             railTop = bounds.top + Math.max(0, (bounds.bottom - bounds.top - total) / 2);
-            rail.style.left = `${bounds.right - RAIL_WIDTH}px`;
+            rail.style.left = `${onLeft ? bounds.left : bounds.right - RAIL_WIDTH}px`;
             rail.style.top = `${railTop}px`;
             rail.style.height = `${total}px`;
             list.style.height = `${height}px`;
@@ -404,7 +405,8 @@
             const width = Math.min(280, Math.max(120, bounds.right - bounds.left - RAIL_WIDTH - 24));
             preview.style.maxWidth = `${width}px`;
             const rect = preview.getBoundingClientRect();
-            preview.style.left = `${Math.max(bounds.left + 8, bounds.right - RAIL_WIDTH - rect.width - 8)}px`;
+            const left = onLeft ? bounds.left + RAIL_WIDTH + 8 : Math.max(bounds.left + 8, bounds.right - RAIL_WIDTH - rect.width - 8);
+            preview.style.left = `${left}px`;
             preview.style.top = `${clamp(tickY - rect.height / 2, bounds.top, Math.max(bounds.top, bounds.bottom - rect.height))}px`;
         }
 

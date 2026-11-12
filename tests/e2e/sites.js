@@ -82,6 +82,14 @@
         const rails = () => qa('.wg-nav').filter(el => !el.hidden).length;
         const scrollEl = () => probe('scroll');
         const paneRight = () => { const el = scrollEl(); return el.getBoundingClientRect().left + el.clientLeft + el.clientWidth; };
+        function railFits() {
+            const nav = q('.wg-nav').getBoundingClientRect();
+            const message = probe('markdown').getBoundingClientRect();
+            const pane = scrollEl().getBoundingClientRect();
+            return EXPECTED.railSide === 'left'
+                ? nav.left >= pane.left - 1 && nav.right <= message.left + 1
+                : nav.right <= paneRight() + 1 && nav.left >= message.right - 1;
+        }
         const snapshot = () => ({
             p:px('p1','fontSize'), pLine:px('p1','lineHeight'), pBottom:px('p1','marginBottom'), p2Top:px('p2','marginTop'),
             h:px('h','fontSize'), hLine:px('h','lineHeight'), inline:px('inline','fontSize'), katex:px('katex','fontSize'),
@@ -150,14 +158,16 @@
                 qa('.wg-nav-tick')[0].focus();
                 q('.wg-nav-list').dispatchEvent(new KeyboardEvent('keydown', { key:'ArrowDown', bubbles:true }));
                 out.keyboard = { focused:qa('.wg-nav-tick').indexOf(document.activeElement), tabbable:qa('.wg-nav-tick').filter(b => b.tabIndex === 0).length,
-                    preview:!q('.wg-nav-preview').hidden };
+                    preview:!q('.wg-nav-preview').hidden,
+                    previewInside:EXPECTED.railSide === 'left' ? q('.wg-nav-preview').getBoundingClientRect().left >= q('.wg-nav').getBoundingClientRect().right
+                        : q('.wg-nav-preview').getBoundingClientRect().right <= q('.wg-nav').getBoundingClientRect().left };
                 document.activeElement.blur();
                 await width({ chatWidthSetting:{ value:100, unit:'percent' } });
                 status();
                 await wait();
                 const navRect = q('.wg-nav').getBoundingClientRect();
                 out.gutter = { value:root.style.getPropertyValue('--wgx-gutter'), railLeft:navRect.left, railRight:navRect.right,
-                    paneRight:paneRight(), contentRight:window.contexts[0].navigation.contentRight(), visible:rails(),
+                    paneRight:paneRight(), fits:railFits(), visible:rails(),
                     column:rect('column').width, composer:rect('composer').width };
                 await save(K.navigation, false);
                 out.navOff = { gutter:root.style.getPropertyValue('--wgx-gutter'), rails:qa('.wg-nav').length, width:status().capabilities.width };
@@ -168,14 +178,15 @@
                 narrow.style.cssText = EXPECTED.narrowPane.style;
                 await width({ widthEnabled:false });
                 await save(K.navigation, false);
-                out.widthOffNative = { free:paneRight() - window.contexts[0].navigation.contentRight(), columnLeft:rect('column').left, composerLeft:rect('composer').left,
+                out.widthOffNative = { free:EXPECTED.railSide === 'left' ? rect('markdown').left - scrollEl().getBoundingClientRect().left
+                    : paneRight() - rect('markdown').right, columnLeft:rect('column').left, composerLeft:rect('composer').left,
                     column:contentWidth('column'), composer:rect('composer').width };
                 await save(K.navigation, true);
                 status();
                 await wait(100);
                 const offNav = q('.wg-nav') && !q('.wg-nav').hidden ? q('.wg-nav').getBoundingClientRect() : null;
                 out.widthOff = { gutterClass:root.classList.contains('wider-nav-gutter'), activeClass:root.classList.contains('wider-width-active'),
-                    rail:!!offNav, railLeft:offNav && offNav.left, paneRight:paneRight(), contentRight:window.contexts[0].navigation.contentRight(),
+                    rail:!!offNav, railLeft:offNav && offNav.left, paneRight:paneRight(), fits:railFits(),
                     column:contentWidth('column'), composer:rect('composer').width, columnLeft:rect('column').left, composerLeft:rect('composer').left,
                     width:status().capabilities.width };
                 const classRecords = new MutationObserver(() => {});
@@ -373,9 +384,10 @@
         assert.strictEqual(r.keyboard.focused, 1, label('ArrowDown moves focus within the rail'));
         assert.strictEqual(r.keyboard.tabbable, 1, label('one Tab stop'));
         assert.strictEqual(r.keyboard.preview, true);
+        assert(r.keyboard.previewInside, label('preview opens toward the conversation'));
         assert(parseFloat(r.gutter.value) > 0, label(`100% width reserves a gutter: ${JSON.stringify(r.gutter)}`));
         assert.strictEqual(r.gutter.visible, 1, label('rail stays visible at 100% width'));
-        assert(r.gutter.railRight <= r.gutter.paneRight + 0.5 && r.gutter.railLeft >= r.gutter.contentRight - 0.5,
+        assert(r.gutter.fits,
             label(`rail fits between column and pane edge: ${JSON.stringify(r.gutter)}`));
         near(r.gutter.composer - r.gutter.column, n.composerOuter - n.columnOuter, label('composer stays aligned with the gutter'), 1);
         assert.strictEqual(r.navOff.gutter, '', label('navigation off releases the gutter'));
@@ -391,7 +403,7 @@
             near(r.widthOff.column, r.widthOffNative.column, label('native column width is kept'), 1);
             near(r.widthOff.composer, r.widthOffNative.composer, label('native composer width is kept'), 1);
         }
-        assert(r.widthOff.railLeft >= r.widthOff.contentRight - 0.5 && r.widthOff.railLeft + 24 <= r.widthOff.paneRight + 0.5,
+        assert(r.widthOff.fits,
             label(`rail fits beside the native column: ${JSON.stringify(r.widthOff)}`));
         assert.strictEqual(r.widthOff.classMutations, 0, label('a settled layout sync with width off leaves html classes untouched'));
         assert.deepStrictEqual([r.widthOffNavOff.gutterClass, r.widthOffNavOff.owners], [false, 0], label('navigation off releases it'));

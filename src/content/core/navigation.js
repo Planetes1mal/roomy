@@ -6,6 +6,7 @@
 
     core.modules.navigation = function (ctx) {
         const site = ctx.site;
+        const onLeft = site.navigation.side === 'left';
         let navigation = null;
         let navigationTimer = null;
         const module = { get rail() { return navigation; } };
@@ -46,7 +47,7 @@
             const pane = ctx.surface.pane || (column && column.parentElement);
             if (!column || !pane) return 0;
             const available = pane.clientWidth;
-            const padding = parseFloat(getComputedStyle(column).paddingRight) || 0;
+            const padding = parseFloat(getComputedStyle(column)[onLeft ? 'paddingLeft' : 'paddingRight']) || 0;
             const setting = ctx.settings.chatWidthSetting;
             const requested = setting.unit === 'percent' ? innerWidth * setting.value / 100 : setting.value;
             const side = (available - Math.min(requested, available - padding * 2)) / 2;
@@ -58,11 +59,17 @@
                 ctx.isChatSurface() && Boolean(ctx.surface.scroll);
         }
 
-        function contentRight() {
+        function freeSpace(paneBounds) {
             const column = ctx.surface.column;
             const roots = ctx.reading.MESSAGE_ROOT ? [...column.querySelectorAll(ctx.reading.MESSAGE_ROOT)].slice(-40) : [];
-            if (roots.length) return Math.max(...roots.map(node => node.getBoundingClientRect().right));
-            return column.getBoundingClientRect().right - (parseFloat(getComputedStyle(column).paddingRight) || 0);
+            if (onLeft) {
+                const left = roots.length ? Math.min(...roots.map(node => node.getBoundingClientRect().left))
+                    : column.getBoundingClientRect().left + (parseFloat(getComputedStyle(column).paddingLeft) || 0);
+                return left - paneBounds.left;
+            }
+            const right = roots.length ? Math.max(...roots.map(node => node.getBoundingClientRect().right))
+                : column.getBoundingClientRect().right - (parseFloat(getComputedStyle(column).paddingRight) || 0);
+            return paneBounds.right - right;
         }
 
         function sync() {
@@ -75,9 +82,10 @@
             }
             const current = turns();
             const paneBounds = bounds();
-            const fits = paneBounds.right - contentRight() >= railWidth() - 1;
+            const fits = freeSpace(paneBounds) >= railWidth() - 1;
             if (!navigation) {
                 navigation = window.widerMessageNavigation.create({
+                    side: site.navigation.side,
                     labels: {
                         rail: chrome.i18n.getMessage('navigationLabel') || 'Message navigation',
                         message: (n, total) => (chrome.i18n.getMessage('navigationMessage') || 'Message {n} of {total}')
@@ -108,7 +116,7 @@
         module.bounds = bounds;
         module.neededGutter = neededGutter;
         module.wanted = wanted;
-        module.contentRight = contentRight;
+        module.freeSpace = freeSpace;
         module.sync = sync;
         module.queue = queue;
         module.retire = retire;

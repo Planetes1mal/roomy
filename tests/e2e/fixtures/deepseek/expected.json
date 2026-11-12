@@ -3,6 +3,7 @@
         1600,
         1000
     ],
+    "railSide": "left",
     "turns": 3,
     "scrollInset": 16,
     "unknown": {
