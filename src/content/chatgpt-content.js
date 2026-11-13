@@ -264,11 +264,17 @@
         applyReading();
         const hasMarker = node => node.nodeType === 1 && (node.matches(SURFACE_MARKERS) || node.querySelector(SURFACE_MARKERS));
         layoutObserver = new MutationObserver(function (mutations) {
-            const changed = mutations.some(mutation => mutation.type === 'attributes'
-                ? mutation.attributeName !== 'class' || hasMarker(mutation.target)
-                : [...mutation.addedNodes, ...mutation.removedNodes].some(hasMarker));
+            const changed = mutations.some(mutation => {
+                const target = mutation.target;
+                if (target.closest('.wg-nav, .wg-nav-preview')) return false;
+                if (surface.kind === 'dots' && target !== surface.root && surface.root.contains(target)) return false;
+                return mutation.type === 'attributes'
+                    ? mutation.attributeName !== 'class' || hasMarker(target)
+                    : [...mutation.addedNodes, ...mutation.removedNodes].some(hasMarker);
+            });
             if (changed) queueLayout();
-        }).observe(document.documentElement, {
+        });
+        layoutObserver.observe(document.documentElement, {
             childList: true, subtree: true, attributes: true,
             attributeFilter: ['class', 'hidden', 'inert', 'role', 'data-theme', 'data-thread-user-message-navigation-content',
                 'data-pip-obstacle', 'data-composer-placement', 'data-app-action-timeline-scroll',

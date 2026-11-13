@@ -168,6 +168,24 @@
                     code:px('#dots-code','fontSize'), codeLine:px('#dots-code','lineHeight'), codeLabel:px('#code-label','fontSize'),
                     codeScrolls:q('#code-scroll').scrollWidth > q('#code-scroll').clientWidth,
                     navVisible:!q('.wg-nav').hidden, reading:s.capabilities.reading, navigation:s.capabilities.navigation };
+                const frame = window.requestAnimationFrame;
+                window.requestAnimationFrame = callback => setTimeout(() => callback(performance.now()), 16);
+                status();
+                await wait();
+                const originalQuery = document.querySelectorAll;
+                let discoveries = 0;
+                document.querySelectorAll = function (selector) {
+                    if (selector === '.messaging-root .thread-pane .message-list') discoveries++;
+                    return originalQuery.call(this, selector);
+                };
+                const action = q('#dots-list .message-inline-actions');
+                for (let change = 0; change < 12; change++) {
+                    action.hidden = !action.hidden;
+                    await wait(36);
+                }
+                document.querySelectorAll = originalQuery;
+                window.requestAnimationFrame = frame;
+                out.dotsDiscoveries = discoveries;
                 const composerHost = q('#dots-composer-host');
                 composerHost.className = 'composer-wrap';
                 composerHost.firstElementChild.removeAttribute('data-codex-composer-root');
@@ -338,6 +356,7 @@
     assert.deepStrictEqual([c.widthOffNavOff.gutterClass, c.widthOffNavOff.owners], [false, 0], 'navigation off releases it');
     assert.strictEqual(c.dots.surface, 'dots');
     assert.deepStrictEqual(c.dots.owners.sort(), ['dots-composer', 'dots-list'], 'only the visible Dots owners are marked');
+    assert.strictEqual(c.dotsDiscoveries, 0, 'toggling message actions does not rediscover the chat layout');
     assert(c.dotsComposer.marked, 'current Dots footer composer is marked');
     near(c.dotsComposer.composer, c.dotsComposer.list, 'current Dots composer follows transcript width');
     near(c.dots.font, 20, 'Dots prose scales from its own 16px baseline');
