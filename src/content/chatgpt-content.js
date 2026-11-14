@@ -126,8 +126,9 @@
         const dotsList = findVisible('.messaging-root .thread-pane .message-list', document, nativeOwner);
         if (dotsList) {
             const pane = dotsList.closest('.thread-pane');
+            const composerPane = pane.closest('main.thread-pane') || pane;
             const composer = findVisible(`[data-codex-composer-root] ${NATIVE_WIDTH}, ` +
-                `.conversation-footer .composer-wrap ${NATIVE_WIDTH}:has([contenteditable="true"])`, pane, nativeOwner);
+                `.conversation-footer .composer-wrap ${NATIVE_WIDTH}:has([contenteditable="true"])`, composerPane, nativeOwner);
             return {
                 kind: 'dots', root: dotsList, column: dotsList,
                 scroll: dotsList.closest('[data-role="messages-scroll"]') || pane,

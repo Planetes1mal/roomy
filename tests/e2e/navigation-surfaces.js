@@ -88,6 +88,7 @@
         [data-user-message-bubble] > div { max-width:70%; padding:10px 16px; background:#eee; line-height:24px; }
         [data-markdown-text-style] p { margin:0 0 16px; min-height:150px; }
         .thread-pane { --thread-content-responsive-max-width:640px; display:flex; flex-direction:column; height:640px; }
+        .thread-pane .thread-pane { --thread-content-responsive-max-width:inherit; height:auto; }
         .messages-scroll { overflow-y:auto; height:560px; scrollbar-gutter:stable both-edges; }
         html[data-theme="dark"] body, html[data-theme="dark"] .thread-pane { background:rgb(14, 14, 14); color:rgb(236, 236, 236); }
         [data-markdown-copy="code-block"] code { display:block; font-size:12px; line-height:20px; white-space:pre; font-family:monospace; }
@@ -187,6 +188,11 @@
                 window.requestAnimationFrame = frame;
                 out.dotsDiscoveries = discoveries;
                 const composerHost = q('#dots-composer-host');
+                const viewport = q('.conversation-viewport');
+                const innerPane = document.createElement('div');
+                innerPane.className = 'thread-pane flex-1';
+                viewport.replaceWith(innerPane);
+                innerPane.appendChild(viewport);
                 composerHost.className = 'composer-wrap';
                 composerHost.firstElementChild.removeAttribute('data-codex-composer-root');
                 s = status();
