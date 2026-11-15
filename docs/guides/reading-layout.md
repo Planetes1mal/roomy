@@ -108,7 +108,7 @@ Roomy adjusts Claude's conversation pages and the new-chat page. When the Artifa
 
 ## DeepSeek
 
-Open DeepSeek's page in the popup (from the site list, or directly when chat.deepseek.com is the current tab), then click **Allow DeepSeek access** and confirm Chrome's prompt if access has not been granted yet. Width, font size, reading density, Advanced spacing, full-width user messages and message navigation work as described above, with separate saved values for DeepSeek. Density and manual spacing change prose only: code lines, table rows and formulas keep DeepSeek's own spacing. DeepSeek wraps long code lines itself, so there is no code-wrap control.
+Open DeepSeek's page in the popup (from the site list, or directly when chat.deepseek.com is the current tab), then click **Allow DeepSeek access** and confirm Chrome's prompt if access has not been granted yet. Width, font size, reading density, Advanced spacing and full-width user messages work as described above, with separate saved values for DeepSeek. Use DeepSeek’s own navigation to jump between messages. Density and manual spacing change prose only: code lines, table rows and formulas keep DeepSeek's own spacing. DeepSeek wraps long code lines itself, so there is no code-wrap control.
 
 | Task | Requested width | Font |
 |---|---|---|

@@ -36,7 +36,7 @@ for (const site of sites) {
     assert.ok(['core', 'legacy'].includes(site.runtime), `${site.id}: runtime`);
     assert.ok(['default', 'gemini-legacy'].includes(site.storage), `${site.id}: storage codec`);
     assert.ok(site.capabilities.length && site.capabilities.every(c => registry.CAPABILITIES.includes(c)), `${site.id}: capabilities`);
-    assert.ok(site.capabilities.includes('width') && site.capabilities.includes('navigation'), `${site.id}: width and navigation are the minimum`);
+    assert.ok(site.capabilities.includes('width'), `${site.id}: conversation width is required`);
     assert.ok(site.tasks.length && site.tasks.every(task => utils.TASK_DEFINITIONS[task]), `${site.id}: tasks are defined`);
     assert.deepStrictEqual(Object.keys(utils.TASK_PRESETS[site.id]), plain(site.tasks), `${site.id}: task presets follow the registry`);
     if (site.runtime === 'core') {
@@ -126,7 +126,7 @@ assert.strictEqual(utils.TASK_UNDO_KEYS.chatgpt, 'chatgptTaskPresetUndo');
 for (const site of sites) {
     const defaults = utils.normalizeSiteSettings({}, site.id);
     assert.strictEqual(defaults.siteEnabled, true);
-    assert.strictEqual(defaults.navigationEnabled, true);
+    assert.strictEqual(defaults.navigationEnabled, site.capabilities.includes('navigation') ? true : undefined);
     assert.deepStrictEqual(JSON.parse(JSON.stringify(defaults.chatWidthSetting)), { value: 1000, unit: 'px' });
     assert.strictEqual(defaults.messageFontSize, 100);
     assert.strictEqual(defaults.userFullWidth, false);

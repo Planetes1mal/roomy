@@ -3,9 +3,7 @@
         1600,
         1000
     ],
-    "railSide": "left",
-    "turns": 3,
-    "scrollInset": 16,
+    "turns": 0,
     "unknown": {
         "selector": "[data-probe=\"column\"]",
         "attribute": "class"

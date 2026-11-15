@@ -69,7 +69,7 @@
             since: '3.2.0',
             runtime: 'core',
             storage: 'default',
-            capabilities: ['width', 'navigation', 'reading', 'userFullWidth'],
+            capabilities: ['width', 'reading', 'userFullWidth'],
             tasks: ['reading', 'wide', 'large'],
             adapter: { js: 'src/content/sites/deepseek.js', css: 'src/content/sites/deepseek.css' }
         }

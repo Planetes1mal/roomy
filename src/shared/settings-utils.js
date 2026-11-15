@@ -414,7 +414,7 @@
         const settings = {
             site,
             siteEnabled: source[keys.enabled] !== false,
-            navigationEnabled: source[keys.navigation] !== false,
+            navigationEnabled: hasCapability(site, 'navigation') ? source[keys.navigation] !== false : undefined,
             ...normalizeSiteWidthSettings(source, site),
             ...normalizeReadingSettings(getReadingSource(source, site))
         };
@@ -427,7 +427,7 @@
     }
 
     function getSiteNavigationPatch(site, enabled) {
-        return { [keysFor(site).navigation]: enabled === true };
+        return hasCapability(site, 'navigation') ? { [keysFor(site).navigation]: enabled === true } : {};
     }
 
     function getSiteReadingPatch(stored, site, edit) {

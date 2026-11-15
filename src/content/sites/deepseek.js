@@ -5,7 +5,6 @@
         scroll: '.ds-virtual-list',
         list: '.ds-virtual-list-items',
         column: '.ds-virtual-list-visible-items',
-        item: '[data-virtual-list-item-key]',
         message: '.ds-message',
         assistantBody: '.ds-message .ds-markdown',
         userBubble: '.ds-message > div:has(> .ds-collapsible-text)',
@@ -23,13 +22,8 @@
             const list = column && column.closest(selectors.list);
             const scroll = list && list.closest(selectors.scroll);
             if (column && list && scroll) {
-                const editor = ctx.findVisible(selectors.editor, scroll);
-                let footer = null;
-                for (let el = editor; el && el !== scroll; el = el.parentElement) {
-                    if (el.parentElement === scroll) footer = el;
-                }
                 return {
-                    kind: 'chat', root: column, column, scroll, footer, pane: scroll,
+                    kind: 'chat', root: column, column, scroll, pane: scroll,
                     widthOwners: [{ element: scroll, strategy: 'variable' }]
                 };
             }
@@ -46,14 +40,8 @@
             userBubble: selectors.userBubble,
             exclude: `${selectors.codeBanner}, ${selectors.controls}`
         },
-        turnKey: element => {
-            const item = element.closest(selectors.item);
-            return item ? item.getAttribute('data-virtual-list-item-key') : null;
-        },
-        navigation: { side: 'left', topInset: 8, bottomInset: 8, scrollInset: 16 },
         watch: {
-            markers: selectors.markers,
-            attributes: ['data-virtual-list-item-key']
+            markers: selectors.markers
         }
     });
 })();

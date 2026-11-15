@@ -101,7 +101,6 @@
             turnKey: definition.turnKey || null,
             turnText: definition.turnText || selectors.turnText || null,
             navigation: {
-                side: navigation.side || 'right',
                 topInset: navigation.topInset === undefined ? 56 : navigation.topInset,
                 bottomInset: navigation.bottomInset === undefined ? 8 : navigation.bottomInset,
                 scrollInset: navigation.scrollInset === undefined ? 72 : navigation.scrollInset
@@ -293,7 +292,7 @@
             const readingStatus = !ctx.settingsLoaded ? 'loading' : !settings.siteEnabled ? 'paused'
                 : !chatSurface ? 'notApplicable' : messages ? 'active' : conversation ? 'unsupported' : 'idle';
             const paused = !settings.siteEnabled ? 'paused' : null;
-            const turns = chatSurface ? ctx.navigation.turns().length : 0;
+            const turns = chatSurface && settings.navigationEnabled ? ctx.navigation.turns().length : 0;
             const rail = ctx.navigation.rail;
             return {
                 site: site.id, protocolVersion: settingsUtils.PROTOCOL_VERSION,
@@ -306,7 +305,7 @@
                     reading: readingStatus,
                     fullWidth: paused || (!settings.userFullWidth ? 'off' : !ctx.width.active ? 'idle'
                         : ctx.reading.hasFullPaths() ? 'active' : 'idle'),
-                    navigation: paused || (!settings.navigationEnabled ? 'off' : !chatSurface ? 'notApplicable'
+                    navigation: settings.navigationEnabled === undefined ? 'notApplicable' : paused || (!settings.navigationEnabled ? 'off' : !chatSurface ? 'notApplicable'
                         : rail && rail.visible ? 'active' : 'idle')
                 },
                 navigation: { turns, visible: Boolean(rail && rail.visible) }

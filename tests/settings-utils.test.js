@@ -325,6 +325,8 @@ assert.ok(utils, 'settings utils are exposed');
 }
 
 {
+    assert.strictEqual(utils.normalizeSiteSettings({ deepseekMessageNavigationEnabled: true }, 'deepseek').navigationEnabled, undefined);
+    assert.deepStrictEqual(Object.keys(utils.getSiteNavigationPatch('deepseek', true)), []);
     assert.strictEqual(utils.normalizeSiteSettings({}, 'gemini').navigationEnabled, true);
     assert.strictEqual(utils.normalizeSiteSettings({ chatgptMessageNavigationEnabled: false }, 'chatgpt').navigationEnabled, false);
     assert.strictEqual(utils.normalizeSiteSettings({ chatgptMessageNavigationEnabled: false }, 'gemini').navigationEnabled, true);

@@ -53,7 +53,7 @@
         {
             id: 'beta', name: 'Beta', url: 'https://beta.example/', matches: ['https://beta.example/*'],
             access: 'optional', since: '3.2.0', runtime: 'core', storage: 'default',
-            capabilities: ['width', 'navigation'], tasks: ['reading', 'wide'],
+            capabilities: ['width'], tasks: ['reading', 'wide'],
             adapter: { js: 'src/content/sites/beta.js' }
         }`;
     fs.writeFileSync(registryPath, registry.slice(0, start) + fakeSites + registry.slice(end));
@@ -168,6 +168,7 @@
         grantText: document.getElementById('grantSitePermission').textContent,
         intro: !document.getElementById('introLine').hidden,
         introText: document.getElementById('introLineText').textContent,
+        navigation: !document.getElementById('navigationCard').hidden,
         codeWrap: !document.getElementById('codeWrapCard').hidden,
         userFullWidth: !document.getElementById('userFullWidthCard').hidden,
         tasks: [...document.getElementById('taskPresetSelect').options].map(option => option.value),
@@ -225,6 +226,7 @@
             await popup.ready("!document.getElementById('siteView').hidden");
             let site = await popup.evaluate(SITE_STATE);
             assert.strictEqual(site.title, 'Alpha Chat');
+            assert.strictEqual(site.navigation, true);
             assert.strictEqual(site.permission, true, 'ungranted site shows the permission card');
             assert.strictEqual(site.grantText, 'Allow Alpha Chat access');
             assert.strictEqual(site.codeWrap, false, 'code wrap is hidden without the capability');
@@ -238,6 +240,7 @@
             popup = await openPopup('?site=beta');
             await popup.ready("!document.getElementById('siteView').hidden");
             site = await popup.evaluate(SITE_STATE);
+            assert.strictEqual(site.navigation, false, 'navigation is absent without the capability');
             assert.deepStrictEqual([site.title, site.codeWrap, site.userFullWidth, site.tasks], ['Beta', false, false, ['reading', 'wide']]);
             await popup.close();
             popup = await openPopup('?site=gemini');

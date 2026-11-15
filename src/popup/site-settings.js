@@ -45,6 +45,7 @@ const codeWrapCard = document.getElementById('codeWrapCard');
 const codeWrapToggle = document.getElementById('codeWrapToggle');
 const userFullWidthCard = document.getElementById('userFullWidthCard');
 const userFullWidthToggle = document.getElementById('userFullWidthToggle');
+const navigationCard = document.getElementById('navigationCard');
 const navigationToggle = document.getElementById('navigationToggle');
 const taskPresetSelect = document.getElementById('taskPresetSelect');
 const applyTaskPreset = document.getElementById('applyTaskPreset');
@@ -454,7 +455,8 @@ function renderSite() {
     codeWrapToggle.checked = settings.codeWrap === true;
     userFullWidthCard.hidden = !hasCapability('userFullWidth');
     userFullWidthToggle.checked = settings.userFullWidth;
-    navigationToggle.checked = settings.navigationEnabled;
+    navigationCard.hidden = !hasCapability('navigation');
+    navigationToggle.checked = settings.navigationEnabled === true;
     renderTaskState();
 }
 
