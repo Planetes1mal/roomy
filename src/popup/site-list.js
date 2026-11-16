@@ -1,12 +1,12 @@
 const siteRows = {};
 
 function siteStateText(site) {
-    if (!isGranted(site)) return t('siteAccessNeeded', 'Access needed');
+    if (!isGranted(site)) return '';
     const settings = siteSettings[site];
     if (!settings) return '';
     if (!settings.siteEnabled) return t('sitePaused', 'Paused');
     if (!settings.widthEnabled) return t('stateWidthOff', 'Widening off');
-    return t('stateEnabled', 'Enabled');
+    return '';
 }
 
 function createSiteRow(site) {
@@ -31,7 +31,9 @@ function createSiteRow(site) {
     name.append(label, fresh, current);
     const state = document.createElement('span');
     state.className = 'site-state';
-    open.append(name, state);
+    const labels = document.createElement('span');
+    labels.append(name, state);
+    open.append(labels);
     open.addEventListener('click', () => openSite(site));
     const control = document.createElement('span');
     control.className = 'site-control';
@@ -47,13 +49,14 @@ function createSiteRow(site) {
     input.addEventListener('change', () => setSiteEnabled(site, input.checked, input));
     const allow = document.createElement('button');
     allow.type = 'button';
-    allow.className = 'secondary-btn site-allow';
+    allow.className = 'btn site-allow';
     allow.addEventListener('click', () => requestSiteAccess(site, allow));
     control.append(toggle, allow);
     const chevron = document.createElement('span');
-    chevron.className = 'site-chevron';
+    chevron.className = 'chevron';
     chevron.setAttribute('aria-hidden', 'true');
-    row.append(open, control, chevron);
+    open.append(chevron);
+    row.append(open, control);
     siteRows[site] = { row, fresh, current, state, toggle, input, allow };
     return row;
 }
@@ -65,6 +68,7 @@ function renderSiteRow(site) {
     const granted = isGranted(site);
     const settings = siteSettings[site];
     parts.state.textContent = siteStateText(site);
+    parts.state.hidden = !parts.state.textContent;
     parts.current.textContent = t('currentSite', 'Current page');
     parts.current.hidden = site !== activeTabSite;
     parts.fresh.textContent = t('siteNew', 'New');
@@ -90,8 +94,10 @@ function renderSiteList() {
     }
     for (const list of [yours, addable]) {
         const order = siteRegistry.sites.map(site => site.id);
-        [...list.children].sort((a, b) => order.indexOf(a.dataset.site) - order.indexOf(b.dataset.site))
-            .forEach(row => list.appendChild(row));
+        const rank = row => row.dataset.site === activeTabSite ? -1 : order.indexOf(row.dataset.site);
+        [...list.children].sort((a, b) => rank(a) - rank(b)).forEach((row, i) => {
+            if (list.children[i] !== row) list.insertBefore(row, list.children[i]);
+        });
     }
     document.getElementById('addableSitesGroup').hidden = addable.children.length === 0;
     document.getElementById('yourSitesGroup').hidden = yours.children.length === 0;

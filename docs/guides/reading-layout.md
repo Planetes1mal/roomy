@@ -34,12 +34,12 @@ Use **Font size** in the extension to adjust conversation text without changing 
 
 1. Keep your browser at a comfortable zoom level. For a controlled comparison, use the same browser zoom before and after.
 2. Try **110%** or **115%** in **Font size**. The available range is **75%–200%**, in 5-point steps.
-3. Keep **Reading density** at **0** as a starting point. If paragraphs then feel too far apart, adjust density; use **Advanced spacing** when you want separate line-height and paragraph-spacing controls.
-4. Use **Reset font size** to return the extension's font setting to **100%**.
+3. Keep **Reading density** at **0** as a starting point. If paragraphs then feel too far apart, adjust density; use **Custom line and paragraph spacing** when you want separate line-height and paragraph-spacing controls.
+4. Use the reset icon beside the font size to return the extension's font setting to **100%**.
 
-This affects supported conversation text, including code and headings; it does not scale Chrome's toolbar or the extension popup. Enlarging text can make tables and code wrap more, so recheck those parts of the answer. Font size is independent of paragraph spacing: at Auto density 0, native paragraph gaps remain unchanged and native line-height proportions scale with the text. Higher density gradually compresses prose spacing. Code blocks and table cells keep their native line-height proportions at every density and manual line height; inline code follows its paragraph. Moving either Advanced spacing slider applies both displayed values manually; Reset spacing returns to Auto at the current density.
+This affects supported conversation text, including code and headings; it does not scale Chrome's toolbar or the extension popup. Enlarging text can make tables and code wrap more, so recheck those parts of the answer. Font size is independent of paragraph spacing: at Auto density 0, native paragraph gaps remain unchanged and native line-height proportions scale with the text. Higher density gradually compresses prose spacing. Code blocks and table cells keep their native line-height proportions at every density and manual line height; inline code follows its paragraph. Enable custom spacing to edit the two values. Reset spacing restores the site’s original density.
 
-For a simple long-answer starting point, try **1000 px / 110% font / density 0 / code wrap off**. To return to native reading typography after experimenting, set density to 0 and font size to 100%, then expand **Advanced spacing** and click **Reset spacing** to clear custom spacing. Collapsing that panel only hides the controls; it does not reset them. Width and code wrapping remain separate choices.
+For a simple long-answer starting point, try **1000 px / 110% font / density 0 / code wrap off**. To return to native reading typography after experimenting, reset font size to 100% on the site page, then open **Reading settings** and choose **Reset spacing** if available. Width and code wrapping remain separate choices.
 
 ## A setting appears to do nothing
 
@@ -67,7 +67,7 @@ Fresh installs start at **1000 px**, **100% font**, **density 0**, **custom spac
 
 ## Task presets
 
-**Task presets** combines the same individual controls. Select a task to see its summary; nothing changes until you click **Apply**.
+Open **Task presets** to see the width and font size for each task. Click a row to enable conversation width and apply the settings shown.
 
 | Task | Requested width | Font | Code wrapping |
 |---|---|---|---|
@@ -78,13 +78,13 @@ Fresh installs start at **1000 px**, **100% font**, **density 0**, **custom spac
 
 Every task sets density to 0 and clears custom spacing. Actual width respects your saved minimum and maximum limits. Your named width presets, range limits, interface language, and user-message full-width choice are preserved.
 
-**Restore previous settings** restores the width, font, spacing, and code-wrapping settings saved immediately before the latest task application on this device. The single saved snapshot survives closing the popup. Restoring also replaces any later manual changes to those four setting groups; it is not a multi-step history.
+**Undo last preset** restores the width switch, width, font, spacing, and code-wrapping settings saved immediately before the latest task application on this device. The single saved snapshot survives closing the popup. Restoring also replaces any later manual changes to those four setting groups; it is not a multi-step history.
 
 Maintainer references: [settings defaults and normalization](../../src/shared/settings-utils.js), [layout rules](../../src/content/gemini-content.css), [content behavior](../../src/content/gemini-content.js), and [diagnostic report fields](../../src/help/help.js).
 
 ## ChatGPT
 
-Open ChatGPT's page in the popup (from the site list, or directly when ChatGPT is the current tab), then click **Allow ChatGPT access** and confirm Chrome's prompt if access has not been granted yet. Font size, reading density, Advanced spacing, and full-width user messages work as described above, with separate saved values for ChatGPT. Density and manual spacing change prose only: code lines, table rows, and formulas keep ChatGPT's own spacing. ChatGPT has no extension code-wrap switch; use the wrap button on each code block.
+Open ChatGPT's page in the popup (from the site list, or directly when ChatGPT is the current tab), then click **Allow ChatGPT access** and confirm Chrome's prompt if access has not been granted yet. Font size, reading density, custom spacing, and full-width user messages work as described above, with separate saved values for ChatGPT. Density and manual spacing change prose only: code lines, table rows, and formulas keep ChatGPT's own spacing. ChatGPT has no extension code-wrap switch; use the wrap button on each code block.
 
 | Task | Requested width | Font |
 |---|---|---|
@@ -96,7 +96,7 @@ Use the switch beside the site name at the top of its page to compare with the o
 
 ## Claude
 
-Open Claude's page in the popup (from the site list, or directly when claude.ai is the current tab), then click **Allow Claude access** and confirm Chrome's prompt if access has not been granted yet. Width, font size, reading density, Advanced spacing, full-width user messages and message navigation work as described above, with separate saved values for Claude. Density and manual spacing change prose only: code lines, table rows and formulas keep Claude's own spacing. Claude has no code-wrap control at all, so long code lines scroll inside the block.
+Open Claude's page in the popup (from the site list, or directly when claude.ai is the current tab), then click **Allow Claude access** and confirm Chrome's prompt if access has not been granted yet. Width, font size, reading density, custom spacing, full-width user messages and message navigation work as described above, with separate saved values for Claude. Density and manual spacing change prose only: code lines, table rows and formulas keep Claude's own spacing. Claude has no code-wrap control at all, so long code lines scroll inside the block.
 
 | Task | Requested width | Font |
 |---|---|---|
@@ -108,7 +108,7 @@ Roomy adjusts Claude's conversation pages and the new-chat page. When the Artifa
 
 ## DeepSeek
 
-Open DeepSeek's page in the popup (from the site list, or directly when chat.deepseek.com is the current tab), then click **Allow DeepSeek access** and confirm Chrome's prompt if access has not been granted yet. Width, font size, reading density, Advanced spacing and full-width user messages work as described above, with separate saved values for DeepSeek. Use DeepSeek’s own navigation to jump between messages. Density and manual spacing change prose only: code lines, table rows and formulas keep DeepSeek's own spacing. DeepSeek wraps long code lines itself, so there is no code-wrap control.
+Open DeepSeek's page in the popup (from the site list, or directly when chat.deepseek.com is the current tab), then click **Allow DeepSeek access** and confirm Chrome's prompt if access has not been granted yet. Width, font size, reading density, custom spacing and full-width user messages work as described above, with separate saved values for DeepSeek. Use DeepSeek’s own navigation to jump between messages. Density and manual spacing change prose only: code lines, table rows and formulas keep DeepSeek's own spacing. DeepSeek wraps long code lines itself, so there is no code-wrap control.
 
 | Task | Requested width | Font |
 |---|---|---|

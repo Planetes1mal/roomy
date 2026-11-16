@@ -9,13 +9,13 @@
     "message": "Amplía Gemini, ChatGPT, Claude y DeepSeek, ajusta el texto y la densidad de lectura por sitio, y pausa cualquiera cuando quieras."
   },
   "widthLabel": {
-    "message": "Ancho del chat"
+    "message": "Ancho de conversación"
   },
   "widthMin": {
-    "message": "Ancho mínimo"
+    "message": "Mínimo del deslizador"
   },
   "widthMax": {
-    "message": "Ancho máximo"
+    "message": "Máximo del deslizador"
   },
   "btnNarrow": {
     "message": "Estrecho"
@@ -32,26 +32,8 @@
   "btnInsane": {
     "message": "Máximo"
   },
-  "editPresets": {
-    "message": "Editar preajustes"
-  },
-  "donePresets": {
-    "message": "Listo"
-  },
-  "managePresets": {
-    "message": "Gestionar preajustes"
-  },
-  "managePresetsSummary": {
-    "message": "5 preajustes personalizados"
-  },
-  "resetToDefault": {
-    "message": "Restablecer valores predeterminados"
-  },
-  "clampedHint": {
-    "message": "Ajustado al rango permitido"
-  },
   "codeWrapLabel": {
-    "message": "Ajuste de línea del código"
+    "message": "Ajustar líneas de código"
   },
   "userFullWidthLabel": {
     "message": "Mis mensajes a todo el ancho"
@@ -65,11 +47,8 @@
   "densityLabel": {
     "message": "Densidad de lectura"
   },
-  "compactnessUnit": {
-    "message": "%"
-  },
   "advancedDensity": {
-    "message": "Espaciado avanzado"
+    "message": "Personalizar interlineado y espaciado"
   },
   "lineHeightLabel": {
     "message": "Altura de línea"
@@ -81,16 +60,10 @@
     "message": "Tamaño del texto"
   },
   "resetFontSize": {
-    "message": "Restablecer tamaño del texto"
+    "message": "Restaurar el tamaño al 100%"
   },
   "resetDensity": {
     "message": "Restablecer espaciado"
-  },
-  "customSpacing": {
-    "message": "Personalizado"
-  },
-  "autoSpacing": {
-    "message": "Automático"
   },
   "uiLanguageLabel": {
     "message": "Idioma"
@@ -105,29 +78,20 @@
   "helpLink": {
     "message": "Ayuda y comentarios"
   },
-  "sourceLink": {
-    "message": "GitHub · Código fuente"
-  },
   "helpPageTitle": {
     "message": "Roomy · Ayuda"
   },
-  "helpTitle": {
-    "message": "Ayuda y comentarios"
-  },
   "helpGettingStarted": {
-    "message": "Adapta {sites} a tu pantalla"
+    "message": "Primeros pasos"
   },
   "helpOpenPopup": {
     "message": "Abre {sites} y haz clic en el icono de Roomy en la barra de herramientas. En un sitio compatible, la ventana abre los ajustes de ese sitio; en otras páginas muestra la lista de todos los sitios."
   },
   "helpWidthTitle": {
-    "message": "Ancho de la conversación"
+    "message": "Ancho de conversación"
   },
   "helpWidthBody": {
-    "message": "Elige px para un ancho fijo o % para adaptarlo a la ventana. Mueve el control o elige un ajuste predefinido. Cada sitio guarda por separado el ancho, los límites y los ajustes, también por unidad. Abre Rango y ajustes predefinidos para editarlos. El interruptor junto al título del ancho pausa la ampliación de ese sitio y restaura su ancho original. Se conservan los valores y ajustes; las opciones de lectura siguen activas."
-  },
-  "helpCodeTitle": {
-    "message": "Ajuste de línea del código"
+    "message": "Arrastra el deslizador o elige un acceso rápido. Los píxeles fijan el ancho y el porcentaje sigue el espacio disponible. Al desactivar el ancho se conservan los ajustes de lectura."
   },
   "helpCodeBody": {
     "message": "El ajuste de línea del código solo está disponible en {sites}. Los demás sitios conservan sus propios controles de ajuste en cada bloque de código; la extensión no los modifica."
@@ -136,13 +100,13 @@
     "message": "Tamaño del texto y espaciado"
   },
   "helpReadingBody": {
-    "message": "Ajusta el tamaño del texto entre el 75% y el 200% sin ampliar toda la página; títulos, código y tablas mantienen su proporción. Con densidad 0 en Auto se conservan las separaciones y alturas de línea originales; una densidad mayor reduce gradualmente solo el espaciado del texto. Las líneas de código y las celdas de tablas conservan sus proporciones de altura de línea, y las fórmulas conservan su espaciado original. Espaciado avanzado permite fijar valores manuales exactos; Restablecer espaciado vuelve a Auto con la densidad actual. Cada sitio guarda ajustes de lectura por separado."
+    "message": "Ajusta el texto de los mensajes del 75% al 200% con − y +. Los menús y el cuadro de entrada mantienen su tamaño."
   },
   "helpLiveSettings": {
     "message": "Los cambios se guardan automáticamente y se aplican al instante a las pestañas abiertas de ese sitio. Los ajustes de cada sitio son independientes; el idioma de la extensión es compartido. La sincronización entre dispositivos depende de los ajustes del navegador."
   },
   "helpTroubleshooting": {
-    "message": "¿Algo no se ve bien?"
+    "message": "Si los ajustes no se aplican"
   },
   "helpTroubleshootPage": {
     "message": "Comprueba que estás en un sitio compatible ({sites}) y que Roomy está activado y tiene acceso a ese sitio. Las aplicaciones web instaladas desde Chrome (PWA) usan las mismas páginas. No se admiten las aplicaciones de escritorio nativas ni el panel de Gemini integrado en Chrome."
@@ -171,9 +135,6 @@
   "helpCopyReport": {
     "message": "Copiar informe"
   },
-  "helpSupportProject": {
-    "message": "Si Roomy te resulta útil, puedes dar una estrella al proyecto o dejar una reseña sincera."
-  },
   "helpGitHubLink": {
     "message": "Código fuente y estrella en GitHub"
   },
@@ -195,9 +156,6 @@
   "helpReportCopyFallback": {
     "message": "No se pudo copiar automáticamente. El informe está seleccionado; cópialo manualmente."
   },
-  "taskPresets": {
-    "message": "Preajustes por tarea"
-  },
   "taskReading": {
     "message": "Lectura larga"
   },
@@ -210,17 +168,11 @@
   "taskLarge": {
     "message": "Texto grande"
   },
-  "taskApply": {
-    "message": "Aplicar"
-  },
   "taskRestore": {
-    "message": "Restaurar ajustes anteriores"
-  },
-  "taskSaving": {
-    "message": "Guardando los ajustes…"
+    "message": "Deshacer el último preajuste"
   },
   "taskApplied": {
-    "message": "Aplicado. Los ajustes anteriores se guardan en este dispositivo."
+    "message": "Se ha aplicado «{name}»."
   },
   "taskRestored": {
     "message": "Se han restaurado los ajustes anteriores."
@@ -232,19 +184,16 @@
     "message": "Preajustes por tarea"
   },
   "helpTaskBody": {
-    "message": "Elige un preajuste por tarea, revisa el resumen y haz clic en Aplicar. Cada sitio ofrece sus propios preajustes, como Lectura larga, Ancho (tablas y código) y Texto grande. Los preajustes cambian el ancho, el tamaño del texto y el espaciado (y el ajuste de línea del código donde esté disponible) dentro de tus límites. Restaurar ajustes anteriores deshace el último preajuste de ese sitio en este dispositivo, incluso tras cerrar la ventana, y reemplaza los cambios posteriores en esos ajustes."
-  },
-  "autoSpacingHint": {
-    "message": "Auto respeta el espaciado original de cada mensaje. Al mover cualquier control, se aplican manualmente los dos valores siguientes."
+    "message": "Pulsa un preajuste para activar el ancho, ajustar la letra y recuperar el espaciado original. El ancho respeta tus límites. En {codeWrapSites} también cambia el ajuste de líneas de código."
   },
   "currentSite": {
     "message": "Actual"
   },
   "widthOptions": {
-    "message": "Límites y preajustes"
+    "message": "Rango y accesos rápidos"
   },
   "readingSettings": {
-    "message": "Texto y espaciado"
+    "message": "Ajustes de lectura"
   },
   "layoutUnsupported": {
     "message": "Este diseño de página aún no es compatible. Se conserva el ancho original."
@@ -271,13 +220,10 @@
     "message": "No se pudo guardar. Inténtalo de nuevo"
   },
   "pageOutdated": {
-    "message": "Guardado, pero esta página aún ejecuta una versión anterior de la extensión. Recarga la extensión en chrome://extensions y luego recarga esta página."
+    "message": "Ajustes guardados. Esta página sigue usando una versión anterior de Roomy."
   },
   "taskWide": {
     "message": "Ancho (tablas y código)"
-  },
-  "taskSpacingNative": {
-    "message": "espaciado original"
   },
   "taskWrapOn": {
     "message": "código con ajuste de línea"
@@ -316,7 +262,7 @@
     "message": "NEW"
   },
   "helpSiteAccess": {
-    "message": "El acceso a {required} es obligatorio. El acceso a {optional} es opcional: haz clic en Permitir junto al sitio en la lista de la ventana emergente."
+    "message": "{required} funciona al instalar la extensión. En {optional}, pulsa Permitir junto al sitio y confirma en Chrome. Cada sitio necesita permiso una vez."
   },
   "yourSites": {
     "message": "Tus sitios"
@@ -333,20 +279,14 @@
   "allowAccess": {
     "message": "Permitir"
   },
-  "stateEnabled": {
-    "message": "Activado"
-  },
   "stateWidthOff": {
     "message": "Ampliación desactivada"
-  },
-  "siteAccessNeeded": {
-    "message": "Requiere acceso"
   },
   "grantSitePermission": {
     "message": "Permitir acceso a {site}"
   },
   "sitePermissionHint": {
-    "message": "El acceso a {site} es opcional. Permítelo para aplicar estos ajustes."
+    "message": "Permite el acceso para que Roomy ajuste las conversaciones en {host}."
   },
   "sitePermissionFailed": {
     "message": "No se pudo solicitar acceso. Inténtalo de nuevo."
@@ -359,5 +299,113 @@
   },
   "helpOpenSite": {
     "message": "Abrir {site}"
+  },
+  "back": {
+    "message": "Volver"
+  },
+  "nativeWidth": {
+    "message": "Ancho original"
+  },
+  "howToFix": {
+    "message": "Cómo resolverlo"
+  },
+  "pausedHint": {
+    "message": "En pausa. El sitio conserva su diseño original. Los cambios se guardan y se aplican al reactivar Roomy."
+  },
+  "resetRangeDefaults": {
+    "message": "Restaurar valores de {unit}"
+  },
+  "rangeResetDone": {
+    "message": "Se han restaurado los valores de {unit}."
+  },
+  "undo": {
+    "message": "Deshacer"
+  },
+  "rangeUndoDone": {
+    "message": "Se ha deshecho el restablecimiento."
+  },
+  "shortcuts": {
+    "message": "Accesos rápidos"
+  },
+  "shortcutName": {
+    "message": "Nombre"
+  },
+  "width": {
+    "message": "Ancho"
+  },
+  "originalSpacing": {
+    "message": "Original"
+  },
+  "compactSpacing": {
+    "message": "Compacto"
+  },
+  "manual": {
+    "message": "Manual"
+  },
+  "manualSpacingLabel": {
+    "message": "Espaciado manual"
+  },
+  "compactSummary": {
+    "message": "Compacto al {n}%"
+  },
+  "fontDecrease": {
+    "message": "Reducir el tamaño de letra"
+  },
+  "fontIncrease": {
+    "message": "Aumentar el tamaño de letra"
+  },
+  "rangeInvalid": {
+    "message": "Introduce un múltiplo de {step} entre {min} y {max}."
+  },
+  "belowMaximum": {
+    "message": "Debe ser menor que {n}."
+  },
+  "aboveMinimum": {
+    "message": "Debe ser mayor que {n}."
+  },
+  "skipMain": {
+    "message": "Saltar al contenido"
+  },
+  "onThisPage": {
+    "message": "En esta página"
+  },
+  "newTab": {
+    "message": "se abre en otra pestaña"
+  },
+  "newIssue": {
+    "message": "Crear una incidencia en GitHub"
+  },
+  "preset": {
+    "message": "Preajuste"
+  },
+  "availableOn": {
+    "message": "Sitios disponibles"
+  },
+  "pauseSite": {
+    "message": "Pausar un sitio"
+  },
+  "helpPause": {
+    "message": "Desactiva el interruptor junto al nombre del sitio para recuperar su diseño original. Al activarlo se aplican los ajustes guardados."
+  },
+  "helpRange": {
+    "message": "Edita los límites y los nombres y anchos de los cinco accesos rápidos por unidad. Al salir del campo se guarda el valor o se muestra el error debajo. Al reducir el rango se ajustan los valores que queden fuera."
+  },
+  "helpDensity": {
+    "message": "La densidad reduce progresivamente el interlineado y la separación entre párrafos. El valor original conserva el espaciado del sitio."
+  },
+  "helpManual": {
+    "message": "Activa el espaciado personalizado para ajustar por separado el interlineado y los párrafos. Restablecer recupera el espaciado original."
+  },
+  "helpUserWidth": {
+    "message": "Activa «Mis mensajes a todo el ancho» para que ocupen el mismo ancho que las respuestas."
+  },
+  "helpNavigation": {
+    "message": "En {navigationSites}, usa las marcas de la derecha para saltar a un mensaje. DeepSeek ofrece su propia navegación."
+  },
+  "helpUndoTask": {
+    "message": "Deshacer recupera los ajustes anteriores, incluido el interruptor de ancho. Cada sitio recuerda la última aplicación en este dispositivo incluso si cierras la ventana."
+  },
+  "helpWidthSwitch": {
+    "message": "Para cambiar el ancho, activa «Ancho de conversación»."
   }
 }

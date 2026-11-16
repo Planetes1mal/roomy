@@ -78,7 +78,7 @@
                     sites:[...document.querySelectorAll('.site-row')].map(row => row.dataset.site),
                     width:getComputedStyle(document.body).width,
                     styles:[...document.styleSheets].some(sheet => sheet.href && sheet.cssRules.length > 0),
-                    helpUrl:document.querySelector('[data-i18n="helpLink"]').href };
+                    helpUrl:document.querySelector('[data-i18n="helpLink"]').closest('a').href };
             })()`, 'Packaged popup scripts should initialize and enable its controls');
             assert.strictEqual(state.version, expected.version);
             assert.strictEqual(state.versionName, expected.version_name);
@@ -93,7 +93,7 @@
             const help = await waitForPage(helpSession.sessionId, `(() => {
                 if (document.readyState !== 'complete' || !globalThis.widerGeminiSettings) return null;
                 const version = document.getElementById('extensionVersion')?.textContent;
-                if (!version) return null;
+                if (!version || !document.querySelector('#presetsTable tr')) return null;
                 return { version, shared:typeof widerGeminiSettings.normalizeStorage === 'function',
                     links:[...document.querySelectorAll('#siteLinks a')].map(a => a.href),
                     styles:[...document.styleSheets].some(sheet => sheet.href && sheet.cssRules.length > 0) };
@@ -102,6 +102,31 @@
             assert.strictEqual(help.shared, true);
             assert.deepStrictEqual(help.links, plain(widerRoomySites.sites.map(site => site.url)), 'Help links every registered site');
             assert.strictEqual(help.styles, true, 'Packaged help stylesheet should load');
+            const helpId = helpSession.sessionId;
+            const click = async selector => {
+                const point = await waitForPage(helpId, `(() => {
+                    const el = document.querySelector(${JSON.stringify(selector)});
+                    el.scrollIntoView({block:'center', behavior:'instant'});
+                    const r = el.getBoundingClientRect();
+                    return { x:r.x + r.width / 2, y:r.y + r.height / 2 };
+                })()`, 'Help control is available');
+                for (const type of ['mousePressed', 'mouseReleased']) {
+                    await send('Input.dispatchMouseEvent', { type, ...point, button:'left', clickCount:1 }, helpId);
+                }
+            };
+            await send('Emulation.setDeviceMetricsOverride', {width:1440, height:900, deviceScaleFactor:1, mobile:false}, helpId);
+            await click('.toc [href="#presets"]');
+            await waitForPage(helpId, `document.querySelector('.toc [aria-current="location"]').hash === '#presets' &&
+                Math.abs(document.querySelector('#presets h2').getBoundingClientRect().top - 16) < 2`, 'Contents follows the chapter');
+            await click('#generateReport');
+            const report = await waitForPage(helpId, "document.querySelector('#diagnosticReport').value", 'Report generated');
+            assert.deepStrictEqual(Object.keys(JSON.parse(report).sites), plain(widerRoomySites.sites.map(site => site.id)));
+            assert(!report.includes('https://') && !report.includes('presetsByUnit'), 'Report excludes URLs and shortcut names');
+            await click('#copyReport');
+            await waitForPage(helpId, `document.getElementById('reportStatus').textContent === chrome.i18n.getMessage('helpReportCopied')`, 'Copy report');
+            const issue = await waitForPage(helpId, "document.querySelector('#reportPreview a').href", 'Issue link');
+            assert.strictEqual(issue, 'https://github.com/Planetes1mal/roomy/issues/new/choose');
+            console.log('PASS: help contents, report generation, copy and GitHub issue link');
             console.log('Packaged extension loaded in Chrome:', JSON.stringify(state));
             console.log('Packaged help loaded through the popup link:', JSON.stringify(help));
         } catch (error) {

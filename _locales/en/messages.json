@@ -9,13 +9,13 @@
     "message": "Widen Gemini, ChatGPT, Claude and DeepSeek, adjust font size and reading density per site, and pause any site at any time."
   },
   "widthLabel": {
-    "message": "Chat Width"
+    "message": "Conversation width"
   },
   "widthMin": {
-    "message": "Min width"
+    "message": "Slider minimum"
   },
   "widthMax": {
-    "message": "Max width"
+    "message": "Slider maximum"
   },
   "btnNarrow": {
     "message": "Narrow"
@@ -32,29 +32,11 @@
   "btnInsane": {
     "message": "Insane"
   },
-  "editPresets": {
-    "message": "Edit presets"
-  },
-  "donePresets": {
-    "message": "Done"
-  },
-  "managePresets": {
-    "message": "Manage presets"
-  },
-  "managePresetsSummary": {
-    "message": "5 presets customized"
-  },
-  "resetToDefault": {
-    "message": "Reset to default"
-  },
-  "clampedHint": {
-    "message": "Clamped to range"
-  },
   "codeWrapLabel": {
-    "message": "Code Auto Wrap"
+    "message": "Wrap code lines"
   },
   "userFullWidthLabel": {
-    "message": "User Message Full Width"
+    "message": "Full-width messages from me"
   },
   "refreshing": {
     "message": "Refreshing page..."
@@ -65,11 +47,8 @@
   "densityLabel": {
     "message": "Reading density"
   },
-  "compactnessUnit": {
-    "message": "%"
-  },
   "advancedDensity": {
-    "message": "Advanced spacing"
+    "message": "Custom line and paragraph spacing"
   },
   "lineHeightLabel": {
     "message": "Line height"
@@ -81,16 +60,10 @@
     "message": "Font size"
   },
   "resetFontSize": {
-    "message": "Reset font size"
+    "message": "Restore 100% font size"
   },
   "resetDensity": {
     "message": "Reset spacing"
-  },
-  "customSpacing": {
-    "message": "Custom"
-  },
-  "autoSpacing": {
-    "message": "Auto"
   },
   "uiLanguageLabel": {
     "message": "Language"
@@ -105,17 +78,11 @@
   "helpLink": {
     "message": "Help & feedback"
   },
-  "sourceLink": {
-    "message": "GitHub · Source"
-  },
   "helpPageTitle": {
     "message": "Roomy · Help"
   },
-  "helpTitle": {
-    "message": "Help & feedback"
-  },
   "helpGettingStarted": {
-    "message": "Make {sites} fit your screen"
+    "message": "Getting started"
   },
   "helpOpenPopup": {
     "message": "Open {sites}, then click the Roomy toolbar icon. On a supported website the popup opens that website's settings; elsewhere it lists all websites."
@@ -124,10 +91,7 @@
     "message": "Conversation width"
   },
   "helpWidthBody": {
-    "message": "Choose px for a fixed width or % to follow the window size. Move the slider or choose a preset. Each website saves width, limits, and presets separately; each unit has its own presets. Expand Range & presets to edit them. The switch beside the width title pauses widening for that website and restores its original width. Your saved values and presets are kept; reading settings remain active."
-  },
-  "helpCodeTitle": {
-    "message": "Code wrapping"
+    "message": "Drag the slider or pick a shortcut. Pixels give you a fixed width. Percentages follow the available space. Turn off Conversation width to use the site’s original width while keeping your reading settings."
   },
   "helpCodeBody": {
     "message": "Code auto wrap is available on {sites}. Other websites keep their own code-block wrap controls; the extension leaves them unchanged."
@@ -136,13 +100,13 @@
     "message": "Text size & spacing"
   },
   "helpReadingBody": {
-    "message": "Font size ranges from 75% to 200% without zooming the whole page, keeping headings, code, and tables in proportion. At Auto density 0, native paragraph gaps and line heights are preserved; higher density gradually tightens prose only. Code lines and table cells keep their native line-height proportions, and formulas keep their native spacing. Advanced spacing sets exact manual values; Reset spacing returns to Auto at the current density. Each website keeps separate reading settings."
+    "message": "Adjust message text from 75% to 200% with the − and + buttons. The site’s menus and composer keep their own text size."
   },
   "helpLiveSettings": {
     "message": "Changes are saved automatically and apply live to open tabs of that website. Each website keeps separate settings; the popup language is shared. Sync across devices depends on your browser’s sync settings."
   },
   "helpTroubleshooting": {
-    "message": "Something looks wrong?"
+    "message": "Settings not taking effect"
   },
   "helpTroubleshootPage": {
     "message": "Check that you are on a supported website ({sites}) and Roomy is enabled with access to that website. Chrome-installed web apps (PWAs) use the same webpages. Native desktop apps and Chrome’s built-in Gemini panel are not supported."
@@ -171,9 +135,6 @@
   "helpCopyReport": {
     "message": "Copy report"
   },
-  "helpSupportProject": {
-    "message": "If Roomy helps you, you can star the project or leave an honest review."
-  },
   "helpGitHubLink": {
     "message": "Source code & Star on GitHub"
   },
@@ -195,9 +156,6 @@
   "helpReportCopyFallback": {
     "message": "Copy was unavailable. The report is selected; copy it manually."
   },
-  "taskPresets": {
-    "message": "Task presets"
-  },
   "taskReading": {
     "message": "Long reading"
   },
@@ -210,17 +168,11 @@
   "taskLarge": {
     "message": "Large text"
   },
-  "taskApply": {
-    "message": "Apply"
-  },
   "taskRestore": {
-    "message": "Restore previous settings"
-  },
-  "taskSaving": {
-    "message": "Saving settings…"
+    "message": "Undo last preset"
   },
   "taskApplied": {
-    "message": "Applied. Previous settings are saved on this device."
+    "message": "Applied {name}."
   },
   "taskRestored": {
     "message": "Previous settings restored."
@@ -232,19 +184,16 @@
     "message": "Task presets"
   },
   "helpTaskBody": {
-    "message": "Choose a task preset, review the summary, then click Apply. Each website offers its own presets, such as Long reading, Wide (tables & code), and Large text. Presets change width, font size, and spacing (and code wrapping where available), within your width limits. Restore previous settings undoes the most recent preset for that website on this device, even after closing the popup; it replaces later changes to those settings."
-  },
-  "autoSpacingHint": {
-    "message": "Auto follows each message's native spacing. Moving either slider applies both values below manually."
+    "message": "Click a preset to apply it. This enables the selected width, sets the font size and restores original spacing. Width stays within your slider limits. On {codeWrapSites} presets also set code wrapping."
   },
   "currentSite": {
     "message": "Current"
   },
   "widthOptions": {
-    "message": "Range & presets"
+    "message": "Range & shortcuts"
   },
   "readingSettings": {
-    "message": "Text & spacing"
+    "message": "Reading settings"
   },
   "layoutUnsupported": {
     "message": "This page layout is not supported yet. Original page width is preserved."
@@ -271,13 +220,10 @@
     "message": "Could not save. Please try again."
   },
   "pageOutdated": {
-    "message": "Saved, but this page is still running an older version of the extension. Reload the extension on chrome://extensions, then refresh this page."
+    "message": "Settings saved. This page is still running an older version of Roomy."
   },
   "taskWide": {
     "message": "Wide (tables & code)"
-  },
-  "taskSpacingNative": {
-    "message": "native spacing"
   },
   "taskWrapOn": {
     "message": "code wrap on"
@@ -316,7 +262,7 @@
     "message": "NEW"
   },
   "helpSiteAccess": {
-    "message": "Access to {required} is required. Access to {optional} is optional: click Allow next to the website in the popup's list."
+    "message": "{required} works after installation. For {optional}, click Allow next to the website and confirm in Chrome. Each website needs your permission once."
   },
   "yourSites": {
     "message": "Your websites"
@@ -333,20 +279,14 @@
   "allowAccess": {
     "message": "Allow"
   },
-  "stateEnabled": {
-    "message": "Enabled"
-  },
   "stateWidthOff": {
     "message": "Widening off"
-  },
-  "siteAccessNeeded": {
-    "message": "Access needed"
   },
   "grantSitePermission": {
     "message": "Allow {site} access"
   },
   "sitePermissionHint": {
-    "message": "{site} access is optional. Allow access to apply these settings."
+    "message": "Allow access so Roomy can adjust conversations on {host}."
   },
   "sitePermissionFailed": {
     "message": "Could not request access. Please try again."
@@ -359,5 +299,113 @@
   },
   "helpOpenSite": {
     "message": "Open {site}"
+  },
+  "back": {
+    "message": "Back"
+  },
+  "nativeWidth": {
+    "message": "Original width"
+  },
+  "howToFix": {
+    "message": "How to fix it"
+  },
+  "pausedHint": {
+    "message": "Paused. This website uses its original layout. Changes are saved and take effect when you turn Roomy back on."
+  },
+  "resetRangeDefaults": {
+    "message": "Restore {unit} defaults"
+  },
+  "rangeResetDone": {
+    "message": "Restored {unit} defaults."
+  },
+  "undo": {
+    "message": "Undo"
+  },
+  "rangeUndoDone": {
+    "message": "Reset undone."
+  },
+  "shortcuts": {
+    "message": "Shortcuts"
+  },
+  "shortcutName": {
+    "message": "Name"
+  },
+  "width": {
+    "message": "Width"
+  },
+  "originalSpacing": {
+    "message": "Original"
+  },
+  "compactSpacing": {
+    "message": "Compact"
+  },
+  "manual": {
+    "message": "Manual"
+  },
+  "manualSpacingLabel": {
+    "message": "Manual spacing"
+  },
+  "compactSummary": {
+    "message": "Compact {n}%"
+  },
+  "fontDecrease": {
+    "message": "Decrease font size"
+  },
+  "fontIncrease": {
+    "message": "Increase font size"
+  },
+  "rangeInvalid": {
+    "message": "Enter a multiple of {step} between {min} and {max}."
+  },
+  "belowMaximum": {
+    "message": "Use a value below {n}."
+  },
+  "aboveMinimum": {
+    "message": "Use a value above {n}."
+  },
+  "skipMain": {
+    "message": "Skip to content"
+  },
+  "onThisPage": {
+    "message": "On this page"
+  },
+  "newTab": {
+    "message": "opens in a new tab"
+  },
+  "newIssue": {
+    "message": "Open a GitHub issue"
+  },
+  "preset": {
+    "message": "Preset"
+  },
+  "availableOn": {
+    "message": "Available on"
+  },
+  "pauseSite": {
+    "message": "Pause a website"
+  },
+  "helpPause": {
+    "message": "Turn off the switch next to a website’s name to restore its original layout. Your saved settings take effect when you turn it back on."
+  },
+  "helpRange": {
+    "message": "Edit the slider limits and the names and widths of the five shortcuts. Each unit has its own set. Leave a field to save it. An invalid value shows an error below the field. Narrowing the range brings outlying widths inside it."
+  },
+  "helpDensity": {
+    "message": "Reading density gradually tightens line and paragraph spacing. Original preserves the site’s spacing."
+  },
+  "helpManual": {
+    "message": "Turn on custom spacing to set line height and paragraph gaps separately. Reset spacing restores the original spacing."
+  },
+  "helpUserWidth": {
+    "message": "Full-width messages from me gives your messages the same available width as replies."
+  },
+  "helpNavigation": {
+    "message": "On {navigationSites}, use the markers on the right to jump to messages. DeepSeek provides its own navigation."
+  },
+  "helpUndoTask": {
+    "message": "Undo last preset restores the settings from just before you applied it, including whether width was on. Each website remembers its last application on this device, even after you close the popup."
+  },
+  "helpWidthSwitch": {
+    "message": "To change the width, turn on Conversation width."
   }
 }

@@ -12,10 +12,10 @@
     "message": "会話の幅"
   },
   "widthMin": {
-    "message": "最小幅"
+    "message": "スライダーの最小値"
   },
   "widthMax": {
-    "message": "最大幅"
+    "message": "スライダーの最大値"
   },
   "btnNarrow": {
     "message": "狭め"
@@ -32,29 +32,11 @@
   "btnInsane": {
     "message": "超ワイド"
   },
-  "editPresets": {
-    "message": "プリセットを編集"
-  },
-  "donePresets": {
-    "message": "完了"
-  },
-  "managePresets": {
-    "message": "プリセットを管理"
-  },
-  "managePresetsSummary": {
-    "message": "5つのプリセットをカスタマイズ"
-  },
-  "resetToDefault": {
-    "message": "初期設定に戻す"
-  },
-  "clampedHint": {
-    "message": "設定範囲内に調整しました"
-  },
   "codeWrapLabel": {
-    "message": "コードを自動で折り返す"
+    "message": "コードを折り返す"
   },
   "userFullWidthLabel": {
-    "message": "自分のメッセージを幅いっぱいに表示"
+    "message": "自分のメッセージを全幅にする"
   },
   "refreshing": {
     "message": "ページを再読み込みしています…"
@@ -65,11 +47,8 @@
   "densityLabel": {
     "message": "文章の密度"
   },
-  "compactnessUnit": {
-    "message": "%"
-  },
   "advancedDensity": {
-    "message": "間隔の詳細設定"
+    "message": "行間と段落間隔を個別に設定"
   },
   "lineHeightLabel": {
     "message": "行の高さ"
@@ -81,16 +60,10 @@
     "message": "文字サイズ"
   },
   "resetFontSize": {
-    "message": "文字サイズをリセット"
+    "message": "文字サイズを100%に戻す"
   },
   "resetDensity": {
     "message": "間隔をリセット"
-  },
-  "customSpacing": {
-    "message": "カスタム"
-  },
-  "autoSpacing": {
-    "message": "自動"
   },
   "uiLanguageLabel": {
     "message": "言語"
@@ -105,17 +78,11 @@
   "helpLink": {
     "message": "ヘルプ・フィードバック"
   },
-  "sourceLink": {
-    "message": "GitHub · ソースコード"
-  },
   "helpPageTitle": {
     "message": "Roomy · ヘルプ"
   },
-  "helpTitle": {
-    "message": "ヘルプ・フィードバック"
-  },
   "helpGettingStarted": {
-    "message": "{sites} を画面に合わせる"
+    "message": "使い始める"
   },
   "helpOpenPopup": {
     "message": "{sites} を開き、ツールバーの Roomy アイコンをクリックします。対応サイトではそのサイトの設定が直接開き、それ以外のページではすべてのサイトの一覧が表示されます。"
@@ -124,10 +91,7 @@
     "message": "会話の幅"
   },
   "helpWidthBody": {
-    "message": "固定幅には px、ウィンドウ幅に合わせるには % を選び、スライダーまたはプリセットで調整します。幅、範囲、プリセットはサイトごとに別々に保存され、単位ごとのプリセットも独立しています。「範囲とプリセット」を開いて編集できます。幅の見出し横のスイッチで、そのサイトだけ拡張を一時停止して元の幅に戻せます。保存した値とプリセットは保持され、読みやすさの設定も引き続き適用されます。"
-  },
-  "helpCodeTitle": {
-    "message": "コードの折り返し"
+    "message": "スライダーかショートカットで調整します。px は固定幅、% は表示領域に対する割合です。「会話の幅」をオフにしても読みやすさの設定は有効です。"
   },
   "helpCodeBody": {
     "message": "「コードを自動で折り返す」は {sites} でのみ使えます。他のサイトでは各コードブロックの折り返し操作を使ってください。拡張機能は変更しません。"
@@ -136,13 +100,13 @@
     "message": "文字サイズと間隔"
   },
   "helpReadingBody": {
-    "message": "ページ全体を拡大せずに文字サイズを75%〜200%に調整でき、見出し・コード・表の比率は保たれます。自動モードの密度0では元の段落間隔と行高を保ち、密度を上げると本文の間隔だけが徐々に狭くなります。コード行と表のセルは元の行高の比率を保ち、数式も元の間隔を保ちます。「間隔の詳細設定」では値を手動で指定でき、「間隔をリセット」で現在の密度の自動モードに戻ります。読み設定はサイトごとに別々に保存されます。"
+    "message": "− と + でメッセージの文字サイズを75%から200%に調整できます。メニューと入力欄の文字サイズは変わりません。"
   },
   "helpLiveSettings": {
     "message": "変更は自動保存され、そのサイトの開いているタブにすぐ反映されます。設定はサイトごとに独立していますが、ポップアップの言語は共通です。端末間の同期はブラウザの同期設定によります。"
   },
   "helpTroubleshooting": {
-    "message": "表示がおかしいときは"
+    "message": "設定が反映されないとき"
   },
   "helpTroubleshootPage": {
     "message": "対応サイト（{sites}）を開いていて、Roomy が有効で、そのサイトへのアクセスが許可されているか確認してください。Chrome からインストールしたウェブアプリ（PWA）は同じウェブページを使用します。ネイティブのデスクトップアプリや Chrome 内蔵の Gemini パネルには対応していません。"
@@ -171,9 +135,6 @@
   "helpCopyReport": {
     "message": "レポートをコピー"
   },
-  "helpSupportProject": {
-    "message": "Roomy が役立ったら、プロジェクトに Star を付けたり、率直なレビューを投稿したりしていただけるとうれしいです。"
-  },
   "helpGitHubLink": {
     "message": "ソースコード・GitHub で Star"
   },
@@ -195,9 +156,6 @@
   "helpReportCopyFallback": {
     "message": "自動でコピーできませんでした。レポートを選択したので、手動でコピーしてください。"
   },
-  "taskPresets": {
-    "message": "用途別プリセット"
-  },
   "taskReading": {
     "message": "長文を読む"
   },
@@ -210,17 +168,11 @@
   "taskLarge": {
     "message": "大きな文字"
   },
-  "taskApply": {
-    "message": "適用"
-  },
   "taskRestore": {
-    "message": "適用前に戻す"
-  },
-  "taskSaving": {
-    "message": "設定を保存しています…"
+    "message": "前回の適用を取り消す"
   },
   "taskApplied": {
-    "message": "適用しました。変更前の設定はこの端末に保存されています。"
+    "message": "「{name}」を適用しました。"
   },
   "taskRestored": {
     "message": "適用前の設定に戻しました。"
@@ -232,19 +184,16 @@
     "message": "用途別プリセット"
   },
   "helpTaskBody": {
-    "message": "用途別プリセットを選び、概要を確認してから「適用」をクリックします。プリセットはサイトごとに用意されており、「長文を読む」「ワイド（表とコード）」「大きな文字」などがあります。変更されるのは幅・文字サイズ・間隔（対応サイトではコードの折り返しも）で、幅の範囲は維持されます。「適用前に戻す」は、この端末でそのサイトに最後に適用したプリセットを元に戻します。ポップアップを閉じた後でも使えますが、その後の変更も上書きされます。"
-  },
-  "autoSpacingHint": {
-    "message": "自動では各メッセージの元の間隔に従います。どちらかのスライダーを動かすと、下の2つの値を手動で適用します。"
+    "message": "プリセットを押すと幅と文字サイズが適用され、間隔は元に戻ります。幅は設定範囲に収まります。{codeWrapSites} ではコードの折り返しも設定されます。"
   },
   "currentSite": {
     "message": "現在のページ"
   },
   "widthOptions": {
-    "message": "範囲とプリセット"
+    "message": "範囲とショートカット"
   },
   "readingSettings": {
-    "message": "文字と間隔"
+    "message": "読みやすさの設定"
   },
   "layoutUnsupported": {
     "message": "このページのレイアウトには未対応です。元の幅を維持しています。"
@@ -271,13 +220,10 @@
     "message": "保存できませんでした。もう一度お試しください"
   },
   "pageOutdated": {
-    "message": "設定は保存されましたが、このページでは古いバージョンの拡張機能が動作しています。chrome://extensions で拡張機能を再読み込みしてから、このページを再読み込みしてください。"
+    "message": "設定を保存しました。このページでは古いバージョンが動作しています。"
   },
   "taskWide": {
     "message": "ワイド（表とコード）"
-  },
-  "taskSpacingNative": {
-    "message": "元の間隔"
   },
   "taskWrapOn": {
     "message": "コード折り返しあり"
@@ -316,7 +262,7 @@
     "message": "NEW"
   },
   "helpSiteAccess": {
-    "message": "{required} へのアクセスは必須です。{optional} へのアクセスは任意です。ポップアップのサイト一覧で、そのサイトの横にある「許可」をクリックしてください。"
+    "message": "{required} はインストール直後から使えます。{optional} はそれぞれ一覧で「許可」を押し、Chrome の確認画面で一度許可してください。"
   },
   "yourSites": {
     "message": "利用中のサイト"
@@ -333,20 +279,14 @@
   "allowAccess": {
     "message": "許可"
   },
-  "stateEnabled": {
-    "message": "有効"
-  },
   "stateWidthOff": {
     "message": "幅の拡張はオフ"
-  },
-  "siteAccessNeeded": {
-    "message": "アクセス許可が必要"
   },
   "grantSitePermission": {
     "message": "{site} へのアクセスを許可"
   },
   "sitePermissionHint": {
-    "message": "{site} へのアクセスは任意です。許可すると、この設定が適用されます。"
+    "message": "許可すると、Roomy が {host} の会話レイアウトを調整できます。"
   },
   "sitePermissionFailed": {
     "message": "アクセスを要求できませんでした。もう一度お試しください。"
@@ -359,5 +299,113 @@
   },
   "helpOpenSite": {
     "message": "{site} を開く"
+  },
+  "back": {
+    "message": "戻る"
+  },
+  "nativeWidth": {
+    "message": "サイト本来の幅"
+  },
+  "howToFix": {
+    "message": "対処方法"
+  },
+  "pausedHint": {
+    "message": "一時停止中です。変更は保存され、再開すると反映されます。"
+  },
+  "resetRangeDefaults": {
+    "message": "{unit} の初期値に戻す"
+  },
+  "rangeResetDone": {
+    "message": "{unit} の初期値に戻しました。"
+  },
+  "undo": {
+    "message": "元に戻す"
+  },
+  "rangeUndoDone": {
+    "message": "リセットを取り消しました。"
+  },
+  "shortcuts": {
+    "message": "ショートカット"
+  },
+  "shortcutName": {
+    "message": "名前"
+  },
+  "width": {
+    "message": "幅"
+  },
+  "originalSpacing": {
+    "message": "元の間隔"
+  },
+  "compactSpacing": {
+    "message": "詰める"
+  },
+  "manual": {
+    "message": "手動"
+  },
+  "manualSpacingLabel": {
+    "message": "手動の間隔"
+  },
+  "compactSummary": {
+    "message": "密度 {n}%"
+  },
+  "fontDecrease": {
+    "message": "文字を小さくする"
+  },
+  "fontIncrease": {
+    "message": "文字を大きくする"
+  },
+  "rangeInvalid": {
+    "message": "{min}～{max} の範囲で {step} の倍数を入力してください。"
+  },
+  "belowMaximum": {
+    "message": "最大値 {n} 未満にしてください。"
+  },
+  "aboveMinimum": {
+    "message": "最小値 {n} より大きくしてください。"
+  },
+  "skipMain": {
+    "message": "本文へ移動"
+  },
+  "onThisPage": {
+    "message": "このページの目次"
+  },
+  "newTab": {
+    "message": "新しいタブで開きます"
+  },
+  "newIssue": {
+    "message": "GitHub で問題を報告"
+  },
+  "preset": {
+    "message": "プリセット"
+  },
+  "availableOn": {
+    "message": "対応サイト"
+  },
+  "pauseSite": {
+    "message": "サイトごとに一時停止する"
+  },
+  "helpPause": {
+    "message": "サイト名の横のスイッチを切ると、元のレイアウトに戻ります。再びオンにすると保存した設定が適用されます。"
+  },
+  "helpRange": {
+    "message": "上下限と5個のショートカットの名前と幅を単位別に編集できます。欄を離れると保存され、入力エラーは欄の下に表示されます。範囲外の幅は新しい上下限に収まります。"
+  },
+  "helpDensity": {
+    "message": "密度を上げると行間と段落間隔が少しずつ狭くなります。初期値ではサイトの間隔を保ちます。"
+  },
+  "helpManual": {
+    "message": "手動設定をオンにすると、行間と段落間隔を個別に指定できます。リセットで元の間隔に戻ります。"
+  },
+  "helpUserWidth": {
+    "message": "自分のメッセージを全幅にすると、回答と同じ幅が使えます。"
+  },
+  "helpNavigation": {
+    "message": "{navigationSites} では右の目印を押すとメッセージへ移動できます。DeepSeek は標準のナビゲーションを使います。"
+  },
+  "helpUndoTask": {
+    "message": "取り消すと幅のオン・オフを含め、直前の設定に戻ります。この端末ではサイトごとに前回の適用が保存され、ポップアップを閉じても取り消せます。"
+  },
+  "helpWidthSwitch": {
+    "message": "幅を変更するときは「会話の幅」をオンにしてください。"
   }
 }

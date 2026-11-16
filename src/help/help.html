@@ -1,90 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title data-i18n="helpPageTitle">Roomy · Help</title>
+    <link rel="stylesheet" href="../shared/ui.css">
     <link rel="stylesheet" href="help.css">
     <script src="../shared/sites.js" defer></script>
     <script src="../shared/settings-utils.js" defer></script>
     <script src="help.js" defer></script>
 </head>
-
 <body>
-    <main class="container">
-        <header class="header">
-            <img class="header-icon" src="../../icons/icon48.png" width="48" height="48" alt="">
-            <div>
-                <p class="brand"><span data-i18n="brandName">Roomy</span> <span id="extensionVersion" class="version"></span></p>
-                <h1 data-i18n="helpTitle">Help & feedback</h1>
-            </div>
-        </header>
-
-        <section class="card" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle" data-i18n="helpGettingStarted">Make your AI chats fit your screen</h2>
-            <p data-i18n="helpOpenPopup">Open a supported website, then click the Roomy toolbar icon. On a supported website the popup opens that website's settings; elsewhere it lists all websites.</p>
-            <p data-i18n="helpSiteAccess">Gemini access is required. Other websites are optional: click Allow next to the website in the popup's list.</p>
-            <dl class="instructions">
-                <div>
-                    <dt data-i18n="helpTaskTitle">Task presets</dt>
-                    <dd data-i18n="helpTaskBody">Choose a task preset, review the summary, then click Apply. Each website offers its own presets, such as Long reading, Wide (tables &amp; code), and Large text. Presets change width, font size, and spacing (and code wrapping where available), within your width limits. Restore previous settings undoes the most recent preset for that website on this device, even after closing the popup; it replaces later changes to those settings.</dd>
-                </div>
-                <div>
-                    <dt data-i18n="helpWidthTitle">Conversation width</dt>
-                    <dd data-i18n="helpWidthBody">Choose px for a fixed width or % to follow the window size. Move the slider or choose a preset. Each website saves width, limits, and presets separately; each unit has its own presets. Expand Range &amp; presets to edit them. The switch beside the width title pauses widening for that website and restores its original width. Your saved values and presets are kept; reading settings remain active.</dd>
-                </div>
-                <div>
-                    <dt data-i18n="helpCodeTitle">Code wrapping</dt>
-                    <dd data-i18n="helpCodeBody">Code auto wrap is available on Gemini. Other websites keep their own code-block wrap controls; the extension leaves them unchanged.</dd>
-                </div>
-                <div>
-                    <dt data-i18n="helpReadingTitle">Text size & spacing</dt>
-                    <dd data-i18n="helpReadingBody">Font size ranges from 75% to 200% without zooming the whole page, keeping headings, code, and tables in proportion. At Auto density 0, native paragraph gaps and line heights are preserved; higher density gradually tightens prose only. Code lines and table cells keep their native line-height proportions, and formulas keep their native spacing. Advanced spacing sets exact manual values; Reset spacing returns to Auto at the current density. Each website keeps separate reading settings.</dd>
-                </div>
-            </dl>
-            <p class="note" data-i18n="helpLiveSettings">Changes are saved automatically and apply live to open tabs of that website. Each website keeps separate settings; the popup language is shared. Sync across devices depends on your browser's sync settings.</p>
-            <nav class="site-links" id="siteLinks"></nav>
-        </section>
-
-        <section class="card" aria-labelledby="troubleshootingTitle">
-            <h2 id="troubleshootingTitle" data-i18n="helpTroubleshooting">Something looks wrong?</h2>
-            <ol class="troubleshooting">
-                <li data-i18n="helpTroubleshootPage">Check that you are on a supported website and Roomy is enabled with access to that website. Chrome-installed web apps (PWAs) use the same webpages. Native desktop apps and Chrome's built-in Gemini panel are not supported.</li>
-                <li data-i18n="helpTroubleshootRefresh">If a setting does not appear after installing or updating the extension, reload the affected page once. If the popup says the page runs an older version, reload the extension on chrome://extensions first. An unsupported-layout notice means widening is not applied to the current page. Use the switch beside the website name to pause everything on that website; saved settings are kept.</li>
-                <li data-i18n="helpTroubleshootReport">If the problem continues, note the site, steps to reproduce it, and your window size. A screenshot with private content removed can help; mention any other extensions that change the page layout.</li>
-            </ol>
-            <a class="button primary" href="https://github.com/Planetes1mal/roomy/issues/new/choose"
-                target="_blank" rel="noopener noreferrer" data-i18n="helpReportIssue">Report a problem</a>
-        </section>
-
-        <section class="card" aria-labelledby="diagnosticsTitle">
-            <h2 id="diagnosticsTitle" data-i18n="helpDiagnosticsTitle">Settings report</h2>
-            <p id="diagnosticPrivacy" data-i18n="helpDiagnosticsPrivacy">Generate a report to preview before sharing it in an issue. It includes only the extension version, browser name and major version, platform, interface language, and each website's Enable switch, width, range, and reading settings. It contains no chats, page URLs, titles, or custom preset names. Nothing is sent automatically.</p>
-            <div class="actions">
-                <button type="button" id="generateReport" class="button primary"
-                    data-i18n="helpGenerateReport">Generate report</button>
-            </div>
-            <div id="reportPreview" class="report-preview" hidden>
-                <label for="diagnosticReport" data-i18n="helpReportPreview">Preview</label>
-                <textarea id="diagnosticReport" rows="15" readonly spellcheck="false"
-                    aria-describedby="diagnosticPrivacy"></textarea>
-                <button type="button" id="copyReport" class="button secondary"
-                    data-i18n="helpCopyReport">Copy report</button>
-            </div>
-            <p id="reportStatus" class="status" role="status" aria-live="polite"></p>
-        </section>
-
-        <footer class="footer">
-            <p data-i18n="helpSupportProject">If Roomy helps you, you can star the project or leave an honest review.</p>
-            <nav class="footer-links">
-                <a href="https://github.com/Planetes1mal/roomy" target="_blank" rel="noopener noreferrer"
-                    data-i18n="helpGitHubLink">Source code & Star on GitHub</a>
-                <a href="https://chromewebstore.google.com/detail/apadogadaahdjhhmbdhkmdecbobijoed/reviews"
-                    target="_blank" rel="noopener noreferrer" data-i18n="helpReviewLink">Review on Chrome Web Store</a>
-            </nav>
-        </footer>
-    </main>
+    <a class="skip" href="#main" data-i18n="skipMain">Skip to content</a>
+    <header><div class="bar">
+        <div class="brand"><img src="../../icons/icon48.png" width="26" height="26" alt=""><strong data-i18n="brandName">Roomy</strong><small id="extensionVersion"></small></div>
+        <a href="https://github.com/Planetes1mal/roomy/issues/new/choose" target="_blank" rel="noopener noreferrer"><span data-i18n="helpReportIssue">Report a problem</span> ↗</a>
+    </div></header>
+    <div class="layout">
+        <nav class="toc" aria-label="On this page">
+            <a href="#start" aria-current="location" data-i18n="helpGettingStarted">Getting started</a>
+            <a href="#width" data-i18n="helpWidthTitle">Conversation width</a>
+            <a href="#reading" data-i18n="helpReadingTitle">Text size &amp; spacing</a>
+            <a href="#presets" data-i18n="helpTaskTitle">Task presets</a>
+            <a href="#trouble" data-i18n="helpTroubleshooting">Settings not taking effect</a>
+            <a href="#report" data-i18n="helpReportIssue">Report a problem</a>
+        </nav>
+        <main id="main" tabindex="-1">
+            <h1 data-i18n="helpPageTitle">Roomy · Help</h1>
+            <section id="start"><h2 data-i18n="helpGettingStarted">Getting started</h2>
+                <p data-i18n="helpOpenPopup"></p><p data-i18n="helpSiteAccess"></p>
+                <nav id="siteLinks"></nav>
+                <h3 data-i18n="pauseSite">Pause a website</h3>
+                <p data-i18n="helpPause"></p><p data-i18n="helpLiveSettings"></p>
+            </section>
+            <section id="width"><h2 data-i18n="helpWidthTitle">Conversation width</h2>
+                <p data-i18n="helpWidthBody"></p><h3 data-i18n="widthOptions"></h3><p data-i18n="helpRange"></p>
+            </section>
+            <section id="reading"><h2 data-i18n="helpReadingTitle">Text size &amp; spacing</h2>
+                <p data-i18n="helpReadingBody"></p><h3 data-i18n="readingSettings"></h3>
+                <ul><li data-i18n="helpDensity"></li><li data-i18n="helpManual"></li><li data-i18n="helpUserWidth"></li><li data-i18n="helpCodeBody"></li></ul>
+                <h3 data-i18n="navigationLabel"></h3><p data-i18n="helpNavigation"></p>
+            </section>
+            <section id="presets"><h2 data-i18n="helpTaskTitle">Task presets</h2>
+                <p data-i18n="helpTaskBody"></p>
+                <div class="table-wrap"><table><thead><tr><th scope="col" data-i18n="preset">Preset</th><th scope="col" data-i18n="width">Width</th><th scope="col" data-i18n="fontSizeLabel"></th><th scope="col" data-i18n="availableOn">Websites</th></tr></thead><tbody id="presetsTable"></tbody></table></div>
+                <p data-i18n="helpUndoTask"></p>
+            </section>
+            <section id="trouble"><h2 data-i18n="helpTroubleshooting">Settings not taking effect</h2>
+                <ol><li data-i18n="helpTroubleshootPage"></li><li data-i18n="helpWidthSwitch"></li><li data-i18n="helpTroubleshootRefresh"></li></ol>
+            </section>
+            <section id="report"><h2 data-i18n="helpReportIssue">Report a problem</h2>
+                <p data-i18n="helpTroubleshootReport"></p><h3 data-i18n="helpDiagnosticsTitle">Settings report</h3>
+                <p id="diagnosticPrivacy" data-i18n="helpDiagnosticsPrivacy"></p>
+                <button id="generateReport" class="primary" data-i18n="helpGenerateReport">Generate report</button>
+                <div id="reportPreview" hidden>
+                    <label for="diagnosticReport" data-i18n="helpReportPreview">Preview</label>
+                    <textarea id="diagnosticReport" rows="12" readonly spellcheck="false" aria-describedby="diagnosticPrivacy"></textarea>
+                    <div class="actions"><button id="copyReport" class="btn" data-i18n="helpCopyReport">Copy report</button>
+                        <a href="https://github.com/Planetes1mal/roomy/issues/new/choose" target="_blank" rel="noopener noreferrer"><span data-i18n="newIssue">Open a GitHub issue</span> ↗</a></div>
+                </div><p id="reportStatus" role="status"></p>
+            </section>
+            <footer><a href="https://github.com/Planetes1mal/roomy" target="_blank" rel="noopener noreferrer"><span data-i18n="helpGitHubLink"></span> ↗</a>
+                <a href="https://chromewebstore.google.com/detail/apadogadaahdjhhmbdhkmdecbobijoed/reviews" target="_blank" rel="noopener noreferrer"><span data-i18n="helpReviewLink"></span> ↗</a></footer>
+        </main>
+    </div>
 </body>
-
 </html>

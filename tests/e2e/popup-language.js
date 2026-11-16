@@ -117,8 +117,7 @@
                 assert.strictEqual(state.auto, dictionary.uiLanguageAuto.message);
                 assert.deepStrictEqual(state.groups, [dictionary.yourSites.message, dictionary.addableSites.message],
                     'Site list groups use the selected dictionary');
-                assert(state.states.includes(dictionary.stateEnabled.message) && state.states.includes(dictionary.siteAccessNeeded.message),
-                    'Site states use the selected dictionary');
+                assert(state.states.every(text => text === ''), 'Normal and ungranted rows omit redundant states');
                 assert(state.rows.every(row => row.fits), `Site rows do not overflow: ${JSON.stringify(state.rows)}`);
                 return state;
             }

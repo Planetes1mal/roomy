@@ -28,6 +28,7 @@
             sites: names(sites.sites),
             required: names(sites.required()),
             optional: names(sites.optional()),
+            navigationSites: names(sites.sites.filter(site => site.capabilities.includes('navigation'))),
             codeWrapSites: names(sites.sites.filter(site => site.capabilities.includes('codeWrap')))
         };
     }
@@ -50,6 +51,38 @@
         }
     }
 
+    const toc = document.querySelector('.toc');
+    const sections = Array.from(document.querySelectorAll('main section[id]'));
+    function updateContents() {
+        let current = sections[0];
+        for (const section of sections) {
+            if (section.getBoundingClientRect().top <= 17) current = section;
+        }
+        if (Math.ceil(window.scrollY + innerHeight) >= document.documentElement.scrollHeight) current = sections.at(-1);
+        for (const link of toc.children) {
+            if (link.hash === '#' + current.id) link.setAttribute('aria-current', 'location');
+            else link.removeAttribute('aria-current');
+        }
+    }
+    window.addEventListener('scroll', updateContents, { passive: true });
+    window.addEventListener('resize', updateContents);
+
+    function renderPresets() {
+        const tbody = document.getElementById('presetsTable');
+        tbody.replaceChildren();
+        const labels = { reading: 'taskReading', wide: 'taskWide', table: 'taskTable', code: 'taskCode', large: 'taskLarge' };
+        for (const [task, label] of Object.entries(labels)) {
+            const available = sites.sites.filter(site => site.tasks.includes(task));
+            if (!available.length) continue;
+            const { chatWidthSetting: width, messageFontSize } = settingsUtils.TASK_DEFINITIONS[task];
+            const row = tbody.insertRow();
+            for (const value of [t(label), width.value + (width.unit === 'px' ? ' px' : '%'), messageFontSize + '%',
+                available.length === sites.sites.length ? t('allSites') : sites.joinNames(available.map(s => s.name), t('localeCode'))]) {
+                row.insertCell().textContent = value;
+            }
+        }
+    }
+
     async function localize(language) {
         const selected = settingsUtils.normalizeUiLanguage(language);
         dictionary = null;
@@ -69,6 +102,16 @@
             element.textContent = fill(text, key === 'helpCodeBody' ? { ...values, sites: values.codeWrapSites } : values);
         });
         renderSiteLinks();
+        renderPresets();
+        toc.setAttribute('aria-label', t('onThisPage'));
+        document.querySelectorAll('a[target="_blank"]').forEach(link => {
+            link.querySelector('.sr')?.remove();
+            const hint = document.createElement('span');
+            hint.className = 'sr';
+            hint.textContent = ' (' + t('newTab') + ')';
+            link.append(hint);
+        });
+        updateContents();
         status.textContent = '';
     }
 

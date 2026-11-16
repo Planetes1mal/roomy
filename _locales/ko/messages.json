@@ -12,10 +12,10 @@
     "message": "대화 너비"
   },
   "widthMin": {
-    "message": "최소 너비"
+    "message": "슬라이더 최솟값"
   },
   "widthMax": {
-    "message": "최대 너비"
+    "message": "슬라이더 최댓값"
   },
   "btnNarrow": {
     "message": "좁게"
@@ -32,29 +32,11 @@
   "btnInsane": {
     "message": "최대로"
   },
-  "editPresets": {
-    "message": "프리셋 편집"
-  },
-  "donePresets": {
-    "message": "완료"
-  },
-  "managePresets": {
-    "message": "프리셋 관리"
-  },
-  "managePresetsSummary": {
-    "message": "프리셋 5개 사용자 지정됨"
-  },
-  "resetToDefault": {
-    "message": "기본값으로 초기화"
-  },
-  "clampedHint": {
-    "message": "설정 범위에 맞게 조정됨"
-  },
   "codeWrapLabel": {
     "message": "코드 자동 줄바꿈"
   },
   "userFullWidthLabel": {
-    "message": "내 메시지도 전체 너비로"
+    "message": "내 메시지를 전체 너비로 표시"
   },
   "refreshing": {
     "message": "페이지 새로고침 중…"
@@ -65,11 +47,8 @@
   "densityLabel": {
     "message": "읽기 밀도"
   },
-  "compactnessUnit": {
-    "message": "%"
-  },
   "advancedDensity": {
-    "message": "간격 세부 설정"
+    "message": "줄 및 문단 간격 직접 설정"
   },
   "lineHeightLabel": {
     "message": "줄 간격"
@@ -81,16 +60,10 @@
     "message": "글자 크기"
   },
   "resetFontSize": {
-    "message": "글자 크기 초기화"
+    "message": "글자 크기를 100%로 복원"
   },
   "resetDensity": {
     "message": "간격 초기화"
-  },
-  "customSpacing": {
-    "message": "사용자 지정"
-  },
-  "autoSpacing": {
-    "message": "자동"
   },
   "uiLanguageLabel": {
     "message": "언어"
@@ -105,17 +78,11 @@
   "helpLink": {
     "message": "도움말 및 피드백"
   },
-  "sourceLink": {
-    "message": "GitHub · 소스 코드"
-  },
   "helpPageTitle": {
     "message": "Roomy · 도움말"
   },
-  "helpTitle": {
-    "message": "도움말 및 피드백"
-  },
   "helpGettingStarted": {
-    "message": "{sites}를 화면에 맞추기"
+    "message": "시작하기"
   },
   "helpOpenPopup": {
     "message": "{sites}를 열고 도구 모음의 Roomy 아이콘을 누르세요. 지원하는 사이트에서는 해당 사이트의 설정이 바로 열리고, 다른 페이지에서는 모든 사이트 목록이 표시됩니다."
@@ -124,10 +91,7 @@
     "message": "대화 너비"
   },
   "helpWidthBody": {
-    "message": "고정 너비는 px, 창 크기에 따른 너비는 %를 선택하세요. 슬라이더를 움직이거나 프리셋을 선택하세요. 너비, 범위, 프리셋은 사이트별로 따로 저장되며 단위별 프리셋도 별개입니다. 범위 및 프리셋을 펼쳐 편집할 수 있습니다. 너비 제목 옆 스위치로 해당 사이트의 확장을 일시 중지하면 원래 너비로 돌아갑니다. 저장한 값과 프리셋은 유지되며 읽기 설정도 계속 적용됩니다."
-  },
-  "helpCodeTitle": {
-    "message": "코드 줄바꿈"
+    "message": "슬라이더나 바로가기로 너비를 조절하세요. px는 고정 너비이고 %는 사용 가능한 공간을 따릅니다. 대화 너비를 끄면 읽기 설정은 유지됩니다."
   },
   "helpCodeBody": {
     "message": "코드 자동 줄바꿈은 {sites}에서만 제공됩니다. 다른 사이트에서는 각 코드 블록의 줄바꿈 기능을 사용하세요. 확장 프로그램은 이를 변경하지 않습니다."
@@ -136,13 +100,13 @@
     "message": "글자 크기와 간격"
   },
   "helpReadingBody": {
-    "message": "페이지 전체를 확대하지 않고 글자 크기를 75%~200%로 조절하며, 제목·코드·표의 비율은 유지됩니다. 자동 모드의 밀도 0은 기본 문단 간격과 줄 높이를 유지하고, 밀도를 높이면 본문 간격만 점진적으로 줄어듭니다. 코드 줄과 표 셀은 원래 줄 높이 비율을 유지하고 수식도 원래 간격을 유지합니다. 간격 세부 설정에서는 정확한 값을 직접 지정할 수 있으며, 간격 초기화를 누르면 현재 밀도의 자동 모드로 돌아갑니다. 읽기 설정은 사이트별로 따로 저장됩니다."
+    "message": "−와 +로 메시지 글자 크기를 75~200%로 조절하세요. 메뉴와 입력창의 글자 크기는 유지됩니다."
   },
   "helpLiveSettings": {
     "message": "변경 사항은 자동 저장되며 해당 사이트의 열린 탭에 바로 적용됩니다. 사이트별 설정은 독립적이고 팝업 언어는 공통입니다. 기기 간 동기화는 브라우저의 동기화 설정에 따라 달라집니다."
   },
   "helpTroubleshooting": {
-    "message": "화면이 제대로 표시되지 않나요?"
+    "message": "설정이 적용되지 않을 때"
   },
   "helpTroubleshootPage": {
     "message": "지원하는 사이트({sites})를 열었는지, Roomy가 활성화되어 있고 해당 사이트 접근이 허용되어 있는지 확인하세요. Chrome에서 설치한 웹 앱(PWA)은 같은 웹페이지를 사용합니다. 네이티브 데스크톱 앱이나 Chrome 내장 Gemini 패널은 지원하지 않습니다."
@@ -171,9 +135,6 @@
   "helpCopyReport": {
     "message": "보고서 복사"
   },
-  "helpSupportProject": {
-    "message": "Roomy가 도움이 되었다면 GitHub에서 Star를 누르거나 솔직한 사용 후기를 남겨 주세요."
-  },
   "helpGitHubLink": {
     "message": "GitHub 소스 코드 및 Star"
   },
@@ -195,9 +156,6 @@
   "helpReportCopyFallback": {
     "message": "자동으로 복사하지 못했습니다. 보고서가 선택되어 있으니 직접 복사해 주세요."
   },
-  "taskPresets": {
-    "message": "작업별 프리셋"
-  },
   "taskReading": {
     "message": "긴 글 읽기"
   },
@@ -210,17 +168,11 @@
   "taskLarge": {
     "message": "큰 글자"
   },
-  "taskApply": {
-    "message": "적용"
-  },
   "taskRestore": {
-    "message": "적용 전 설정 복원"
-  },
-  "taskSaving": {
-    "message": "설정 저장 중…"
+    "message": "마지막 적용 취소"
   },
   "taskApplied": {
-    "message": "적용했습니다. 이전 설정은 이 기기에 저장되었습니다."
+    "message": "{name} 적용됨."
   },
   "taskRestored": {
     "message": "적용 전 설정을 복원했습니다."
@@ -232,19 +184,16 @@
     "message": "작업별 프리셋"
   },
   "helpTaskBody": {
-    "message": "작업 프리셋을 선택하고 요약을 확인한 뒤 적용을 누르세요. 프리셋은 사이트별로 제공되며 긴 글 읽기, 와이드(표·코드), 큰 글자 등이 있습니다. 프리셋은 너비, 글자 크기, 간격(지원하는 사이트에서는 코드 줄바꿈 포함)만 바꾸며 설정한 너비 범위를 따릅니다. 적용 전 설정 복원은 팝업을 닫은 뒤에도 이 기기에서 해당 사이트에 마지막으로 적용한 프리셋을 되돌리며, 이후 변경 사항도 덮어씁니다."
-  },
-  "autoSpacingHint": {
-    "message": "자동 모드는 각 메시지의 기본 간격을 따릅니다. 슬라이더 하나를 움직이면 아래 두 값이 모두 수동으로 적용됩니다."
+    "message": "프리셋을 누르면 대화 너비를 켜고 글자 크기와 기본 간격을 적용합니다. 너비는 설정 범위를 따릅니다. {codeWrapSites}에서는 코드 줄바꿈도 적용합니다."
   },
   "currentSite": {
     "message": "현재 페이지"
   },
   "widthOptions": {
-    "message": "범위와 프리셋"
+    "message": "범위 및 바로가기"
   },
   "readingSettings": {
-    "message": "글자와 간격"
+    "message": "읽기 설정"
   },
   "layoutUnsupported": {
     "message": "아직 지원하지 않는 페이지 레이아웃입니다. 원래 너비가 유지됩니다."
@@ -271,13 +220,10 @@
     "message": "저장하지 못했습니다. 다시 시도하세요"
   },
   "pageOutdated": {
-    "message": "설정은 저장되었지만 이 페이지에서 이전 버전의 확장 프로그램이 실행 중입니다. chrome://extensions에서 확장 프로그램을 다시 로드한 뒤 이 페이지를 새로고침하세요."
+    "message": "설정을 저장했습니다. 이 페이지는 이전 버전을 사용 중입니다."
   },
   "taskWide": {
     "message": "와이드(표·코드)"
-  },
-  "taskSpacingNative": {
-    "message": "기본 간격"
   },
   "taskWrapOn": {
     "message": "코드 줄바꿈 켬"
@@ -316,7 +262,7 @@
     "message": "NEW"
   },
   "helpSiteAccess": {
-    "message": "{required} 접근 권한은 필수입니다. {optional} 접근 권한은 선택 사항입니다. 팝업의 사이트 목록에서 해당 사이트 옆의 허용을 누르세요."
+    "message": "{required}에서는 설치 후 바로 사용할 수 있습니다. {optional}은 사이트별로 한 번씩 목록에서 허용을 누른 뒤 Chrome에서 확인하세요."
   },
   "yourSites": {
     "message": "내 사이트"
@@ -333,20 +279,14 @@
   "allowAccess": {
     "message": "허용"
   },
-  "stateEnabled": {
-    "message": "사용 중"
-  },
   "stateWidthOff": {
     "message": "너비 확장 꺼짐"
-  },
-  "siteAccessNeeded": {
-    "message": "접근 허용 필요"
   },
   "grantSitePermission": {
     "message": "{site} 접근 허용"
   },
   "sitePermissionHint": {
-    "message": "{site} 접근 권한은 선택 사항입니다. 허용하면 이 설정이 적용됩니다."
+    "message": "권한을 허용하면 Roomy가 {host}의 대화 레이아웃을 조정합니다."
   },
   "sitePermissionFailed": {
     "message": "접근 권한을 요청할 수 없습니다. 다시 시도하세요."
@@ -359,5 +299,113 @@
   },
   "helpOpenSite": {
     "message": "{site} 열기"
+  },
+  "back": {
+    "message": "뒤로"
+  },
+  "nativeWidth": {
+    "message": "사이트 기본 너비"
+  },
+  "howToFix": {
+    "message": "해결 방법"
+  },
+  "pausedHint": {
+    "message": "일시 중지되어 사이트가 원래대로 표시됩니다. 변경 사항은 저장되며 다시 켜면 적용됩니다."
+  },
+  "resetRangeDefaults": {
+    "message": "{unit} 기본값 복원"
+  },
+  "rangeResetDone": {
+    "message": "{unit} 기본값을 복원했습니다."
+  },
+  "undo": {
+    "message": "실행 취소"
+  },
+  "rangeUndoDone": {
+    "message": "기본값 복원을 취소했습니다."
+  },
+  "shortcuts": {
+    "message": "바로가기"
+  },
+  "shortcutName": {
+    "message": "이름"
+  },
+  "width": {
+    "message": "너비"
+  },
+  "originalSpacing": {
+    "message": "기본"
+  },
+  "compactSpacing": {
+    "message": "좁게"
+  },
+  "manual": {
+    "message": "수동"
+  },
+  "manualSpacingLabel": {
+    "message": "수동 간격"
+  },
+  "compactSummary": {
+    "message": "밀도 {n}%"
+  },
+  "fontDecrease": {
+    "message": "글자 작게"
+  },
+  "fontIncrease": {
+    "message": "글자 크게"
+  },
+  "rangeInvalid": {
+    "message": "{min}~{max} 사이의 {step} 배수를 입력하세요."
+  },
+  "belowMaximum": {
+    "message": "최댓값 {n}보다 작아야 합니다."
+  },
+  "aboveMinimum": {
+    "message": "최솟값 {n}보다 커야 합니다."
+  },
+  "skipMain": {
+    "message": "본문으로 건너뛰기"
+  },
+  "onThisPage": {
+    "message": "이 페이지의 목차"
+  },
+  "newTab": {
+    "message": "새 탭에서 열림"
+  },
+  "newIssue": {
+    "message": "GitHub에 문제 등록"
+  },
+  "preset": {
+    "message": "프리셋"
+  },
+  "availableOn": {
+    "message": "지원 사이트"
+  },
+  "pauseSite": {
+    "message": "사이트 일시 중지"
+  },
+  "helpPause": {
+    "message": "사이트 이름 옆의 스위치를 끄면 원래 레이아웃으로 돌아갑니다. 다시 켜면 저장된 설정이 적용됩니다."
+  },
+  "helpRange": {
+    "message": "단위별로 범위와 다섯 바로가기의 이름 및 너비를 편집하세요. 칸을 벗어나면 저장되고 오류는 칸 아래에 표시됩니다. 범위를 줄이면 벗어난 값도 조정됩니다."
+  },
+  "helpDensity": {
+    "message": "읽기 밀도를 높이면 줄 및 문단 간격이 점차 좁아집니다. 기본값은 원래 간격을 유지합니다."
+  },
+  "helpManual": {
+    "message": "사용자 지정 간격을 켜면 줄 높이와 문단 간격을 각각 설정할 수 있습니다. 초기화하면 원래 간격으로 돌아갑니다."
+  },
+  "helpUserWidth": {
+    "message": "내 메시지를 전체 너비로 표시하면 답변과 같은 너비를 사용합니다."
+  },
+  "helpNavigation": {
+    "message": "{navigationSites}에서는 오른쪽 표시를 눌러 메시지로 이동합니다. DeepSeek는 자체 탐색 기능을 사용합니다."
+  },
+  "helpUndoTask": {
+    "message": "마지막 적용 취소는 너비 스위치를 포함해 적용 전 설정을 복원합니다. 팝업을 닫아도 이 기기에서 사이트별 마지막 적용을 취소할 수 있습니다."
+  },
+  "helpWidthSwitch": {
+    "message": "너비를 바꾸려면 대화 너비를 켜세요."
   }
 }

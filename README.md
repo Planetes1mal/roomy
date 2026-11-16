@@ -51,13 +51,13 @@ If you manually installed a release candidate, replace its files with the stable
 
 1. Open [Gemini](https://gemini.google.com/), [ChatGPT](https://chatgpt.com/), [Claude](https://claude.ai/) or [DeepSeek](https://chat.deepseek.com/) and click the Roomy icon in your browser toolbar.
 2. On a supported site the popup opens that site's settings; elsewhere it lists all sites, and each row opens its page. Choose `px` or `%`, then move the width slider or click a preset.
-3. Expand **Text & spacing** to adjust the font size and reading density. On Gemini you can also turn on code wrapping; ChatGPT keeps its own wrap button on each code block, and Claude's and DeepSeek's code blocks are left as they are.
+3. Use **−** and **+** on the site page to adjust font size. Open **Reading settings** to change spacing. On Gemini you can also turn on code wrapping; ChatGPT keeps its own wrap button on each code block, and Claude's and DeepSeek's code blocks are left as they are.
 
 After a new install, the popup opens once from the toolbar icon and lists the sites you can add. Click **Allow** next to ChatGPT, Claude or DeepSeek and confirm Chrome's prompt to turn that site on. After an update that adds a site, nothing opens: a **NEW** badge appears on the toolbar icon until you next open the popup, where the new site is marked in the list. Until access is granted, the site stays under **Websites you can add** with the same button.
 
-Expand **Range & presets** for width limits and **Manage presets**. Each site and unit has its own presets. The language selector is at the bottom of the site list.
+Open **Range & shortcuts** to edit slider limits and the five shortcuts. Each site and unit has its own values. Leaving a field saves it. The language selector is at the bottom of the site list.
 
-Use **Task presets** to change the layout in one step: long reading, tables, code, or large text on Gemini; long reading, wide (tables and code), or large text on ChatGPT, Claude and DeepSeek. Preview the settings, then apply them; **Restore previous settings** restores that site's previous layout on this device, even after closing the popup. See the [reading guide](./docs/guides/reading-layout.md) for the values and restore behavior.
+Use **Task presets** to change the layout in one step: long reading, tables, code, or large text on Gemini; long reading, wide (tables and code), or large text on ChatGPT, Claude and DeepSeek. Click a preset to apply the values shown and turn on conversation width. **Undo last preset** restores that site’s previous settings on this device, even after closing the popup. See the [reading guide](./docs/guides/reading-layout.md) for the values and restore behavior.
 
 Use **Help & feedback** at the bottom of the site list for troubleshooting or to preview and copy diagnostic settings. Roomy targets Gemini, ChatGPT, Claude and DeepSeek webpages, including Chrome-installed site app windows; it does not change native desktop apps or Chrome’s built-in Gemini panel. On Claude it adjusts conversations and the new-chat page; projects, settings, Claude Code and shared pages stay as they are, and the content of the Artifacts panel is never changed. On DeepSeek it adjusts conversations and the new-chat page.
 

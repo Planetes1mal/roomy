@@ -325,8 +325,8 @@
             readingSource: (stored, keys) => stored[keys.reading],
             widthPayload: (width, keys) => ({ [keys.width]: width }),
             readingPatch: (next, changed, edit, keys) => ({ [keys.reading]: next }),
-            taskPatch: (stored, site, chatWidthSetting, reading) => ({
-                ...getSiteWidthStoragePayload({ ...normalizeSiteSettings(stored, site), chatWidthSetting }, site),
+            taskPatch: (stored, site, chatWidthSetting, reading, managed) => ({
+                ...getSiteWidthStoragePayload({ ...normalizeSiteSettings(stored, site), ...widthSwitch(managed), chatWidthSetting }, site),
                 ...getSiteReadingPatch(stored, site, reading)
             })
         },
@@ -349,6 +349,7 @@
             taskPatch: (stored, site, chatWidthSetting, reading, managed) => ({
                 chatWidthSetting,
                 chatWidth: getLegacyChatWidth(chatWidthSetting),
+                ...widthSwitch(managed),
                 ...reading,
                 codeWrap: managed.codeWrap === true
             })
@@ -439,8 +440,13 @@
         return codecFor(site).readingPatch(next, changed, edit, keysFor(site));
     }
 
+    function widthSwitch(settings) {
+        return typeof settings.widthEnabled === 'boolean' ? { widthEnabled: settings.widthEnabled } : {};
+    }
+
     function getTaskManaged(settings, site) {
         const managed = {
+            ...widthSwitch(settings),
             chatWidthSetting: { ...settings.chatWidthSetting },
             messageFontSize: settings.messageFontSize,
             ...normalizeDensity(settings)
@@ -453,6 +459,7 @@
         const preset = TASK_PRESETS[site][task];
         return getTaskManaged({
             ...preset,
+            widthEnabled: true,
             chatWidthSetting: normalizeWidthSetting(preset.chatWidthSetting, ranges),
             messageFontSize: normalizeFontSize(preset.messageFontSize)
         }, site);
@@ -470,8 +477,10 @@
 
     function isSameManaged(a, b, site) {
         if (!a || !b) return false;
+        const compareSwitch = typeof a.widthEnabled === 'boolean' && typeof b.widthEnabled === 'boolean';
         const key = value => JSON.stringify(getTaskManaged({
             ...value,
+            widthEnabled: compareSwitch ? value.widthEnabled : undefined,
             messageFontSize: normalizeFontSize(value.messageFontSize)
         }, site));
         return key(a) === key(b);
@@ -517,6 +526,7 @@
         DENSITY_KEYS,
         hasCapability,
         getSiteKeys,
+        FONT_SIZE_RANGE,
         PX_RANGE,
         PERCENT_RANGE,
         DEFAULTS,

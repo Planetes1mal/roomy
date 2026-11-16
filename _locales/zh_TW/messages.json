@@ -9,13 +9,13 @@
     "message": "分別加寬 Gemini、ChatGPT、Claude 和 DeepSeek 的對話區域，依網站調整字型大小與閱讀密度，並可隨時暫停任一網站。"
   },
   "widthLabel": {
-    "message": "對話區域寬度"
+    "message": "對話寬度"
   },
   "widthMin": {
-    "message": "最小寬度"
+    "message": "滑桿最小值"
   },
   "widthMax": {
-    "message": "最大寬度"
+    "message": "滑桿最大值"
   },
   "btnNarrow": {
     "message": "窄"
@@ -32,29 +32,11 @@
   "btnInsane": {
     "message": "真的需要這麼寬嗎？"
   },
-  "editPresets": {
-    "message": "編輯預設"
-  },
-  "donePresets": {
-    "message": "完成"
-  },
-  "managePresets": {
-    "message": "管理預設"
-  },
-  "managePresetsSummary": {
-    "message": "已自訂 5 個預設"
-  },
-  "resetToDefault": {
-    "message": "還原預設值"
-  },
-  "clampedHint": {
-    "message": "已限制在範圍內"
-  },
   "codeWrapLabel": {
     "message": "程式碼自動換行"
   },
   "userFullWidthLabel": {
-    "message": "使用者訊息填滿寬度"
+    "message": "我的訊息使用完整寬度"
   },
   "refreshing": {
     "message": "正在重新整理頁面..."
@@ -65,11 +47,8 @@
   "densityLabel": {
     "message": "閱讀密度"
   },
-  "compactnessUnit": {
-    "message": "%"
-  },
   "advancedDensity": {
-    "message": "進階間距"
+    "message": "自訂行距與段距"
   },
   "lineHeightLabel": {
     "message": "行高"
@@ -81,16 +60,10 @@
     "message": "字型大小"
   },
   "resetFontSize": {
-    "message": "還原字型大小"
+    "message": "字級恢復為 100%"
   },
   "resetDensity": {
     "message": "還原間距"
-  },
-  "customSpacing": {
-    "message": "自訂"
-  },
-  "autoSpacing": {
-    "message": "自動"
   },
   "uiLanguageLabel": {
     "message": "介面語言"
@@ -105,29 +78,20 @@
   "helpLink": {
     "message": "說明與回報"
   },
-  "sourceLink": {
-    "message": "GitHub · 原始碼"
-  },
   "helpPageTitle": {
     "message": "Roomy · 說明"
   },
-  "helpTitle": {
-    "message": "使用說明與意見回饋"
-  },
   "helpGettingStarted": {
-    "message": "讓 {sites} 適合你的螢幕"
+    "message": "開始使用"
   },
   "helpOpenPopup": {
     "message": "開啟 {sites}，點選工具列上的 Roomy 圖示。在支援的網站上，彈出視窗會直接進入該網站的設定；在其他頁面則顯示全部網站的清單。"
   },
   "helpWidthTitle": {
-    "message": "訊息區域寬度"
+    "message": "對話寬度"
   },
   "helpWidthBody": {
-    "message": "選擇 px 使用固定寬度，選擇 % 跟隨視窗大小。拖曳滑桿或點選預設。每個網站分別儲存寬度、範圍與預設，每種單位也有獨立預設。展開「範圍與預設」即可編輯。寬度標題旁的開關可以單獨暫停該網站的加寬並恢復原站寬度，已儲存的數值與預設會保留，閱讀設定仍然有效。"
-  },
-  "helpCodeTitle": {
-    "message": "程式碼換行"
+    "message": "拖曳滑桿微調，或點快捷值直接切換。px 固定寬度，% 隨可用空間調整。關閉「對話寬度」後，網站恢復原始寬度，字級與間距照常生效。"
   },
   "helpCodeBody": {
     "message": "程式碼自動換行只在 {sites} 提供。其他網站請使用程式碼區塊內建的換行控制項，擴充功能不會變更它。"
@@ -136,13 +100,13 @@
     "message": "字級與間距"
   },
   "helpReadingBody": {
-    "message": "字級可在75%至200%之間調整，不必縮放整個頁面，標題、程式碼和表格維持原有比例。自動密度為0時保留原生段距和行高，提高密度只會逐漸收緊正文。程式碼行和表格儲存格保留原生行高比例，公式也保留原生間距。進階間距可手動指定精確數值；還原間距會回到目前密度的自動模式。每個網站分別儲存閱讀設定。"
+    "message": "用 − 和 + 將訊息字級調到 75% 至 200%。選單和輸入框維持原字級。"
   },
   "helpLiveSettings": {
     "message": "設定會自動儲存並即時套用至該網站已開啟的分頁。各網站的設定互相獨立，彈出視窗語言共用。跨裝置同步取決於瀏覽器的同步設定。"
   },
   "helpTroubleshooting": {
-    "message": "顯示不如預期？"
+    "message": "設定未生效"
   },
   "helpTroubleshootPage": {
     "message": "確認目前網站是受支援的網站（{sites}），且 Roomy 已啟用並獲准存取該網站。透過 Chrome 安裝的網頁應用程式（PWA）使用同一網頁。不支援原生桌面應用程式或 Chrome 內建的 Gemini 面板。"
@@ -171,9 +135,6 @@
   "helpCopyReport": {
     "message": "複製報告"
   },
-  "helpSupportProject": {
-    "message": "如果 Roomy 對你有幫助，歡迎為專案點 Star，或留下真實的使用評價。"
-  },
   "helpGitHubLink": {
     "message": "檢視原始碼 / 在 GitHub 點 Star"
   },
@@ -195,9 +156,6 @@
   "helpReportCopyFallback": {
     "message": "無法自動複製，已選取報告，請手動複製。"
   },
-  "taskPresets": {
-    "message": "任務預設"
-  },
   "taskReading": {
     "message": "長文閱讀"
   },
@@ -210,17 +168,11 @@
   "taskLarge": {
     "message": "大字"
   },
-  "taskApply": {
-    "message": "套用"
-  },
   "taskRestore": {
-    "message": "還原套用前設定"
-  },
-  "taskSaving": {
-    "message": "正在儲存設定…"
+    "message": "復原上次套用"
   },
   "taskApplied": {
-    "message": "已套用。套用前的設定已儲存在此裝置。"
+    "message": "已套用「{name}」。"
   },
   "taskRestored": {
     "message": "已還原套用前的設定。"
@@ -232,19 +184,16 @@
     "message": "任務預設"
   },
   "helpTaskBody": {
-    "message": "選擇任務預設，查看摘要後點選套用。每個網站提供各自的預設，例如長文閱讀、寬螢幕（表格與程式碼）和大字。預設只調整寬度、字級和間距（支援的網站另含程式碼換行），並遵守自訂寬度範圍。「還原套用前設定」可復原此裝置上該網站最近一次套用，即使已關閉彈出視窗；還原會覆蓋之後對這些設定的調整。"
-  },
-  "autoSpacingHint": {
-    "message": "自動模式跟隨各則訊息的原生間距。移動任一滑桿後，將手動套用下方兩項數值。"
+    "message": "點一下預設會開啟對話寬度、設定字級，並恢復原始間距。寬度受滑桿範圍限制。在 {codeWrapSites} 上也會設定程式碼換行。"
   },
   "currentSite": {
     "message": "目前網頁"
   },
   "widthOptions": {
-    "message": "範圍與預設"
+    "message": "範圍與快捷值"
   },
   "readingSettings": {
-    "message": "文字與間距"
+    "message": "閱讀設定"
   },
   "layoutUnsupported": {
     "message": "尚未支援目前的頁面版面，已保留原站寬度。"
@@ -271,13 +220,10 @@
     "message": "無法儲存，請再試一次"
   },
   "pageOutdated": {
-    "message": "設定已儲存，但此頁面仍在執行舊版擴充功能。請先在 chrome://extensions 重新載入擴充功能，再重新整理此頁面。"
+    "message": "設定已儲存，但此頁面仍在執行舊版擴充功能。"
   },
   "taskWide": {
     "message": "寬螢幕（表格與程式碼）"
-  },
-  "taskSpacingNative": {
-    "message": "原生間距"
   },
   "taskWrapOn": {
     "message": "程式碼換行"
@@ -316,7 +262,7 @@
     "message": "新"
   },
   "helpSiteAccess": {
-    "message": "{required} 存取權限為必要。{optional} 存取權限為選用：在彈出視窗的網站清單中點選該網站旁的「允許」。"
+    "message": "安裝後即可在 {required} 使用。{optional} 需要分別允許一次：在網站清單點「允許」，再於 Chrome 提示中確認。"
   },
   "yourSites": {
     "message": "你的網站"
@@ -333,20 +279,14 @@
   "allowAccess": {
     "message": "允許"
   },
-  "stateEnabled": {
-    "message": "已啟用"
-  },
   "stateWidthOff": {
     "message": "寬度已關閉"
-  },
-  "siteAccessNeeded": {
-    "message": "需要授權"
   },
   "grantSitePermission": {
     "message": "允許存取 {site}"
   },
   "sitePermissionHint": {
-    "message": "{site} 存取權限為選用。允許存取後才會套用這些設定。"
+    "message": "允許後，Roomy 才能調整 {host} 上的對話版面。"
   },
   "sitePermissionFailed": {
     "message": "無法要求存取權限，請重試。"
@@ -359,5 +299,113 @@
   },
   "helpOpenSite": {
     "message": "開啟 {site}"
+  },
+  "back": {
+    "message": "返回"
+  },
+  "nativeWidth": {
+    "message": "網站原始寬度"
+  },
+  "howToFix": {
+    "message": "處理方式"
+  },
+  "pausedHint": {
+    "message": "已暫停，網站保持原樣。修改會儲存，開啟開關後生效。"
+  },
+  "resetRangeDefaults": {
+    "message": "恢復 {unit} 預設值"
+  },
+  "rangeResetDone": {
+    "message": "已恢復 {unit} 預設值。"
+  },
+  "undo": {
+    "message": "復原"
+  },
+  "rangeUndoDone": {
+    "message": "已復原重設操作。"
+  },
+  "shortcuts": {
+    "message": "快捷值"
+  },
+  "shortcutName": {
+    "message": "名稱"
+  },
+  "width": {
+    "message": "寬度"
+  },
+  "originalSpacing": {
+    "message": "原樣"
+  },
+  "compactSpacing": {
+    "message": "緊湊"
+  },
+  "manual": {
+    "message": "手動"
+  },
+  "manualSpacingLabel": {
+    "message": "手動間距"
+  },
+  "compactSummary": {
+    "message": "緊湊 {n}%"
+  },
+  "fontDecrease": {
+    "message": "縮小字級"
+  },
+  "fontIncrease": {
+    "message": "放大字級"
+  },
+  "rangeInvalid": {
+    "message": "請填入 {min}–{max} 之間 {step} 的倍數。"
+  },
+  "belowMaximum": {
+    "message": "必須小於最大值 {n}。"
+  },
+  "aboveMinimum": {
+    "message": "必須大於最小值 {n}。"
+  },
+  "skipMain": {
+    "message": "跳至正文"
+  },
+  "onThisPage": {
+    "message": "本頁目錄"
+  },
+  "newTab": {
+    "message": "在新分頁開啟"
+  },
+  "newIssue": {
+    "message": "在 GitHub 建立問題回報"
+  },
+  "preset": {
+    "message": "預設"
+  },
+  "availableOn": {
+    "message": "適用網站"
+  },
+  "pauseSite": {
+    "message": "暫停某個網站"
+  },
+  "helpPause": {
+    "message": "關掉網站名稱右側的開關，網站就恢復原樣。重新開啟後會套用已儲存的設定。"
+  },
+  "helpRange": {
+    "message": "可修改滑桿上下限與五個快捷值的名稱及寬度。兩種單位分開儲存。離開欄位即儲存，錯誤會顯示於下方。縮小範圍會一併調整超出範圍的值。"
+  },
+  "helpDensity": {
+    "message": "閱讀密度從「原樣」到「緊湊」，逐步縮小行距與段距。"
+  },
+  "helpManual": {
+    "message": "開啟「自訂行距與段距」可分別調整行高與段落間距。重設間距會恢復網站原樣。"
+  },
+  "helpUserWidth": {
+    "message": "「我的訊息使用完整寬度」讓你送出的訊息與回答同寬。"
+  },
+  "helpNavigation": {
+    "message": "在 {navigationSites} 上，點右側標記可跳至對應訊息。DeepSeek 使用內建導覽。"
+  },
+  "helpUndoTask": {
+    "message": "「復原上次套用」可恢復套用前的設定，包含對話寬度開關。此裝置會記住各網站最近一次套用，關閉彈窗後仍可復原。"
+  },
+  "helpWidthSwitch": {
+    "message": "調整寬度時，確認已開啟「對話寬度」。"
   }
 }

@@ -37,9 +37,12 @@ function renderStatus() {
     const target = currentSite ? document.getElementById('siteStatus') : document.getElementById('listStatus');
     for (const element of [document.getElementById('siteStatus'), document.getElementById('listStatus')]) {
         const own = element === target && kind;
-        element.textContent = own ? statusMessages[kind] : '';
+        const text = element.id === 'siteStatus' ? document.getElementById('siteStatusText') : element;
+        text.textContent = own ? statusMessages[kind] : '';
         element.dataset.kind = own ? kind : '';
         element.hidden = !own;
+        if (element.id === 'siteStatus') document.getElementById('statusHelp').hidden =
+            !own || kind !== 'page' || statusMessages.page !== t('pageOutdated');
     }
 }
 
@@ -66,7 +69,6 @@ function enqueue(operation) {
 }
 
 function onSaved(site) {
-    siteSettings[site] = settingsUtils.normalizeSiteSettings(storedSettings, site);
     renderSiteRow(site);
     if (site !== currentSite) return;
     setStatus('error', '');
@@ -200,9 +202,9 @@ async function refreshLayoutStatus() {
 
 function showRefreshNotice() {
     const refreshNotice = document.getElementById('refreshNotice');
-    refreshNotice.classList.add('show');
+    refreshNotice.hidden = false;
     setTimeout(() => {
-        refreshNotice.classList.remove('show');
+        refreshNotice.hidden = true;
     }, 2000);
 }
 
@@ -227,7 +229,10 @@ async function refreshPermissions() {
         granted[site.id] = await chrome.permissions.contains({ origins: site.matches });
     }));
     renderSiteList();
-    if (currentSite) renderPermission();
+    if (currentSite) {
+        if (!isGranted(currentSite)) showPanel('home');
+        renderSite();
+    }
     refreshLayoutStatus();
 }
 
@@ -236,7 +241,12 @@ function requestSiteAccess(site, button) {
     if (!record || record.access !== 'optional') return;
     const request = chrome.permissions.request({ origins: record.matches });
     button.disabled = true;
-    request.then(refreshPermissions).catch(error => {
+    request.then(async () => {
+        await refreshPermissions();
+        button.disabled = false;
+        if (currentSite === site) (isGranted(site) ? document.getElementById('siteTitle') : button).focus();
+        else if (!currentSite) (isGranted(site) ? siteRows[site].row.querySelector('.site-open') : button).focus();
+    }).catch(error => {
         console.error(`[Roomy] Could not request ${record.name} permission:`, error);
         setStatus('error', t('sitePermissionFailed', 'Could not request access. Please try again.'));
     }).finally(() => { button.disabled = false; });

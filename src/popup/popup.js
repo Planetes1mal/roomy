@@ -8,6 +8,29 @@ function showView(name) {
     window.scrollTo(0, 0);
 }
 
+function showPanel(name, direction, focus) {
+    activePanel = name;
+    const scroll = byId('siteScroll');
+    scroll.scrollTop = 0;
+    byId('backLabel').textContent = t(name === 'home' ? 'allSites' : 'back');
+    document.querySelectorAll('[data-panel]').forEach(panel => {
+        panel.hidden = panel.dataset.panel !== name;
+        panel.classList.remove('forward', 'backward');
+        if (!panel.hidden && direction) panel.classList.add(direction);
+    });
+    if (name === 'range') rangeUnit = siteSettings[currentSite].chatWidthSetting.unit;
+    renderSite();
+    if (name === 'range') renderRange(true);
+    if (focus) focus.focus();
+}
+
+document.querySelectorAll('[data-open]').forEach(link => {
+    link.onclick = () => {
+        flushSlider();
+        showPanel(link.dataset.open, 'forward', byId('siteTitle'));
+    };
+});
+
 async function openSite(site) {
     if (!siteRegistry.get(site) || taskBusy) return;
     if (currentSite && currentSite !== site) {
@@ -19,8 +42,8 @@ async function openSite(site) {
     }
     currentSite = site;
     clearStatus();
-    renderSite();
     showView('site');
+    showPanel('home', 'forward', byId('siteTitle'));
     refreshLayoutStatus();
 }
 
@@ -30,13 +53,20 @@ async function openSiteList() {
     } catch (error) {
         return;
     }
+    const previousSite = currentSite;
     currentSite = null;
     clearStatus();
     renderSiteList();
     showView('list');
+    siteRows[previousSite]?.row.querySelector('.site-open').focus();
 }
 
-document.getElementById('backToSites').addEventListener('click', openSiteList);
+document.getElementById('backToSites').addEventListener('click', () => {
+    if (activePanel === 'home') return openSiteList();
+    flushSlider();
+    const opener = document.querySelector('[data-open="' + activePanel + '"]');
+    showPanel('home', 'backward', opener);
+});
 document.getElementById('introLine').addEventListener('click', openSiteList);
 
 async function initializeSettings() {

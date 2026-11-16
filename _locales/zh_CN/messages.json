@@ -9,13 +9,13 @@
     "message": "分别拓宽 Gemini、ChatGPT、Claude 和 DeepSeek 的对话区域，按网站调整字号与阅读密度，并可随时暂停任一网站。"
   },
   "widthLabel": {
-    "message": "对话区域宽度"
+    "message": "对话宽度"
   },
   "widthMin": {
-    "message": "最小宽度"
+    "message": "滑杆最小值"
   },
   "widthMax": {
-    "message": "最大宽度"
+    "message": "滑杆最大值"
   },
   "btnNarrow": {
     "message": "窄"
@@ -32,29 +32,11 @@
   "btnInsane": {
     "message": "你真的需要这么宽吗？"
   },
-  "editPresets": {
-    "message": "编辑预设"
-  },
-  "donePresets": {
-    "message": "完成"
-  },
-  "managePresets": {
-    "message": "管理预设"
-  },
-  "managePresetsSummary": {
-    "message": "已自定义 5 个预设"
-  },
-  "resetToDefault": {
-    "message": "重置为默认"
-  },
-  "clampedHint": {
-    "message": "已限制在范围内"
-  },
   "codeWrapLabel": {
-    "message": "代码区域自动换行"
+    "message": "代码自动换行"
   },
   "userFullWidthLabel": {
-    "message": "用户消息铺满宽度"
+    "message": "我的消息占满宽度"
   },
   "refreshing": {
     "message": "正在刷新页面..."
@@ -65,11 +47,8 @@
   "densityLabel": {
     "message": "阅读密度"
   },
-  "compactnessUnit": {
-    "message": "%"
-  },
   "advancedDensity": {
-    "message": "高级间距"
+    "message": "自定义行距与段距"
   },
   "lineHeightLabel": {
     "message": "行高"
@@ -81,16 +60,10 @@
     "message": "字号"
   },
   "resetFontSize": {
-    "message": "重置字号"
+    "message": "字号恢复为 100%"
   },
   "resetDensity": {
     "message": "重置间距"
-  },
-  "customSpacing": {
-    "message": "自定义"
-  },
-  "autoSpacing": {
-    "message": "自动"
   },
   "uiLanguageLabel": {
     "message": "界面语言"
@@ -105,29 +78,20 @@
   "helpLink": {
     "message": "帮助与反馈"
   },
-  "sourceLink": {
-    "message": "GitHub · 源码"
-  },
   "helpPageTitle": {
     "message": "Roomy · 帮助"
   },
-  "helpTitle": {
-    "message": "帮助与反馈"
-  },
   "helpGettingStarted": {
-    "message": "让 {sites} 适合你的屏幕"
+    "message": "开始使用"
   },
   "helpOpenPopup": {
     "message": "打开 {sites}，点击工具栏中的 Roomy 图标。在支持的网站上，弹窗直接进入该网站的设置；在其它页面则显示全部网站的列表。"
   },
   "helpWidthTitle": {
-    "message": "消息区域宽度"
+    "message": "对话宽度"
   },
   "helpWidthBody": {
-    "message": "选择 px 使用固定宽度，选择 % 跟随窗口大小。拖动滑块或点选预设。每个网站分别保存宽度、范围和预设，每种单位也有独立预设。展开“范围与预设”即可编辑。宽度标题旁的开关可以单独暂停该网站的拓宽并恢复原站宽度，已保存的数值和预设会保留，阅读设置仍然有效。"
-  },
-  "helpCodeTitle": {
-    "message": "代码换行"
+    "message": "拖动滑杆微调，或点快捷值直接切换。px 固定宽度，% 跟随可用空间。关掉“对话宽度”后，网站恢复原来的宽度，字号和间距照常生效。"
   },
   "helpCodeBody": {
     "message": "代码自动换行只在 {sites} 上提供。其它网站请使用代码块自带的换行控件，扩展不会改动它。"
@@ -136,13 +100,13 @@
     "message": "字号与间距"
   },
   "helpReadingBody": {
-    "message": "字号可在75%至200%之间调整，无需缩放整个页面，标题、代码和表格保持原有比例。自动密度为0时保留原生段距和行高，提高密度只会逐渐收紧正文。代码行和表格单元格保留原生行高比例，公式也保留原生间距。高级间距可手动指定精确数值；重置间距会回到当前密度的自动模式。每个网站分别保存阅读设置。"
+    "message": "用 − 和 + 将消息字号调到 75% 至 200%。网站的菜单和输入框保持原来的字号。"
   },
   "helpLiveSettings": {
     "message": "设置会自动保存并实时应用到该网站已打开的标签页。各网站的设置互相独立，弹窗语言共用。跨设备同步取决于浏览器的同步设置。"
   },
   "helpTroubleshooting": {
-    "message": "显示不符合预期？"
+    "message": "设置没生效"
   },
   "helpTroubleshootPage": {
     "message": "确认当前网站是受支持的网站（{sites}），且 Roomy 已启用并获准访问该网站。通过 Chrome 安装的网页应用（PWA）使用同一网页。不支持原生桌面客户端或 Chrome 内置的 Gemini 面板。"
@@ -171,9 +135,6 @@
   "helpCopyReport": {
     "message": "复制报告"
   },
-  "helpSupportProject": {
-    "message": "如果 Roomy 对你有帮助，欢迎为项目点 Star，或留下真实的使用评价。"
-  },
   "helpGitHubLink": {
     "message": "查看源码 / 在 GitHub 点 Star"
   },
@@ -195,9 +156,6 @@
   "helpReportCopyFallback": {
     "message": "无法自动复制，已选中报告，请手动复制。"
   },
-  "taskPresets": {
-    "message": "任务预设"
-  },
   "taskReading": {
     "message": "长文阅读"
   },
@@ -210,17 +168,11 @@
   "taskLarge": {
     "message": "大字"
   },
-  "taskApply": {
-    "message": "应用"
-  },
   "taskRestore": {
-    "message": "恢复应用前设置"
-  },
-  "taskSaving": {
-    "message": "正在保存设置…"
+    "message": "撤销上次应用"
   },
   "taskApplied": {
-    "message": "已应用。应用前的设置已保存在此设备。"
+    "message": "已应用{name}。"
   },
   "taskRestored": {
     "message": "已恢复应用前的设置。"
@@ -232,19 +184,16 @@
     "message": "任务预设"
   },
   "helpTaskBody": {
-    "message": "选择任务预设，查看摘要后点击应用。每个网站提供各自的预设，例如长文阅读、宽屏（表格与代码）和大字。预设只调整宽度、字号和间距（支持的网站另含代码换行），并遵守自定义宽度范围。“恢复应用前设置”可撤销此设备上该网站最近一次应用，即使已关闭弹窗；恢复会覆盖之后对这些设置的调整。"
-  },
-  "autoSpacingHint": {
-    "message": "自动模式跟随各消息的原生间距。移动任一滑块后，将手动应用下方两项数值。"
+    "message": "点一下预设，会打开对话宽度、设置字号，并把间距恢复为原样。宽度受滑杆范围限制。在 {codeWrapSites} 上还会设置代码换行。"
   },
   "currentSite": {
     "message": "当前网页"
   },
   "widthOptions": {
-    "message": "范围与预设"
+    "message": "范围与快捷值"
   },
   "readingSettings": {
-    "message": "文字与间距"
+    "message": "阅读设置"
   },
   "layoutUnsupported": {
     "message": "暂未适配当前页面布局，已保留原站宽度。"
@@ -271,13 +220,10 @@
     "message": "未能保存，请重试"
   },
   "pageOutdated": {
-    "message": "设置已保存，但此页面仍在运行旧版扩展。请先在 chrome://extensions 重新加载扩展，再刷新此页面。"
+    "message": "设置已保存，但此页面仍在运行旧版扩展。"
   },
   "taskWide": {
     "message": "宽屏（表格与代码）"
-  },
-  "taskSpacingNative": {
-    "message": "原生间距"
   },
   "taskWrapOn": {
     "message": "代码换行"
@@ -316,7 +262,7 @@
     "message": "新"
   },
   "helpSiteAccess": {
-    "message": "{required} 访问权限为必选。{optional} 访问权限可选：在弹窗的网站列表里点击该网站旁的“允许”。"
+    "message": "安装后即可在 {required} 使用。{optional} 需要各自允许一次：在网站列表点“允许”，再在 Chrome 提示中确认。"
   },
   "yourSites": {
     "message": "你的网站"
@@ -333,20 +279,14 @@
   "allowAccess": {
     "message": "允许"
   },
-  "stateEnabled": {
-    "message": "已开启"
-  },
   "stateWidthOff": {
     "message": "宽度已关闭"
-  },
-  "siteAccessNeeded": {
-    "message": "需要授权"
   },
   "grantSitePermission": {
     "message": "允许访问 {site}"
   },
   "sitePermissionHint": {
-    "message": "{site} 访问权限可选。允许访问后才会应用这些设置。"
+    "message": "允许后，Roomy 才能调整 {host} 上的对话排版。"
   },
   "sitePermissionFailed": {
     "message": "无法请求访问权限，请重试。"
@@ -359,5 +299,113 @@
   },
   "helpOpenSite": {
     "message": "打开 {site}"
+  },
+  "back": {
+    "message": "返回"
+  },
+  "nativeWidth": {
+    "message": "原站宽度"
+  },
+  "howToFix": {
+    "message": "怎么处理"
+  },
+  "pausedHint": {
+    "message": "已暂停，网站保持原样。修改会保存，打开开关后生效。"
+  },
+  "resetRangeDefaults": {
+    "message": "恢复 {unit} 默认值"
+  },
+  "rangeResetDone": {
+    "message": "已恢复 {unit} 默认值。"
+  },
+  "undo": {
+    "message": "撤销"
+  },
+  "rangeUndoDone": {
+    "message": "已撤销恢复默认值。"
+  },
+  "shortcuts": {
+    "message": "快捷值"
+  },
+  "shortcutName": {
+    "message": "名称"
+  },
+  "width": {
+    "message": "宽度"
+  },
+  "originalSpacing": {
+    "message": "原样"
+  },
+  "compactSpacing": {
+    "message": "紧凑"
+  },
+  "manual": {
+    "message": "手动"
+  },
+  "manualSpacingLabel": {
+    "message": "手动间距"
+  },
+  "compactSummary": {
+    "message": "紧凑 {n}%"
+  },
+  "fontDecrease": {
+    "message": "减小字号"
+  },
+  "fontIncrease": {
+    "message": "增大字号"
+  },
+  "rangeInvalid": {
+    "message": "填 {min}–{max} 之间 {step} 的倍数。"
+  },
+  "belowMaximum": {
+    "message": "要小于最大值 {n}。"
+  },
+  "aboveMinimum": {
+    "message": "要大于最小值 {n}。"
+  },
+  "skipMain": {
+    "message": "跳到正文"
+  },
+  "onThisPage": {
+    "message": "本页目录"
+  },
+  "newTab": {
+    "message": "在新标签页打开"
+  },
+  "newIssue": {
+    "message": "在 GitHub 新建反馈"
+  },
+  "preset": {
+    "message": "预设"
+  },
+  "availableOn": {
+    "message": "提供的网站"
+  },
+  "pauseSite": {
+    "message": "暂停某个网站"
+  },
+  "helpPause": {
+    "message": "关掉网站名右侧的开关，这个网站就恢复原样。重新打开开关后，已保存的设置照旧生效。"
+  },
+  "helpRange": {
+    "message": "可以修改滑杆的上下限，以及五个快捷值的名称和宽度。px 和 % 各存一套。离开输入框即保存，填错时原因显示在框下。缩小范围会把超出的宽度收进范围内。"
+  },
+  "helpDensity": {
+    "message": "阅读密度从“原样”到“紧凑”，逐步收紧消息的行距和段距。"
+  },
+  "helpManual": {
+    "message": "打开“自定义行距与段距”，可分别调节行高和段落间距。“重置间距”恢复网站原样。"
+  },
+  "helpUserWidth": {
+    "message": "“我的消息占满宽度”让你发出的消息和回答同宽。"
+  },
+  "helpNavigation": {
+    "message": "在 {navigationSites} 上，点击右侧标记可跳到对应消息。DeepSeek 使用自带的导航。"
+  },
+  "helpUndoTask": {
+    "message": "“撤销上次应用”可恢复应用前的设置，包括对话宽度开关。每个网站在这台设备上只记最近一次，关掉弹窗后也能撤销。"
+  },
+  "helpWidthSwitch": {
+    "message": "调宽度时，确认“对话宽度”的开关已打开。"
   }
 }

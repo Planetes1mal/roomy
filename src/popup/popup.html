@@ -1,243 +1,127 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Roomy</title>
+    <link rel="stylesheet" href="../shared/ui.css">
     <link rel="stylesheet" href="popup.css">
 </head>
-
 <body>
-    <div class="container">
+    <main class="popup">
         <section id="siteListView" class="view" hidden>
-            <header class="header">
-                <img class="header-icon" src="../../icons/icon48.png" width="36" height="36" alt="">
-                <h1 class="header-title" data-i18n="brandName">Roomy</h1>
-                <span class="header-version" id="extensionVersion"></span>
+            <header class="brandbar">
+                <h1 id="listTitle" tabindex="-1"><img src="../../icons/icon48.png" width="24" height="24" alt="">Roomy</h1>
+                <span id="extensionVersion"></span>
             </header>
-            <div class="site-group" id="yourSitesGroup">
-                <h2 class="group-title" id="yourSitesTitle" data-i18n="yourSites">Your websites</h2>
-                <ul class="site-list" id="yourSites" aria-labelledby="yourSitesTitle"></ul>
+            <div class="scroll">
+                <div id="yourSitesGroup"><h2 class="group-title" id="yourSitesTitle" data-i18n="yourSites">Your websites</h2><ul class="site-list" id="yourSites" aria-labelledby="yourSitesTitle"></ul></div>
+                <div id="addableSitesGroup" hidden><h2 class="group-title" id="addableSitesTitle" data-i18n="addableSites">Websites you can add</h2><ul class="site-list" id="addableSites" aria-labelledby="addableSitesTitle"></ul></div>
+                <p id="listStatus" class="band" role="status" hidden></p>
             </div>
-            <div class="site-group" id="addableSitesGroup" hidden>
-                <h2 class="group-title" id="addableSitesTitle" data-i18n="addableSites">Websites you can add</h2>
-                <ul class="site-list" id="addableSites" aria-labelledby="addableSitesTitle"></ul>
-            </div>
-            <p id="listStatus" class="site-status" role="status" aria-live="polite" hidden></p>
-            <footer class="list-footer">
+            <footer>
+                <a href="../help/help.html" target="_blank" rel="noopener"><span data-i18n="helpLink">Help &amp; feedback</span><i class="chevron"></i></a>
                 <label class="language-row">
-                    <span class="language-label" data-i18n="uiLanguageLabel">Language</span>
-                    <select id="uiLanguageSelect" class="language-select">
-                        <option value="auto" data-i18n="uiLanguageAuto">Follow browser</option>
-                        <option value="en">English</option>
-                        <option value="zh_CN">简体中文</option>
-                        <option value="zh_TW">繁體中文</option>
-                        <option value="ko">한국어</option>
-                        <option value="ja">日本語</option>
-                        <option value="es">Español</option>
-                    </select>
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="7"/><ellipse cx="10" cy="10" rx="3.1" ry="7"/><path d="M3 10h14"/></svg>
+                    <span class="sr" data-i18n="uiLanguageLabel">Language</span>
+                    <select id="uiLanguageSelect"><option value="auto" data-i18n="uiLanguageAuto">Follow browser</option><option value="en">English</option><option value="zh_CN">简体中文</option><option value="zh_TW">繁體中文</option><option value="ko">한국어</option><option value="ja">日本語</option><option value="es">Español</option></select>
                 </label>
-                <nav class="support-links">
-                    <a href="../help/help.html" target="_blank" rel="noopener" data-i18n="helpLink">Help &amp; feedback</a>
-                    <a href="https://github.com/Planetes1mal/roomy" target="_blank" rel="noopener noreferrer" data-i18n="sourceLink">GitHub · Source</a>
-                </nav>
             </footer>
         </section>
-
         <section id="siteView" class="view" hidden>
             <header class="site-header">
-                <button type="button" id="backToSites" class="back-btn">
-                    <span class="back-chevron" aria-hidden="true"></span><span data-i18n="allSites">All websites</span>
-                </button>
-                <h1 id="siteTitle" class="site-title"></h1>
-                <span class="site-power-state" id="sitePowerState" hidden data-i18n="sitePaused">Paused</span>
-                <label class="switch site-switch">
-                    <input type="checkbox" id="siteEnabledToggle" role="switch" disabled>
-                    <span class="slider-toggle" aria-hidden="true"></span>
-                </label>
+                <button id="backToSites" class="back" type="button"><i class="chevron"></i><span id="backLabel" data-i18n="allSites">All websites</span></button>
+                <h1 id="siteTitle" tabindex="-1"></h1>
+                <label class="switch" id="siteSwitch"><input id="siteEnabledToggle" type="checkbox" role="switch"><span></span></label>
             </header>
-            <button type="button" id="introLine" class="intro-line" hidden>
-                <span id="introLineText"></span><span class="intro-chevron" aria-hidden="true"></span>
-            </button>
-            <section id="sitePermission" class="card permission-card" hidden>
-                <p id="sitePermissionHint"></p>
-                <button type="button" id="grantSitePermission" class="secondary-btn"></button>
-            </section>
-            <p id="siteStatus" class="site-status" role="status" aria-live="polite" hidden></p>
-
-            <fieldset id="settingsControls" disabled>
-                <legend class="visually-hidden" id="settingsLegend"></legend>
-                <section class="card width-card">
-                    <div class="card-header width-heading">
-                        <label for="widthSlider" class="card-title" data-i18n="widthLabel">Chat width</label>
-                        <div class="unit-segment" role="group" data-i18n-label="widthUnit" aria-label="Width unit">
-                            <button type="button" id="unitPxBtn" class="segment-btn segment-active" data-unit="px" aria-pressed="true">px</button>
-                            <button type="button" id="unitPercentBtn" class="segment-btn" data-unit="percent" aria-pressed="false">%</button>
-                        </div>
-                        <label class="switch width-switch">
-                            <span class="visually-hidden" id="widthEnabledLabel">Enable widening</span>
-                            <input type="checkbox" id="widthEnabledToggle" aria-labelledby="widthEnabledLabel" checked>
-                            <span class="slider-toggle" aria-hidden="true"></span>
-                        </label>
-                    </div>
-                    <fieldset id="widthControls" aria-labelledby="widthSlider">
-                        <div class="slider-value width-display">
-                            <span id="widthValue">1000</span>
-                            <span id="widthUnitLabel" class="unit">px</span>
-                        </div>
-                        <div class="slider-wrapper">
-                            <div class="slider-container">
-                                <input type="range" id="widthSlider" min="700" max="2000" step="50" value="1000">
-                                <div class="slider-track"></div>
-                            </div>
-                        </div>
-                        <div class="preset-buttons" id="presetButtonsContainer"></div>
-                        <details id="widthOptions" class="width-options">
-                            <summary><span data-i18n="widthOptions">Range &amp; presets</span></summary>
-                            <div class="width-options-body">
-                                <div class="range-inputs">
-                                    <label class="range-label"><span data-i18n="widthMin">Min width</span>
-                                        <input type="number" id="widthMinInput" min="300" max="5000" step="50" value="700">
-                                    </label>
-                                    <label class="range-label"><span data-i18n="widthMax">Max width</span>
-                                        <input type="number" id="widthMaxInput" min="300" max="5000" step="50" value="2000">
-                                    </label>
-                                </div>
-                                <div class="preset-toolbar">
-                                    <button type="button" id="editPresetsBtn" class="secondary-btn"><span data-i18n="editPresets">Edit presets</span></button>
-                                    <button type="button" id="donePresetsBtn" class="secondary-btn" hidden><span data-i18n="donePresets">Done</span></button>
-                                </div>
-                                <section class="manage-card">
-                                    <button type="button" class="collapse-header" id="managePresetsToggle" aria-expanded="false">
-                                        <span class="card-icon" aria-hidden="true">P</span>
-                                        <span class="card-title" data-i18n="managePresets">Manage presets</span>
-                                        <span class="collapse-summary" id="managePresetsSummary"></span>
-                                    </button>
-                                    <div class="collapse-body" id="managePresetsBody" hidden>
-                                        <div id="managePresetsRows"></div>
-                                    </div>
-                                </section>
-                            </div>
-                        </details>
-                    </fieldset>
+            <div id="siteScroll" class="scroll">
+                <button id="introLine" class="band link" hidden><span id="introLineText"></span><i class="chevron"></i></button>
+                <p id="sitePowerState" class="band" role="status" data-i18n="pausedHint" hidden></p>
+                <div id="siteStatus" class="band" role="status" hidden><span id="siteStatusText"></span> <a id="statusHelp" href="../help/help.html#trouble" target="_blank" rel="noopener" data-i18n="howToFix" hidden></a></div>
+                <section id="sitePermission" class="grant" hidden>
+                    <h2 id="grantTitle"></h2><p id="sitePermissionHint"></p>
+                    <button id="grantSitePermission" class="primary"></button>
                 </section>
-
-                <section class="card task-card" aria-labelledby="taskPresetsTitle">
-                    <div class="card-header">
-                        <span class="card-icon" aria-hidden="true">T</span>
-                        <label for="taskPresetSelect" class="card-title" id="taskPresetsTitle" data-i18n="taskPresets">Task presets</label>
-                    </div>
-                    <div class="task-row">
-                        <select id="taskPresetSelect" class="language-select" aria-describedby="taskPresetPreview" disabled></select>
-                        <button type="button" id="applyTaskPreset" class="secondary-btn task-apply" disabled><span data-i18n="taskApply">Apply</span></button>
-                    </div>
-                    <p id="taskPresetPreview" class="task-preview"></p>
-                    <div class="task-actions">
-                        <button type="button" id="restoreTaskPreset" class="secondary-btn" disabled><span data-i18n="taskRestore">Restore previous settings</span></button>
-                    </div>
-                    <p id="taskPresetStatus" class="task-status" role="status" aria-live="polite"></p>
-                </section>
-
-                <details id="readingSettings" class="card reading-settings">
-                    <summary><span data-i18n="readingSettings">Text &amp; spacing</span><span class="collapse-summary" id="readingSummary"></span></summary>
-                    <div class="reading-body">
-                        <section class="card font-size-card">
-                            <div class="card-header">
-                                <span class="card-icon" aria-hidden="true">A</span>
-                                <label for="fontSizeSlider" class="card-title" data-i18n="fontSizeLabel">Font size</label>
-                            </div>
-                            <div class="slider-wrapper">
-                                <div class="slider-container">
-                                    <input type="range" id="fontSizeSlider" min="75" max="200" step="5" value="100">
-                                    <div class="slider-track"></div>
-                                </div>
-                                <div class="slider-value">
-                                    <span id="fontSizeValue">100</span>
-                                    <span class="unit">%</span>
+                <fieldset id="settingsControls" disabled>
+                    <legend id="settingsLegend" class="sr"></legend>
+                    <div id="homePanel" data-panel="home">
+                        <section class="section">
+                            <div class="row"><h2><label for="widthSlider" data-i18n="widthLabel">Conversation width</label></h2><label class="switch" id="widthSwitch"><input id="widthEnabledToggle" type="checkbox" role="switch"><span></span></label></div>
+                            <div class="readout">
+                                <output for="widthSlider" class="number" id="widthDisplay"><span id="widthValue">1000</span><small id="widthUnitLabel">px</small></output>
+                                <span id="nativeWidth" data-i18n="nativeWidth" hidden>Original width</span>
+                                <div class="segment" role="group" data-i18n-label="widthUnit">
+                                    <button data-unit="px" id="unitPxBtn">px</button><button data-unit="percent" id="unitPercentBtn">%</button>
                                 </div>
                             </div>
-                            <button type="button" id="resetFontSizeBtn" class="secondary-btn"><span data-i18n="resetFontSize">Reset font size</span></button>
+                            <fieldset id="widthControls" data-i18n-label="widthLabel">
+                                <input class="range" id="widthSlider" type="range">
+                                <div class="chips" id="presetButtonsContainer"></div>
+                            </fieldset>
+                            <button class="link" data-open="range"><span data-i18n="widthOptions">Range &amp; shortcuts</span><i class="chevron"></i></button>
                         </section>
-
-                        <section class="card density-card">
-                            <div class="card-header">
-                                <span class="card-icon" aria-hidden="true">¶</span>
-                                <label for="compactnessSlider" class="card-title" data-i18n="densityLabel">Reading density</label>
-                            </div>
-                            <div class="slider-wrapper">
-                                <div class="slider-container">
-                                    <input type="range" id="compactnessSlider" min="0" max="100" step="1" value="0">
-                                    <div class="slider-track"></div>
-                                </div>
-                                <div class="slider-value">
-                                    <span id="compactnessValue">0</span>
-                                    <span class="unit" data-i18n="compactnessUnit">%</span>
-                                </div>
-                            </div>
-                            <button type="button" class="collapse-header advanced-toggle" id="advancedDensityToggle" aria-expanded="false">
-                                <span class="card-title" data-i18n="advancedDensity">Advanced spacing</span>
-                                <span class="collapse-summary" id="densitySummary"></span>
-                            </button>
-                            <div class="collapse-body" id="advancedDensityBody" hidden>
-                                <p class="task-hint" data-i18n="autoSpacingHint">Auto follows each message's native spacing. Moving either slider applies both values below manually.</p>
-                                <label class="range-label density-row"><span data-i18n="lineHeightLabel">Line height</span>
-                                    <input type="range" id="lineHeightSlider" min="1.15" max="1.8" step="0.01" value="1.42">
-                                    <span id="lineHeightValue">1.42</span>
-                                </label>
-                                <label class="range-label density-row"><span data-i18n="paragraphSpacingLabel">Paragraph spacing</span>
-                                    <input type="range" id="paragraphSpacingSlider" min="0" max="24" step="1" value="12">
-                                    <span><span id="paragraphSpacingValue">12</span> px</span>
-                                </label>
-                                <button type="button" id="resetDensityBtn" class="secondary-btn"><span data-i18n="resetDensity">Reset spacing</span></button>
+                        <section class="section">
+                            <div class="row"><span id="fontLabel" data-i18n="fontSizeLabel">Font size</span><div class="stepper">
+                                <button id="resetFontSizeBtn" class="icon-btn" data-i18n-label="resetFontSize" hidden>↶</button><button id="fontDown" data-i18n-label="fontDecrease">−</button><output id="fontSizeValue" aria-labelledby="fontLabel"></output><button id="fontUp" data-i18n-label="fontIncrease">+</button>
+                            </div></div>
+                            <button class="link" data-open="reading"><span data-i18n="readingSettings">Reading settings</span><span class="tail"><span id="readingSummary"></span><i class="chevron"></i></span></button>
+                            <div class="row" id="navigationCard"><label for="navigationToggle" data-i18n="navigationLabel">Message navigation</label><label class="switch"><input id="navigationToggle" type="checkbox" role="switch"><span></span></label></div>
+                        </section>
+                        <section class="section"><button class="link" data-open="tasks"><span data-i18n="helpTaskTitle">Task presets</span><span class="tail"><span id="taskMatch"></span><i class="chevron"></i></span></button></section>
+                    </div>
+                    <div data-panel="range" hidden>
+                        <section class="section">
+                            <div class="row"><h2 data-i18n="widthUnit">Width unit</h2><div class="segment" id="rangeUnits" role="group" data-i18n-label="widthUnit"><button data-unit="px">px</button><button data-unit="percent">%</button></div></div>
+                            <div class="fields">
+                                <label><span data-i18n="widthMin">Slider minimum</span><input type="number" id="widthMinInput" data-limit="min" aria-describedby="minError"><span class="error" role="alert" id="minError"></span></label>
+                                <label><span data-i18n="widthMax">Slider maximum</span><input type="number" id="widthMaxInput" data-limit="max" aria-describedby="maxError"><span class="error" role="alert" id="maxError"></span></label>
                             </div>
                         </section>
-
-                        <section class="card toggle-card" id="userFullWidthCard">
-                            <div class="card-header">
-                                <span class="card-icon" aria-hidden="true">U</span>
-                                <label for="userFullWidthToggle" class="card-title" data-i18n="userFullWidthLabel">User message full width</label>
-                                <label class="switch">
-                                    <input type="checkbox" id="userFullWidthToggle" role="switch">
-                                    <span class="slider-toggle" aria-hidden="true"></span>
-                                </label>
-                            </div>
+                        <section class="section">
+                            <h2 class="subhead" data-i18n="shortcuts">Shortcuts</h2>
+                            <div class="preset-grid columns" aria-hidden="true"><span data-i18n="shortcutName">Name</span><span data-i18n="width">Width</span></div>
+                            <div id="presetEditor"></div>
+                            <button class="btn" id="resetRange"></button>
+                            <div class="notice"><span id="rangeStatus" role="status"></span> <button id="undoRange" class="text-btn" data-i18n="undo" hidden>Undo</button></div>
                         </section>
                     </div>
-                </details>
-
-                <div class="card nav-card" id="navigationCard" hidden>
-                    <span class="nav-glyph" aria-hidden="true"><i></i><i></i><i></i></span>
-                    <label for="navigationToggle" class="nav-card-label" data-i18n="navigationLabel">Message navigation</label>
-                    <label class="switch">
-                        <input type="checkbox" id="navigationToggle" role="switch">
-                        <span class="slider-toggle" aria-hidden="true"></span>
-                    </label>
-                </div>
-
-                <div class="card nav-card" id="codeWrapCard" hidden>
-                    <span class="card-icon" aria-hidden="true">C</span>
-                    <label for="codeWrapToggle" class="nav-card-label" data-i18n="codeWrapLabel">Code auto wrap</label>
-                    <label class="switch">
-                        <input type="checkbox" id="codeWrapToggle" role="switch">
-                        <span class="slider-toggle" aria-hidden="true"></span>
-                    </label>
-                </div>
-            </fieldset>
+                    <div data-panel="reading" hidden>
+                        <section class="section">
+                            <div class="row"><label for="compactnessSlider" data-i18n="densityLabel">Reading density</label><output for="compactnessSlider" id="compactnessValue"></output></div>
+                            <input class="range" id="compactnessSlider" type="range" min="0" max="100" step="1">
+                            <div class="ends" aria-hidden="true"><span data-i18n="originalSpacing">Original</span><span data-i18n="compactSpacing">Compact</span></div>
+                            <div class="row"><label for="manualSpacing" data-i18n="advancedDensity">Custom line and paragraph spacing</label><label class="switch"><input id="manualSpacing" type="checkbox" role="switch"><span></span></label></div>
+                            <div id="advancedDensityBody" hidden>
+                                <div class="row"><label for="lineHeightSlider" data-i18n="lineHeightLabel">Line height</label><output for="lineHeightSlider" id="lineHeightValue"></output></div>
+                                <input class="range" id="lineHeightSlider" type="range" min="1.15" max="1.8" step="0.01">
+                                <div class="row"><label for="paragraphSpacingSlider" data-i18n="paragraphSpacingLabel">Paragraph spacing</label><output for="paragraphSpacingSlider" id="paragraphSpacingValue"></output></div>
+                                <input class="range" id="paragraphSpacingSlider" type="range" min="0" max="24" step="1">
+                            </div>
+                            <button class="btn" id="resetDensityBtn" data-i18n="resetDensity" hidden>Reset spacing</button>
+                        </section>
+                        <section class="section">
+                            <div class="row" id="userFullWidthCard"><label for="userFullWidthToggle" data-i18n="userFullWidthLabel"></label><label class="switch"><input id="userFullWidthToggle" type="checkbox" role="switch"><span></span></label></div>
+                            <div class="row" id="codeWrapCard"><label for="codeWrapToggle" data-i18n="codeWrapLabel"></label><label class="switch"><input id="codeWrapToggle" type="checkbox" role="switch"><span></span></label></div>
+                        </section>
+                    </div>
+                    <section class="section" data-panel="tasks" hidden>
+                        <div id="taskRows" role="group" data-i18n-label="helpTaskTitle"></div>
+                        <p class="notice" role="status" id="taskPresetStatus"></p>
+                        <button id="restoreTaskPreset" class="btn" data-i18n="taskRestore" hidden>Undo last preset</button>
+                    </section>
+                </fieldset>
+            </div>
+            <footer><a href="../help/help.html" target="_blank" rel="noopener"><span data-i18n="helpLink">Help &amp; feedback</span><i class="chevron"></i></a></footer>
         </section>
-
-        <div id="refreshNotice" class="refresh-notice">
-            <span class="refresh-spinner" aria-hidden="true"></span>
-            <span class="refresh-text" data-i18n="refreshing">Refreshing page...</span>
-        </div>
-    </div>
+        <p id="refreshNotice" role="status" data-i18n="refreshing" hidden></p>
+    </main>
     <script src="../shared/sites.js"></script>
     <script src="../shared/settings-utils.js"></script>
     <script src="i18n.js"></script>
     <script src="state.js"></script>
     <script src="site-list.js"></script>
     <script src="site-settings.js"></script>
+    <script src="range-editor.js"></script>
     <script src="popup.js"></script>
 </body>
-
 </html>
