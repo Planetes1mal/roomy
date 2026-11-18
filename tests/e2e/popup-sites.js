@@ -155,13 +155,29 @@
                     await send('Emulation.setEmulatedMedia', { features: [{name:'prefers-color-scheme', value},
                         {name:'prefers-reduced-motion', value:'reduce'}] }, sessionId);
                 }
-                return { evaluate, ready, capture, close, click, theme };
+                function space(type) {
+                    return send('Input.dispatchKeyEvent', { type, key:' ', code:'Space', windowsVirtualKeyCode:32 }, sessionId);
+                }
+                return { evaluate, ready, capture, close, click, theme, space };
             }
             await check({ openPopup, send });
         } finally {
             await send('Browser.close').catch(() => child.kill());
             await closed;
         }
+    }
+
+    function contrastRatio(foreground, background) {
+        function luminance(rgb) {
+            const [r, g, b] = rgb.match(/[\d.]+/g).slice(0, 3).map(channel => {
+                const s = Number(channel) / 255;
+                return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            });
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        }
+        const light = luminance(foreground);
+        const dark = luminance(background);
+        return (Math.max(light, dark) + 0.05) / (Math.min(light, dark) + 0.05);
     }
 
     const LIST_STATE = `(() => ({
@@ -245,6 +261,19 @@
             assert.strictEqual(site.navigation, true);
             assert.strictEqual(site.permission, true, 'ungranted site shows the permission card');
             assert.strictEqual(site.grantText, 'Allow Alpha Chat access');
+            for (const scheme of ['light', 'dark']) {
+                await popup.theme(scheme);
+                await popup.evaluate("document.getElementById('grantSitePermission').focus()");
+                await popup.space('keyDown');
+                const [pressed, text, background] = await popup.evaluate(`(() => {
+                    const button = document.getElementById('grantSitePermission');
+                    const style = getComputedStyle(button);
+                    return [button.matches(':active'), style.color, style.backgroundColor];
+                })()`);
+                await popup.evaluate("document.getElementById('grantSitePermission').blur()");
+                await popup.space('keyUp');
+                assert(pressed && contrastRatio(text, background) >= 4.5, scheme + ': keyboard-pressed primary action is legible');
+            }
             assert.strictEqual(site.codeWrap, false, 'code wrap is hidden without the capability');
             assert.strictEqual(site.userFullWidth, true);
             assert.deepStrictEqual(site.tasks, ['reading', 'wide', 'large']);

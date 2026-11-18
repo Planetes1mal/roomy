@@ -6,6 +6,7 @@
     --ink: #172033;
     --sub: #5d6980;
     --accent: #2563eb;
+    --accent-pressed: #1d4ed8;
     --accent-ink: #fff;
     --soft: #e9f0ff;
     --track: #7d879a;
@@ -25,6 +26,7 @@
         --ink: #edf1f7;
         --sub: #a0a8b8;
         --accent: #60a5fa;
+        --accent-pressed: #93c5fd;
         --accent-ink: #0b1424;
         --soft: #15243a;
         --track: #646e82;
@@ -63,6 +65,7 @@ button:not(:disabled):hover, .btn:hover { background: var(--layer); }
 .primary:not(:disabled):hover, .primary:hover { background: var(--accent); filter: brightness(.95); }
 button, .btn { transition: background-color .12s ease-out, border-color .12s ease-out; }
 button:not(:disabled):active, .btn:active { background: var(--soft); }
+.primary:not(:disabled):active { background: var(--accent-pressed); filter: none; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
