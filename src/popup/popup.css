@@ -79,6 +79,7 @@ h2 { font-size: 14px; font-weight: 600; }
 .amount input { padding-right: 32px; }
 input[type=number], input[type=text] { width: 100%; border: 1px solid var(--field); border-radius: 8px; min-height: 40px; padding: 6px 9px; background: var(--bg); }
 .amount input[type=number] { padding-right: 32px; }
+#presetEditor input::placeholder { color: var(--sub); opacity: 1; }
 input[aria-invalid=true] { border-color: var(--err); }
 .subhead { margin: 16px 0 8px; }
 .ends { display: flex; justify-content: space-between; margin-bottom: 8px; }

@@ -424,6 +424,13 @@
                             assert.deepStrictEqual(geometry, [panel, true, true, true, 'siteTitle', 'none']);
                             for (const scheme of ['dark', 'light']) {
                                 await popup.theme(scheme);
+                                if (panel === 'range') {
+                                    const colors = await popup.evaluate(`(() => {
+                                        const input = document.querySelector('#presetEditor input:placeholder-shown');
+                                        return [getComputedStyle(input, '::placeholder').color, getComputedStyle(input).backgroundColor];
+                                    })()`);
+                                    assert(contrastRatio(...colors) >= 4.5, scheme + ': default shortcut names are legible');
+                                }
                                 await popup.capture(`${locale}-${panel}-${scheme}`);
                             }
                             await popup.click('#backToSites');
