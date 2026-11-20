@@ -4,6 +4,22 @@ All notable changes to Roomy (formerly Wider Gemini) are documented in this file
 
 Release notes on GitHub are generated from the matching `## <release-version>` section when a `v<release-version>` tag is pushed. Candidate versions such as `2.6.0-rc.1` are marked as prereleases.
 
+## 3.3.0 (2026-11-20)
+
+### Google AI Mode
+
+- Enable Google AI Mode from the website list to adjust answers and the follow-up box together. Roomy preserves the left sidebar and space for sources. Access to www.google.com is optional. Ordinary search and Chrome's new-tab page keep their native layout.
+- The top tabs and your questions now align with the answer column, including at 1000 px and wider. Conversations open at the saved width as soon as settings are loaded. Later width changes, including slider drags, move smoothly and respect reduced motion.
+
+### Fixes
+
+- The Dots composer on ChatGPT follows your conversation width. Showing message controls no longer makes Roomy recalculate the entire chat layout.
+- Wide tables on ChatGPT and DeepSeek scroll within the message column at the width you choose.
+- DeepSeek now uses its own message navigation. Roomy no longer adds a second rail or shows a navigation switch for DeepSeek.
+- Site settings now show width and font size together, with separate pages for reading, shortcuts, and one-click task presets. Range errors appear beside the field, and you can undo a range reset or a task preset.
+- Help now has a chapter index, a preset comparison, and a direct route from the settings report to a GitHub issue.
+- Primary buttons keep readable labels while you press Space, and default shortcut names are easier to read in dark mode.
+
 ## 3.2.0 (2026-11-08)
 
 Roomy now works on DeepSeek as well as Gemini, ChatGPT and Claude. DeepSeek access is optional: updating adds no permission warning, and Chrome asks for DeepSeek access only after you click **Allow** next to DeepSeek in the popup.
