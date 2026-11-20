@@ -48,6 +48,29 @@ async function exercise() {
         } while (performance.now() - start < 800);
         return frames;
     }
+    async function toggleSidebar(action) {
+        const button = q('[data-sidebar="' + action + '"]');
+        const rect = button.getBoundingClientRect();
+        const target = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        if (target !== button) throw Error('Sidebar toggle is covered: ' + action);
+        target.click();
+        const frames = [];
+        const start = performance.now();
+        do {
+            // Read after both the page and the extension have run their animation frame callbacks.
+            await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+            const boxes = ['.mZJni', '.P3mIxe', '.t0ITR'].map(selector => {
+                const el = q(selector), box = el.getBoundingClientRect();
+                return { left:box.left, reachable:el.contains(document.elementFromPoint(box.left + 2, box.top + box.height / 2)) };
+            });
+            const sidebarRight = Math.max(...['.ho072b', '.qEn1od'].map(selector => {
+                const el = q(selector), style = getComputedStyle(el);
+                return style.visibility === 'visible' && (+style.opacity > 0 || style.pointerEvents !== 'none') ? el.getBoundingClientRect().right : 0;
+            }));
+            frames.push({ ...geometry(), sidebarRight, cardGap:boxes[2].left - sidebarRight, reachable:boxes.every(b => b.reachable) });
+        } while (performance.now() - start < 900);
+        return frames;
+    }
     try {
         // A deferred script holds DOMContentLoaded open until the first visible frame is sampled.
         const fragment = q('template').content.cloneNode(true);
@@ -75,14 +98,14 @@ async function exercise() {
         await fetch('/release-dcl');
         if (!window.domContentLoaded) await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, { once:true }));
         q('.e9EfHf').remove();
-        const toggleSidebar = root.clientWidth === 1440;
-        if (toggleSidebar) document.body.style.setProperty('--lhs', '0px');
+        const narrowDesktop = root.clientWidth === 1440;
         await frame();
         let duringUpdate;
         const transition = document.startViewTransition({
             types:['aimc'],
             async update() {
                 mount();
+                if (narrowDesktop) q('[data-sidebar="close"]').click();
                 await Promise.resolve(); // Mutation delivery, while rendering is suspended.
                 duringUpdate = geometry();
             }
@@ -93,16 +116,21 @@ async function exercise() {
         await frame();
         const firstChatFrame = geometry();
         await frame();
-        if (toggleSidebar) {
-            document.body.style.removeProperty('--lhs');
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
         const narrow = await sample(() => setWidth(700));
         const wide = await sample(() => setWidth(1000));
+        if (narrowDesktop) {
+            q('[data-sidebar="open"]').click();
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
         const reversed = await sample(() => save(keys.enabled, false), true);
         const pause = await sample(() => save(keys.enabled, false));
         const cleaned = !q('[data-wg-aim-motion]');
         const resume = await sample(() => save(keys.enabled, true));
+        document.body.classList.add('animate-sidebar');
+        setWidth(2000);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const sidebarClose = await toggleSidebar('close');
+        const sidebarOpen = await toggleSidebar('open');
         await frame();
         save(keys.enabled, false);
         q('[data-artifact-opened]').remove();
@@ -110,7 +138,7 @@ async function exercise() {
         const left = !q('[data-wg-aim-motion]') && !document.documentElement.classList.contains('wider-width-active');
         await fetch('/report', { method:'POST', body:JSON.stringify({
             viewport:[root.clientWidth,root.clientHeight], native, questionFirst, answerFirst, firstFrame, early, duringUpdate, newSnapshot, firstChatFrame,
-            narrow, wide, reversed, pause, cleaned, resume, left, timings
+            narrow, wide, reversed, pause, cleaned, resume, sidebarClose, sidebarOpen, left, timings
         }) });
     } catch (error) {
         await fetch('/report', { method:'POST', body:JSON.stringify({ error:String(error.stack || error) }) });
@@ -169,7 +197,7 @@ async function runMotion(chrome, temp, page, viewportWidth, windowOverhead) {
     fs.writeFileSync(path.join(temp, 'googleaimode-motion-' + viewportWidth + '.json'), JSON.stringify(data));
     assert.strictEqual(data.viewport[0], viewportWidth);
     assert.equal(data.native.overflow, 0, 'the native grid fits the CSS layout viewport');
-    const wideTarget = Math.min(1000, viewportWidth - 206 - 448 - 48);
+    const wideTarget = Math.min(1000, viewportWidth - 261 - 448 - 48);
     assert(data.early, 'sample the full-document entry before DOMContentLoaded');
     for (const sample of [data.questionFirst, data.answerFirst]) {
         assert(!sample.hasDock, 'this streamed frame precedes the follow-up box');
@@ -177,14 +205,24 @@ async function runMotion(chrome, temp, page, viewportWidth, windowOverhead) {
             'the streamed question and answer use the saved width and alignment before the composer arrives');
     }
     assert(Math.abs(data.firstFrame.width - wideTarget) < 1, 'full-document first frame at the saved width');
-    const entryWidth = viewportWidth === 1440 ? 944 : wideTarget;
+    const entryWidth = viewportWidth === 1440 ? viewportWidth - 64 - 448 - 48 : wideTarget;
     for (const [name, sample] of Object.entries({ duringUpdate:data.duringUpdate, newSnapshot:data.newSnapshot, firstChatFrame:data.firstChatFrame })) {
         assert(Math.abs(sample.width - entryWidth) < 1, name + ': enter at the saved width');
     }
     assert(data.timings.some(([duration, easing]) => duration === '0.35s' && easing.startsWith('linear(')),
         'Chrome plays the registered length transition with the 350 ms spring');
     assert(data.cleaned && data.left, 'pause and mid-transition route exit remove animation ownership');
-    for (const [name, target] of [['narrow',700], ['wide',wideTarget], ['reversed',wideTarget], ['pause',652], ['resume',wideTarget]]) {
+    for (const [name, frames, edge] of [['open', data.sidebarOpen, 261], ['closed', data.sidebarClose, 64]]) {
+        assert.strictEqual(frames.at(-1).sidebarRight, edge, name + ': reached the real rail edge');
+        assert(new Set(frames.map(f => Math.round(f.sidebarRight))).size > 3, name + ': observed the moving rail');
+        assert(Math.abs(frames.at(-1).width - Math.min(2000, viewportWidth - edge - 448 - 48)) < 1, name + ': maximum usable width');
+        for (const f of frames) {
+            assert(f.cardGap >= 0 && f.reachable, name + ': the moving rail covers a left edge: ' + JSON.stringify(f));
+            assert(Math.max(Math.abs(f.tabs), Math.abs(f.bubble), Math.abs(f.editor)) < 1, name + ': content stays aligned');
+            assert.equal(f.overflow, 0, name + ': no horizontal page overflow');
+        }
+    }
+    for (const [name, target] of [['narrow',700], ['wide',entryWidth], ['reversed',wideTarget], ['pause',652], ['resume',wideTarget]]) {
         const frames = data[name];
         const distinct = new Set(frames.map(f => Math.round(f.width)));
         assert(Math.abs(frames.at(-1).width - target) < 1, name + ': settles at the requested width');

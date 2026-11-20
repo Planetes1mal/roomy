@@ -10,13 +10,21 @@ module.exports.pageScenario = `
         };
         const width = (value, unit = 'px') => set(key.width, { chatWidthSetting:{ value, unit } });
         const marked = () => document.querySelectorAll('[data-wgx-width]').length;
+        const hit = selector => {
+            const node = q(selector);
+            const box = node.getBoundingClientRect();
+            return node.contains(document.elementFromPoint(box.left + 2, box.top + box.height / 2));
+        };
         const geometry = () => ({
             answer:rect('.mZJni').width, shell:rect('.t0ITR').width,
             composerOffset:rect('.t0ITR textarea').left - rect('.mZJni').left,
             tabsOffset:rect('.P3mIxe').left - rect('.mZJni').left,
             questionOffset:rect('.tbIZh').right - rect('.mZJni').right,
             sources:rect('.oRipZb').width, gap:rect('.oRipZb').left - rect('.mZJni').right,
-            left:rect('.sidebar').width, viewport:document.documentElement.clientWidth,
+            sidebarRight:rect('[aria-hidden="false"]').right, answerLeft:rect('.mZJni').left,
+            cardLeft:rect('.t0ITR').left, sourcesRight:rect('.oRipZb').right,
+            reachable:['.mZJni', '.P3mIxe', '.t0ITR'].map(hit),
+            viewport:document.documentElement.clientWidth, windowWidth:innerWidth,
             overflow:document.documentElement.scrollWidth - document.documentElement.clientWidth
         });
         try {
@@ -35,6 +43,20 @@ module.exports.pageScenario = `
             out.at1000 = geometry();
             width(90, 'percent');
             out.capped = geometry();
+            out.sidebar = [];
+            for (const [value, unit] of [[1000, 'px'], [70, 'percent'], [90, 'percent'], [2000, 'px']]) {
+                width(value, unit);
+                await wait();
+                for (const action of ['close', 'open']) {
+                    const button = q('button[data-sidebar="' + action + '"]');
+                    const box = button.getBoundingClientRect();
+                    const target = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+                    if (target !== button) throw Error('Sidebar toggle is covered: ' + action);
+                    target.click();
+                    await wait();
+                    out.sidebar.push({ value, unit, open:action === 'open', ...geometry() });
+                }
+            }
             width(1000);
             document.documentElement.style.overflowY = 'hidden';
             width(90, 'percent');
@@ -76,12 +98,12 @@ module.exports.pageScenario = `
 module.exports.check = function (out, expected, { assert, near }) {
     assert.deepStrictEqual(out.entry, [0, true], 'search and its entry toggle stay native');
     assert.strictEqual(out.surface, 'chat');
-    const cap = sample => sample.viewport - 206 - expected.sourceWidth - expected.sourceGap - 48;
+    const cap = sample => sample.viewport - sample.sidebarRight - expected.sourceWidth - expected.sourceGap - 48;
     assert.strictEqual(out.noScrollbar.viewport - out.capped.viewport, 16, 'the fixture reserves a real scrollbar gutter');
     for (const sample of [out.capped, out.noScrollbar]) {
-        assert(cap(sample) > 1000 && cap(sample) < sample.viewport * .9, 'the percent case reaches the available-space cap');
+        assert(cap(sample) > 700 && cap(sample) < sample.viewport * .9, 'the percent case reaches the available-space cap');
     }
-    for (const [sample, width] of [[out.at700, 700], [out.at1000, 1000],
+    for (const [sample, width] of [[out.at700, 700], [out.at1000, Math.min(1000, cap(out.at1000))],
         [out.capped, cap(out.capped)], [out.noScrollbar, cap(out.noScrollbar)]]) {
         near(sample.answer, width, 'answer width');
         near(sample.shell, width + 40, 'composer keeps its original outer inset');
@@ -90,8 +112,24 @@ module.exports.check = function (out, expected, { assert, near }) {
         near(sample.questionOffset, 0, 'questions align with the right edge of answers');
         near(sample.sources, expected.sourceWidth, 'sources keep their native width');
         near(sample.gap, expected.sourceGap, 'sources stay clear of answers');
-        near(sample.left, 206, 'left sidebar keeps its width');
+        near(sample.sidebarRight, 261, 'expanded sidebar reaches its actual edge');
         assert.strictEqual(sample.overflow, 0);
+    }
+    for (const sample of out.sidebar) {
+        const sidebar = sample.open ? 261 : 64;
+        const label = [sample.viewport, sample.value + sample.unit, sample.open ? 'open' : 'closed'].join(' ');
+        const requested = sample.unit === 'percent' ? sample.windowWidth * sample.value / 100 : sample.value;
+        near(sample.sidebarRight, sidebar, label + ': actual visible navigation');
+        near(sample.answer, Math.min(requested, cap(sample)), label + ': width within the usable area');
+        near(sample.answerLeft - sidebar, sample.viewport - sample.sourcesRight, label + ': centered between the rail and viewport edge');
+        near(sample.composerOffset, 0, label + ': editor');
+        near(sample.tabsOffset, 0, label + ': tabs');
+        near(sample.questionOffset, 0, label + ': question');
+        near(sample.gap, expected.sourceGap, label + ': sources gap');
+        near(sample.sources, expected.sourceWidth, label + ': sources width');
+        assert(sample.cardLeft > sidebar && sample.sourcesRight < sample.viewport, label + ': card and sources are inside the available bounds');
+        assert(sample.reachable.every(Boolean), label + ': sidebar does not intercept the answer, tabs or composer');
+        assert.strictEqual(sample.overflow, 0, label + ': no page overflow');
     }
     assert.deepStrictEqual(out.panel, [0, expected.nativeWidth]);
     assert.deepStrictEqual(out.paused, [0, expected.nativeWidth]);

@@ -6,9 +6,19 @@
 <style>
     html { overflow-y: scroll; }
     html::-webkit-scrollbar { width: 16px; }
-    body { margin: 0; --lhs: 206px; --center-width: 652px; --rhs-width: 372px; --rhs-margin: 76px; }
-    .sidebar { position: fixed; width: var(--lhs); height: 100vh; }
-    .DZ13He, .QGG6Id { margin-left: var(--lhs); }
+    body { margin: 0; padding-left: var(--lhs); --lhs: 206px; --center-width: 652px; --rhs-width: 372px; --rhs-margin: 76px; }
+    body:has(.ho072b[aria-hidden="true"]) { --lhs: 0px; }
+    .ho072b, .qEn1od { position: fixed; inset: 0 auto 0 0; z-index: 10; width: 261px; background: white; }
+    .qEn1od { width: 64px; }
+    .ho072b[aria-hidden="true"] { opacity: 0; transform: translateX(-216px); visibility: hidden; pointer-events: none; }
+    .qEn1od[aria-hidden="true"] { opacity: 0; transform: translateX(90px); visibility: hidden; pointer-events: none; }
+    /* The drawer translates farther than the padding reserved by the search page. */
+    body.animate-sidebar { --slide: .45s linear(0, .092 10%, .43 17%, .66 20.6%, .805 27%, .912 40%, .953 51%, .981 65%, 1); }
+    .animate-sidebar, .animate-sidebar .y4VEUd { transition: padding-left var(--slide); }
+    .animate-sidebar :is(.ho072b, .qEn1od) {
+        transition: transform var(--slide), opacity .1s cubic-bezier(.3,0,.8,.15), visibility 0s;
+    }
+    .animate-sidebar [aria-hidden="true"] { transition-delay: 0s, 0s, .45s; }
     .QGG6Id > section { grid-column: 1 / -1; }
     .P3mIxe { grid-column: 2 / -1; }
     .DZ13He, .QGG6Id, [data-artifact-opened], .y4VEUd { display: grid; gap: 0 20px; grid-template-columns: minmax(84px,1fr) repeat(20,36px) minmax(10px,1fr); }
@@ -28,13 +38,27 @@
 </style>
 </head>
 <body>
-<aside class="sidebar">Search history</aside>
+<script>
+    document.addEventListener('click', event => {
+        const button = event.target.closest('button[data-sidebar]');
+        if (!button) return;
+        const open = button.dataset.sidebar === 'open';
+        const drawer = document.querySelector('.ho072b');
+        drawer.setAttribute('aria-hidden', String(!open));
+        drawer.classList.toggle('j2vKLc', open);
+        document.querySelector('.qEn1od').setAttribute('aria-hidden', String(open));
+    });
+</script>
 <form role="search"><textarea></textarea><button type="button" role="link">AI Mode</button></form>
 <template>
 <div class="e9EfHf">
     <header class="DZ13He YNk70c"><nav class="P3mIxe">AI Mode · All</nav></header>
     <div class="QGG6Id YNk70c"><section>
     <div role="main" data-artifact-opened="false">
+        <div class="sSuaFc">
+            <div class="qEn1od" aria-hidden="true"><button type="button" data-sidebar="open">Open sidebar</button></div>
+            <div class="ho072b j2vKLc" role="navigation" data-xid="BVEPif" aria-hidden="false"><button type="button" data-sidebar="close">Close sidebar</button></div>
+        </div>
         <div class="question-row"><div class="ilZyRc" data-rfsp><div class="xEFZqe"><div class="tbIZh">A short question</div></div></div></div>
         <div data-scope-id data-mlbl data-last-turn><div class="row">
             <div class="pWvJNd"><div class="mZJni"><h2>Answer</h2></div></div>

@@ -282,7 +282,7 @@
         });
     `;
 
-    function run(target) {
+    function run(target, windowWidth) {
         const fixtureDir = `${fixturesRoot}/${target.id}`;
         const expected = JSON.parse(read(`${fixtureDir}/expected.json`));
         const extraPath = path.join(repo, fixtureDir, 'extra.js');
@@ -308,7 +308,8 @@
         const html = page.replace('</head>', `${styles}</head>`).replace('</body>', `${install(false)}${tests}</body>`);
         const file = path.join(temp, `${target.id}.html`);
         fs.writeFileSync(file, html);
-        const [w, h] = expected.viewport || [1600, 1000];
+        const [defaultWidth, h] = expected.viewport || [1600, 1000];
+        const w = windowWidth || defaultWidth;
         const result = spawnSync(chrome, ['--headless=new', '--no-first-run', '--no-default-browser-check',
             '--disable-extensions', '--force-prefers-reduced-motion', `--window-size=${w},${h}`,
             `--user-data-dir=${path.join(temp, `profile-${target.id}`)}`, '--dump-dom', '--virtual-time-budget=10000',
@@ -317,7 +318,7 @@
         const match = result.stdout?.match(/<pre id="results">([^<]+)<\/pre>/);
         assert(match, `${target.id}: no browser report (${result.status}): ${result.stderr?.slice(0, 800)}`);
         const report = JSON.parse(match[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&'));
-        fs.writeFileSync(path.join(temp, `${target.id}.json`), JSON.stringify(report, null, 4));
+        fs.writeFileSync(path.join(temp, `${target.id}${windowWidth ? '-' + w : ''}.json`), JSON.stringify(report, null, 4));
         assert(!report.error, `${target.id}: ${report.error}`);
         const motionPage = extra?.runMotion && page.replace('</head>', styles + install(true) + '</head>');
         return { report, expected, extra, motionPage };
@@ -453,6 +454,12 @@
         const { report, expected, extra, motionPage } = run(target);
         if (!extra?.pageScenario) check(target.id, report, expected);
         if (extra && extra.check) extra.check(report, expected, { assert, near });
+        for (const viewport of expected.sidebarViewports || []) {
+            const overhead = expected.viewport[0] - report.capped.viewport;
+            const desktop = run(target, viewport + overhead);
+            assert.strictEqual(desktop.report.capped.viewport, viewport, 'actual CSS layout viewport');
+            extra.check(desktop.report, expected, { assert, near });
+        }
         if (motionPage) await extra.runMotion(chrome, temp, motionPage, report, expected);
         console.log(`Passed generic site checks for ${target.id}`);
     }
