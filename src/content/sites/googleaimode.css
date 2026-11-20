@@ -1,0 +1,27 @@
+/* Google's desktop layout uses 12 tracks for answers and eight for sources. The
+   fixed follow-up box has its own grid and keeps its native 20px outer inset. */
+html.wider-width-active [data-wgx-width="googleGrid"] {
+    --wg-aim-gap: 20px;
+    --wg-aim-source-space: calc(var(--rhs-width) + var(--rhs-margin));
+    --wg-aim-answer: min(var(--wgx-width), calc(var(--wgx-available) - var(--wg-aim-source-space) - 48px));
+    --wg-aim-tracks: minmax(4px, 1fr)
+        repeat(12, minmax(0, calc((var(--wg-aim-answer) - 11 * var(--wg-aim-gap)) / 12)))
+        repeat(8, minmax(0, calc((var(--wg-aim-source-space) - 8 * var(--wg-aim-gap)) / 8)))
+        minmax(4px, 1fr);
+    grid-template-columns: var(--wg-aim-tracks) !important;
+}
+html.wider-width-active [data-wgx-width="googleGrid"] > .y4VEUd {
+    grid-template-columns: var(--wg-aim-tracks) !important;
+}
+html.wider-width-active [data-wgx-width="googleGrid"] > .y4VEUd .t0ITR {
+    width: auto !important;
+    justify-self: stretch !important;
+}
+html.wider-width-active [data-wgx-width="googleGrid"] [data-scope-id][data-mlbl] .pWvJNd:has(> .mZJni) {
+    flex: 0 0 var(--wg-aim-answer) !important;
+    min-width: 0 !important;
+}
+html.wider-width-active [data-wgx-width="googleGrid"] [data-scope-id][data-mlbl] .pWvJNd > .mZJni {
+    width: 100% !important;
+    max-width: 100% !important;
+}

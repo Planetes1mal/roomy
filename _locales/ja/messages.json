@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy：Gemini・ChatGPT・Claude・DeepSeek をワイド表示"
+    "message": "Roomy：Gemini・ChatGPT・Claude・DeepSeek・Google AI Mode をワイド表示"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Gemini・ChatGPT・Claude・DeepSeek の会話エリアを個別に広げ、サイトごとに文字サイズと文章の密度を調整。いつでも一時停止できます。"
+    "message": "Gemini、ChatGPT、Claude、DeepSeek、Google AI Mode の会話幅をサイトごとに設定できます。"
   },
   "widthLabel": {
     "message": "会話の幅"
@@ -407,5 +407,8 @@
   },
   "helpWidthSwitch": {
     "message": "幅を変更するときは「会話の幅」をオンにしてください。"
+  },
+  "helpGoogleMode": {
+    "message": "Google 検索で AI モードを選び、会話を開きます。Roomy は回答と追加入力欄の幅を揃え、出典欄のスペースを確保します。通常の検索と Chrome の新しいタブは元のレイアウトを保ちます。AI モードで調整できるのは幅のみです。"
   }
 }

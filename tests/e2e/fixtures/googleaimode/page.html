@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Search mode transitions</title>
+<style>
+    body { margin: 0; --lhs: 206px; --center-width: 652px; --rhs-width: 372px; --rhs-margin: 76px; }
+    .sidebar { position: fixed; width: var(--lhs); height: 100vh; }
+    [data-artifact-opened] { margin-left: var(--lhs); }
+    [data-artifact-opened], .y4VEUd { display: grid; gap: 0 20px; grid-template-columns: minmax(84px,1fr) repeat(20,36px) minmax(10px,1fr); }
+    .y4VEUd { position: fixed; inset: auto 0 0; padding-left: var(--lhs); height: 142px; }
+    .t0ITR { grid-column: 2 / span 12; margin: 0 -20px; padding: 16px 80px 16px 20px; }
+    .t0ITR textarea { display: block; box-sizing: border-box; width: 100%; }
+    [data-scope-id] { grid-column: 2 / -2; min-height: 400px; }
+    .row { display: flex; }
+    .pWvJNd { width: var(--center-width); }
+    .mZJni { max-width: var(--center-width); }
+    .sources { padding-left: var(--rhs-margin); }
+    .oRipZb { position: sticky; top: 20px; width: var(--rhs-width); }
+</style>
+</head>
+<body>
+<aside class="sidebar">Search history</aside>
+<form role="search"><textarea></textarea><button type="button" role="link">AI Mode</button></form>
+<template>
+    <div role="main" data-artifact-opened="false">
+        <div data-scope-id data-mlbl data-last-turn><div class="row">
+            <div class="pWvJNd"><div class="mZJni"><h2>Answer</h2></div></div>
+            <div class="sources"><aside class="oRipZb">Source links</aside></div>
+        </div></div>
+        <div class="y4VEUd"><div class="t0ITR"><textarea></textarea></div></div>
+    </div>
+</template>
+</body>
+</html>

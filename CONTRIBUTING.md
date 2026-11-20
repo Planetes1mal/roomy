@@ -7,7 +7,7 @@ Bug reports, translations, and focused fixes are welcome. Start with a reproduci
 1. Clone this repository.
 2. Open `chrome://extensions/` in Chrome and enable **Developer mode**.
 3. Choose **Load unpacked** and select the repository folder.
-4. Open [Gemini](https://gemini.google.com/), [ChatGPT](https://chatgpt.com/), [Claude](https://claude.ai/) or [DeepSeek](https://chat.deepseek.com/). After changing extension files, reload the extension and then reload the affected page.
+4. Open [Gemini](https://gemini.google.com/), [ChatGPT](https://chatgpt.com/), [Claude](https://claude.ai/), [DeepSeek](https://chat.deepseek.com/), or [Google AI Mode](https://www.google.com/). After changing extension files, reload the extension and then reload the affected page.
 
 The extension uses vanilla JavaScript, HTML, and CSS. There is no build step or npm install.
 

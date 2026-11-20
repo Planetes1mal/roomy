@@ -44,7 +44,7 @@ const siteTabs = {};
 let nextId = 10;
 for (const site of optional) {
     siteTabs[site.id] = [nextId, nextId + 1];
-    tabs.push({ id: nextId++, url: `${site.url}c/example`, loaded: false, site: site.id });
+    tabs.push({ id: nextId++, url: site.paths ? site.url + 'search?udm=50' : `${site.url}c/example`, loaded: false, site: site.id });
     tabs.push({ id: nextId++, url: site.url, loaded: true, site: site.id });
 }
 const tabsById = new Map(tabs.map(tab => [tab.id, tab]));
@@ -104,7 +104,8 @@ const sandbox = {
         tabs: {
             async query(queryInfo) {
                 queries.push(queryInfo);
-                return tabs.filter(tab => queryInfo.url.some(pattern => tab.url.startsWith(pattern.slice(0, -1))))
+                return tabs.filter(tab => queryInfo.url.some(pattern => pattern.endsWith('*')
+                    ? tab.url.startsWith(pattern.slice(0, -1)) : tab.url === pattern))
                     .map(({ id, url, discarded }) => ({ id, url, discarded }));
             }
         },
@@ -191,7 +192,7 @@ function filesFor(tabId, type) {
         const expected = scriptFor(site);
         const own = plain(registered.find(script => script.id === expected.id));
         assert.ok(own, `${site.id} is registered`);
-        assert.deepStrictEqual(own.matches, plain(site.matches));
+        assert.deepStrictEqual(own.matches, plain(scriptFor(site).matches));
         assert.strictEqual(own.runAt, 'document_start');
         assert.strictEqual(own.persistAcrossSessions, true);
         assert.deepStrictEqual(own.js, expected.js);

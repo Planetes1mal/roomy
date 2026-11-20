@@ -88,7 +88,7 @@ async function initializeSettings() {
             siteSettings[site.id] = settingsUtils.normalizeSiteSettings(result, site.id);
         }
         await Promise.all(siteRegistry.sites.map(site => loadTaskUndo(site.id, localValues)));
-        activeTabSite = getTabSite(tabs[0]);
+        activeTabSite = await getTabSite(tabs[0]);
         const params = new URLSearchParams(window.location.search);
         const savedSite = params.get('site');
         const requested = siteRegistry.get(savedSite) ? savedSite : params.get('view') === 'list' ? null : activeTabSite;

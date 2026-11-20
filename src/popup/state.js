@@ -122,10 +122,11 @@ function siteTabs(site) {
     const permitted = record.access === 'required'
         ? Promise.resolve(true)
         : chrome.permissions.contains({ origins: record.matches });
-    return permitted.then(ok => (ok ? chrome.tabs.query({ url: record.matches }) : []));
+    return permitted.then(ok => (ok ? chrome.tabs.query({ url: siteRegistry.getContentScript(site).matches }) : []));
 }
 
 function notifySiteTabs(site, message) {
+    if (siteRegistry.get(site).modeUrl && message.action === 'updateWidthSetting') message = { action: 'refreshSettings' };
     const v2 = message.action === 'updateSiteEnabled' || message.action === 'updateReadingSettings' ||
         message.action === 'refreshSettings';
     const key = `${site}:${message.action === 'updateWidthSetting' ? 'width' : message.action}`;
@@ -157,9 +158,14 @@ function hasReadingEffect(settings) {
         settings.messageSpacingCustom || settings.userFullWidth;
 }
 
-function getTabSite(tab) {
-    const site = siteRegistry.forUrl(tab && tab.url);
-    return site ? site.id : null;
+async function getTabSite(tab) {
+    const site = siteRegistry.candidateForUrl(tab && tab.url);
+    if (!site) return null;
+    if (siteRegistry.forUrl(tab.url)) return site.id;
+    if (!isGranted(site.id)) return null;
+    // Some search surfaces change modes without navigating.
+    const status = await chrome.tabs.sendMessage(tab.id, { action: 'getLayoutStatus' }).catch(() => null);
+    return status?.site === site.id && ['chat', 'home'].includes(status.surface?.kind) ? site.id : null;
 }
 
 async function refreshLayoutStatus() {
@@ -173,7 +179,7 @@ async function refreshLayoutStatus() {
         await writeQueue;
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (request !== layoutStatusRequest || site !== currentSite) return;
-        if (getTabSite(tab) !== site) {
+        if (await getTabSite(tab) !== site) {
             setStatus('page', '');
             return;
         }

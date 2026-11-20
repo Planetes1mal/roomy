@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy: modo ancho para Gemini, ChatGPT, Claude y DeepSeek"
+    "message": "Roomy: modo ancho para Gemini, ChatGPT, Claude, DeepSeek y Google AI Mode"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Amplía Gemini, ChatGPT, Claude y DeepSeek, ajusta el texto y la densidad de lectura por sitio, y pausa cualquiera cuando quieras."
+    "message": "Amplía Gemini, ChatGPT, Claude, DeepSeek y Google AI Mode. Guarda un ancho de conversación distinto para cada sitio."
   },
   "widthLabel": {
     "message": "Ancho de conversación"
@@ -407,5 +407,8 @@
   },
   "helpWidthSwitch": {
     "message": "Para cambiar el ancho, activa «Ancho de conversación»."
+  },
+  "helpGoogleMode": {
+    "message": "Selecciona Modo IA en la Búsqueda de Google y abre una conversación. Roomy ajusta la respuesta y el cuadro de seguimiento y reserva espacio para las fuentes. La búsqueda normal y la nueva pestaña de Chrome conservan su diseño. El Modo IA solo admite ajustes de ancho."
   }
 }

@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy: Gemini·ChatGPT·Claude·DeepSeek 와이드 모드"
+    "message": "Roomy: Gemini·ChatGPT·Claude·DeepSeek·Google AI Mode 와이드 모드"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Gemini·ChatGPT·Claude·DeepSeek 대화 영역을 각각 넓히고, 사이트별로 글자 크기와 읽기 밀도를 조정하며, 언제든 일시 중지할 수 있습니다."
+    "message": "Gemini, ChatGPT, Claude, DeepSeek, Google AI Mode의 대화 너비를 사이트별로 설정하세요."
   },
   "widthLabel": {
     "message": "대화 너비"
@@ -407,5 +407,8 @@
   },
   "helpWidthSwitch": {
     "message": "너비를 바꾸려면 대화 너비를 켜세요."
+  },
+  "helpGoogleMode": {
+    "message": "Google 검색에서 AI 모드를 선택하고 대화를 여세요. Roomy는 답변과 후속 질문 입력란의 너비를 함께 조정하고 출처 링크를 위한 공간을 남깁니다. 일반 검색과 Chrome 새 탭은 원래 레이아웃을 유지합니다. AI 모드에서는 너비만 조정할 수 있습니다."
   }
 }

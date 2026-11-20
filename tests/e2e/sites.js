@@ -303,7 +303,7 @@
                 { widthEnabled:false, chatWidthSetting:{ value:1000, unit:'px' } } };
                 window.coreSources = ${JSON.stringify(coreSources)};`),
             script(coreSources),
-            script(scenario(target.id, expected))
+            script(extra?.pageScenario || scenario(target.id, expected))
         ].join('');
         const html = page.replace('</head>', `${styles}</head>`).replace('</body>', `${scripts}</body>`);
         const file = path.join(temp, `${target.id}.html`);
@@ -450,7 +450,7 @@
 
     for (const target of selected) {
         const { report, expected, extra } = run(target);
-        check(target.id, report, expected);
+        if (!extra?.pageScenario) check(target.id, report, expected);
         if (extra && extra.check) extra.check(report, expected, { assert, near });
         console.log(`Passed generic site checks for ${target.id}`);
     }

@@ -37,7 +37,7 @@ for (const site of sites) {
     assert.ok(['default', 'gemini-legacy'].includes(site.storage), `${site.id}: storage codec`);
     assert.ok(site.capabilities.length && site.capabilities.every(c => registry.CAPABILITIES.includes(c)), `${site.id}: capabilities`);
     assert.ok(site.capabilities.includes('width'), `${site.id}: conversation width is required`);
-    assert.ok(site.tasks.length && site.tasks.every(task => utils.TASK_DEFINITIONS[task]), `${site.id}: tasks are defined`);
+    assert.ok(Array.isArray(site.tasks) && site.tasks.every(task => utils.TASK_DEFINITIONS[task]), `${site.id}: tasks are defined`);
     assert.deepStrictEqual(Object.keys(utils.TASK_PRESETS[site.id]), plain(site.tasks), `${site.id}: task presets follow the registry`);
     if (site.runtime === 'core') {
         assert.ok(site.adapter && exists(site.adapter.js) && packaged(site.adapter.js), `${site.id}: adapter script exists and is packaged`);
@@ -76,9 +76,17 @@ assert.strictEqual(registry.required().length, 1, 'only Gemini is a required sit
 assert.strictEqual(registry.required()[0].id, 'gemini');
 
 for (const site of sites) {
+    if (site.modeUrl) continue;
     assert.strictEqual(registry.forUrl(site.url), site);
     assert.strictEqual(registry.forUrl(`${site.url}chat/abc?x=1#y`), site);
 }
+const google = registry.get('googleaimode');
+assert.strictEqual(registry.forUrl('https://www.google.com/search?q=test&udm=50'), google);
+for (const url of ['https://www.google.com/', 'https://www.google.com/search?q=test']) {
+    assert.strictEqual(registry.candidateForUrl(url), google);
+    assert.strictEqual(registry.forUrl(url), null, 'a search surface needs a positive mode signal');
+}
+assert.strictEqual(registry.candidateForUrl('https://www.google.com/maps'), null);
 assert.strictEqual(registry.forUrl('https://example.com/'), null);
 assert.strictEqual(registry.forUrl('http://gemini.google.com/'), null, 'only https matches');
 assert.strictEqual(registry.forUrl('https://gemini.google.com.evil.example/'), null, 'host must match exactly');

@@ -4,7 +4,7 @@
 
 原名 **Wider Gemini**。
 
-用來調整 Gemini、ChatGPT、Claude 和 DeepSeek 對話寬度與閱讀版面的 Chrome 擴充功能。每個網站分別記住各自的設定。
+用來調整 Gemini、ChatGPT、Claude、DeepSeek 和 Google AI Mode 對話寬度與閱讀版面的 Chrome 擴充功能。每個網站分別記住各自的設定。
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-安裝-4285F4)](https://chromewebstore.google.com/detail/apadogadaahdjhhmbdhkmdecbobijoed?utm_source=github&utm_medium=readme&utm_campaign=zh-tw)
 [![GitHub Release 3.2.0](https://img.shields.io/badge/release-v3.2.0-blue)](https://github.com/Planetes1mal/roomy/releases/tag/v3.2.0)
@@ -18,9 +18,9 @@
 
 ## 功能
 
-- **調整寬度**：在 Gemini、ChatGPT、Claude 或 DeepSeek 上以像素（`px`）或視窗比例（`%`）設定；每個網站分別儲存範圍和預設。
+- **調整寬度**：在 Gemini、ChatGPT、Claude、DeepSeek 或 Google AI Mode 上以像素（`px`）或視窗比例（`%`）設定；每個網站分別儲存範圍和預設。
 - **依網站啟用或暫停**：網站名稱旁的開關可暫停該網站的所有效果並恢復原頁面，設定仍可編輯並會保留；寬度開關只關閉加寬。遇到尚未辨識的版面時保留原站寬度，並在彈出視窗中提示目前頁面尚未支援。
-- **調整字型大小和間距**：每個網站都支援 75%–200% 字型大小，標題、程式碼和表格維持原有比例；可用閱讀密度收緊間距，或手動設定行高和段落間距。
+- **調整字型大小和間距**：Gemini、ChatGPT、Claude 和 DeepSeek 支援 75%–200% 字型大小，標題、程式碼和表格維持原有比例；可用閱讀密度收緊間距，或手動設定行高和段落間距。
 - **訊息導覽**：對話右側的一列短刻度，點選即可跳到自己傳送的訊息，支援簡短預覽與鍵盤操作，適用於 Gemini、ChatGPT 和 Claude。長對話最多顯示目前訊息附近的 20 個刻度；ChatGPT 和 Claude 隨捲動記住帶有穩定識別碼的訊息，不自動掃描歷史。可在彈出視窗中依網站關閉。DeepSeek 使用網站內建的導覽功能。
 - **任務預設**：一步套用閱讀、寬螢幕或大字設定，並可還原該網站套用前的設定。
 - **Gemini 程式碼自動換行**：較長的程式碼會在對話區內換行顯示。ChatGPT 保留程式碼區塊內建的換行按鈕；Claude 沒有換行按鈕，長行在程式碼區塊內橫向捲動；DeepSeek 會自行替程式碼換行。
@@ -49,11 +49,13 @@ GitHub 版本與 Chrome 線上應用程式商店的更新時間可能不同。�
 
 ## 使用
 
-1. 開啟 [Gemini](https://gemini.google.com/)、[ChatGPT](https://chatgpt.com/)、[Claude](https://claude.ai/) 或 [DeepSeek](https://chat.deepseek.com/)，點選瀏覽器工具列中的 Roomy 圖示。
+1. 開啟 [Gemini](https://gemini.google.com/)、[ChatGPT](https://chatgpt.com/)、[Claude](https://claude.ai/)、[DeepSeek](https://chat.deepseek.com/) 或 [Google AI Mode](https://www.google.com/)，點選瀏覽器工具列中的 Roomy 圖示。
 2. 在支援的網站上開啟時，彈出視窗會直接進入該網站的設定；在其他頁面則列出全部網站，點選一列進入它的設定頁。選擇 `px` 或 `%`，拖曳寬度滑桿，也可以直接點選預設。
 3. 在網站設定首頁用 **−** 和 **+** 調整字級，進入 **閱讀設定** 調整間距。在 Gemini 的設定頁中還可以開啟程式碼自動換行，ChatGPT 保留每個程式碼區塊內建的換行按鈕，Claude 和 DeepSeek 的程式碼區塊維持原樣。
 
-新安裝後，彈出視窗會從工具列圖示處自動開啟一次，列出可加入的網站。點選 ChatGPT、Claude 或 DeepSeek 旁的 **允許** 並在 Chrome 的提示中確認，即可啟用該網站。更新到新增了網站的版本時不會彈出任何內容，只在工具列圖示上顯示「新」標記，下次開啟彈出視窗後消失，清單裡的新網站會標示「新」。授權之前，該網站會留在「可加入的網站」分組中，並保留同一個按鈕。
+在 Google 搜尋選擇 AI Mode 並開啟對話。Roomy 會一起調整回答欄和追問框，為右側來源保留空間。一般搜尋與 Chrome 新分頁維持原版面。Google AI Mode 僅支援寬度設定。
+
+新安裝後，彈出視窗會從工具列圖示處自動開啟一次，列出可加入的網站。點選 ChatGPT、Claude、DeepSeek 或 Google AI Mode 旁的 **允許** 並在 Chrome 的提示中確認，即可啟用該網站。更新到新增了網站的版本時不會彈出任何內容，只在工具列圖示上顯示「新」標記，下次開啟彈出視窗後消失，清單裡的新網站會標示「新」。授權之前，該網站會留在「可加入的網站」分組中，並保留同一個按鈕。
 
 開啟 **範圍與快捷值** 可以調整滑桿範圍，編輯五個快捷值的寬度和名稱，離開欄位即儲存。每個網站的 `px` 和 `%` 各有一組獨立預設。介面語言可在網站列表底部切換。
 

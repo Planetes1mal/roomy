@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy：Gemini、ChatGPT、Claude 与 DeepSeek 宽屏阅读"
+    "message": "Roomy：Gemini、ChatGPT、Claude、DeepSeek 与 Google AI Mode 宽屏阅读"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "分别拓宽 Gemini、ChatGPT、Claude 和 DeepSeek 的对话区域，按网站调整字号与阅读密度，并可随时暂停任一网站。"
+    "message": "分别设置 Gemini、ChatGPT、Claude、DeepSeek 和 Google AI Mode 的对话宽度。"
   },
   "widthLabel": {
     "message": "对话宽度"
@@ -407,5 +407,8 @@
   },
   "helpWidthSwitch": {
     "message": "调宽度时，确认“对话宽度”的开关已打开。"
+  },
+  "helpGoogleMode": {
+    "message": "在 Google 搜索中选择 AI Mode 并打开对话。Roomy 会一起调整回答列和追问框，给右侧来源留出空间。普通搜索和 Chrome 新标签页保留原布局。Google AI Mode 仅支持宽度设置。"
   }
 }

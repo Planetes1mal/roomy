@@ -213,7 +213,7 @@
 
         function apply() {
             const root = document.documentElement;
-            if (!root) return;
+            if (!root || !MESSAGE_ROOT) return;
             if (!ctx.siteActive) {
                 stop();
                 return;

@@ -201,6 +201,13 @@
             const next = discoverSurface();
             const changed = next.root !== ctx.surface.root || next.kind !== ctx.surface.kind;
             ctx.surface = next;
+            if (ctx.settingsLoaded) {
+                const applies = !registry.get(site.id)?.modeUrl || next.kind === 'chat' || next.kind === 'home';
+                ctx.siteActive = applies && ctx.settings.siteEnabled;
+                if (applies && root.getAttribute('data-wgx-site') !== site.id) root.setAttribute('data-wgx-site', site.id);
+                if (!applies && root.getAttribute('data-wgx-site') === site.id) root.removeAttribute('data-wgx-site');
+                root.classList.toggle(SITE_CLASS, ctx.siteActive);
+            }
             ctx.width.sync();
             if (site.hooks.afterSync) site.hooks.afterSync(ctx);
             if (changed && document.readyState !== 'loading') ctx.reading.apply();
@@ -252,12 +259,6 @@
         function applyAllSettings() {
             if (!ctx.settingsLoaded) return;
             ctx.settings = settingsUtils.normalizeSiteSettings(storedSettings, site.id);
-            ctx.siteActive = isExtensionContextValid() && ctx.settings.siteEnabled;
-            const root = document.documentElement;
-            if (root) {
-                root.setAttribute('data-wgx-site', site.id);
-                if (root.classList.contains(SITE_CLASS) !== ctx.siteActive) root.classList.toggle(SITE_CLASS, ctx.siteActive);
-            }
             syncLayout();
             if (document.readyState !== 'loading') ctx.reading.apply();
             ctx.navigation.queue();
@@ -282,15 +283,16 @@
             const widthEnabled = settings.widthEnabled !== false;
             const pauseReason = !settings.siteEnabled ? 'site' : !widthEnabled ? 'width' : null;
             const chatSurface = isChatSurface();
-            const nativeOnly = surface.kind === 'notApplicable' || (chatSurface && surface.nativeWidth);
+            const nativeOnly = surface.kind === 'notApplicable' || surface.nativeWidth;
             const supported = surface.widthOwners.length > 0;
             const status = !ctx.settingsLoaded ? 'loading' : pauseReason === 'site' ? 'sitePaused'
                 : pauseReason === 'width' ? 'paused' : supported ? 'active' : nativeOnly ? 'notApplicable'
                     : document.readyState === 'loading' ? 'loading' : 'unsupported';
             const messages = ctx.reading.hasMessages();
-            const conversation = Boolean(chatSurface && surface.root.textContent.trim());
+            const supportsReading = settingsUtils.hasCapability(site.id, 'reading');
+            const conversation = Boolean(supportsReading && chatSurface && !messages && surface.root.textContent.trim());
             const readingStatus = !ctx.settingsLoaded ? 'loading' : !settings.siteEnabled ? 'paused'
-                : !chatSurface ? 'notApplicable' : messages ? 'active' : conversation ? 'unsupported' : 'idle';
+                : !supportsReading || !chatSurface ? 'notApplicable' : messages ? 'active' : conversation ? 'unsupported' : 'idle';
             const paused = !settings.siteEnabled ? 'paused' : null;
             const turns = chatSurface && settings.navigationEnabled ? ctx.navigation.turns().length : 0;
             const rail = ctx.navigation.rail;

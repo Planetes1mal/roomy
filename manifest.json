@@ -17,7 +17,8 @@
     "optional_host_permissions": [
         "https://chatgpt.com/*",
         "https://claude.ai/*",
-        "https://chat.deepseek.com/*"
+        "https://chat.deepseek.com/*",
+        "https://www.google.com/*"
     ],
     "background": {
         "service_worker": "src/background.js"

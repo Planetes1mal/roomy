@@ -189,6 +189,11 @@ function renderSite() {
     if (!siteSettings[currentSite]) return;
     byId('settingsLegend').textContent = siteName(currentSite);
     byId('siteTitle').textContent = activePanel === 'home' ? siteName(currentSite) : t(PANEL_TITLES[activePanel]);
+    const reading = settingsUtils.hasCapability(currentSite, 'reading');
+    byId('fontRow').hidden = !reading;
+    document.querySelector('[data-open="reading"]').hidden = !reading;
+    byId('fontRow').parentElement.hidden = !reading && !settingsUtils.hasCapability(currentSite, 'navigation');
+    document.querySelector('[data-open="tasks"]').parentElement.hidden = !siteRegistry.get(currentSite).tasks.length;
     renderPermission();
     applyEnabledUi();
     renderWidth();

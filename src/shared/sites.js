@@ -72,6 +72,21 @@
             capabilities: ['width', 'reading', 'userFullWidth'],
             tasks: ['reading', 'wide', 'large'],
             adapter: { js: 'src/content/sites/deepseek.js', css: 'src/content/sites/deepseek.css' }
+        },
+        {
+            id: 'googleaimode',
+            name: 'Google AI Mode',
+            url: 'https://www.google.com/',
+            matches: ['https://www.google.com/*'],
+            paths: ['/', '/search'],
+            modeUrl: url => url.pathname === '/search' && url.searchParams.get('udm') === '50',
+            access: 'optional',
+            since: '3.3.0',
+            runtime: 'core',
+            storage: 'default',
+            capabilities: ['width'],
+            tasks: [],
+            adapter: { js: 'src/content/sites/googleaimode.js', css: 'src/content/sites/googleaimode.css' }
         }
     ];
 
@@ -107,9 +122,15 @@
         return parsed.hostname === host;
     }
 
-    function forUrl(url) {
+    function candidateForUrl(url) {
         if (!url) return null;
-        return SITES.find(site => site.matches.some(pattern => matchesUrl(pattern, url))) || null;
+        return SITES.find(site => site.matches.some(pattern => matchesUrl(pattern, url)) &&
+            (!site.paths || site.paths.includes(new URL(url).pathname))) || null;
+    }
+
+    function forUrl(url) {
+        const site = candidateForUrl(url);
+        return site && (!site.modeUrl || site.modeUrl(new URL(url))) ? site : null;
     }
 
     function getStorageKeys(id) {
@@ -132,7 +153,10 @@
         const adapter = site.adapter || { js: '', css: '' };
         return {
             id: `wider-${site.id}`,
-            matches: [...site.matches],
+            matches: site.paths ? site.paths.flatMap(path => {
+                const page = site.url.slice(0, -1) + path;
+                return [page, page + '?*'];
+            }) : [...site.matches],
             js: core ? [...SHARED_JS, ...CORE_JS, adapter.js] : [...site.legacy.js],
             css: core ? [...SHARED_CSS, ...CORE_CSS, ...(adapter.css ? [adapter.css] : [])] : [...site.legacy.css],
             runAt: 'document_start',
@@ -176,6 +200,7 @@
         required,
         optional,
         matchesUrl,
+        candidateForUrl,
         forUrl,
         getStorageKeys,
         getContentScript,
