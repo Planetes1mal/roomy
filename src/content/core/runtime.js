@@ -107,7 +107,8 @@
             },
             watch: {
                 markers: watch.markers || '',
-                attributes: watch.attributes || []
+                attributes: watch.attributes || [],
+                beforePaint: watch.beforePaint === true
             },
             hooks: definition.hooks || {}
         };
@@ -189,7 +190,8 @@
             };
         }
 
-        function syncLayout() {
+        function syncLayout(discovered) {
+            if (site.watch.beforePaint && layoutFrame !== null) cancelAnimationFrame(layoutFrame);
             layoutFrame = null;
             if (ctx.retired) return;
             if (!isExtensionContextValid()) {
@@ -198,7 +200,7 @@
             }
             const root = document.documentElement;
             if (!root) return;
-            const next = discoverSurface();
+            const next = discovered || discoverSurface();
             const changed = next.root !== ctx.surface.root || next.kind !== ctx.surface.kind;
             ctx.surface = next;
             if (ctx.settingsLoaded) {
@@ -215,7 +217,12 @@
         }
 
         function queueLayout() {
-            if (!ctx.retired && layoutFrame === null) layoutFrame = requestAnimationFrame(syncLayout);
+            if (!ctx.retired && layoutFrame === null) {
+                layoutFrame = requestAnimationFrame(() => {
+                    layoutFrame = null;
+                    syncLayout();
+                });
+            }
         }
 
         function observeLayout() {
@@ -224,13 +231,36 @@
             const markers = site.watch.markers;
             const hasMarker = node => node.nodeType === 1 && Boolean(markers) &&
                 (node.matches(markers) || Boolean(node.querySelector(markers)));
+            const touchesMarker = mutation => mutation.type === 'attributes'
+                ? hasMarker(mutation.target)
+                : [...mutation.addedNodes, ...mutation.removedNodes].some(hasMarker);
+            const couldChangeSurface = mutation => {
+                const surface = ctx.surface;
+                // Appending content inside an established chat does not replace its layout.
+                if (mutation.type === 'childList' && !mutation.removedNodes.length &&
+                    surface.kind === 'chat' && surface.widthOwners.length && mutation.target !== surface.root &&
+                    surface.root.contains(mutation.target)) return false;
+                return touchesMarker(mutation);
+            };
             layoutObserver = new MutationObserver(function (mutations) {
-                const changed = mutations.some(mutation => mutation.type === 'attributes'
-                    ? mutation.attributeName !== 'class' || hasMarker(mutation.target)
-                    : [...mutation.addedNodes, ...mutation.removedNodes].some(hasMarker));
-                if (changed) queueLayout();
+                if (site.watch.beforePaint && !ctx.settingsLoaded) return; // The storage callback discovers the current DOM.
+                const changed = mutations.some(mutation => (mutation.type === 'attributes' && mutation.attributeName !== 'class') ||
+                    touchesMarker(mutation));
+                if (!changed) return;
+                if (site.watch.beforePaint && mutations.some(couldChangeSurface)) {
+                    // During a View Transition update, rAF is suspended until after the new snapshot.
+                    const next = discoverSurface();
+                    const prev = ctx.surface;
+                    if (next.root !== prev.root || next.kind !== prev.kind || next.nativeWidth !== prev.nativeWidth ||
+                        next.footer !== prev.footer || next.widthOwners.length !== prev.widthOwners.length ||
+                        next.widthOwners.some((owner, i) => owner.element !== prev.widthOwners[i].element)) {
+                        syncLayout(next);
+                        return;
+                    }
+                }
+                queueLayout();
             });
-            layoutObserver.observe(document.documentElement, {
+            layoutObserver.observe(site.watch.beforePaint ? document : document.documentElement, {
                 childList: true, subtree: true, attributes: true,
                 attributeFilter: [...new Set(['class', 'hidden', 'inert', 'role', 'data-theme', ...site.watch.attributes])]
             });
@@ -355,8 +385,13 @@
             }
         });
 
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observeLayout, { once: true });
-        else observeLayout();
+        if (document.readyState === 'loading') {
+            if (site.watch.beforePaint) observeLayout();
+            document.addEventListener('DOMContentLoaded', site.watch.beforePaint ? queueLayout : observeLayout,
+                { once: true, signal: listenerControl.signal });
+        } else {
+            observeLayout();
+        }
         readSettings();
         return ctx;
     }
