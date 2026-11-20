@@ -14,11 +14,6 @@
     const dictionaries = Object.fromEntries(['en', 'zh_CN', 'zh_TW', 'ko', 'ja', 'es'].map(locale => [locale,
         JSON.parse(fs.readFileSync(path.join(extension, '_locales', locale, 'messages.json'), 'utf8'))
     ]));
-    const keys = Object.keys(dictionaries.en).sort();
-    for (const [locale, dictionary] of Object.entries(dictionaries)) {
-        assert.deepStrictEqual(Object.keys(dictionary).sort(), keys, `${locale}: dictionary key parity`);
-        for (const key of keys) assert(dictionary[key].message.trim(), `${locale}.${key}: nonempty message`);
-    }
 
     async function checkBrowser(browserLanguage, check) {
         const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'wg-popup-language-'));
@@ -188,7 +183,7 @@
             await expectLanguage('auto', 'en');
             console.log('PASS: unsupported French browser locale falls back to English, including document language');
         });
-        console.log(`PASS: ${keys.length} matching translation keys; screenshots: ${screenshots}`);
+        console.log(`PASS: popup language switching and browser detection; screenshots: ${screenshots}`);
     })().catch(error => {
         console.error(error.stack);
         process.exitCode = 1;

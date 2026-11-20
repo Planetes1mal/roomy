@@ -128,13 +128,12 @@ For full release validation, `node scripts/test.js` also runs packaging tests an
 |---|---|
 | `sites.test.js` | Registry fields, manifest hosts and static scripts, storage-key uniqueness, packaged files, fixtures for core sites, `storage.sync` size estimate |
 | `settings-utils.test.js` | Settings normalization and fallbacks |
-| `gemini-content-css.test.js` | Required scoped selectors and declarations |
 | `gemini-content-lifecycle.test.js` | Single initialization, repeated injection, and late injection |
 | `background.test.js` | Check-before-inject, manifest permissions, discarded tabs, per-tab failures, per-site registration and revocation, and the new-site notice matrix |
 | `locales.test.js` | Identical keys in all six locales, preserved placeholders, store/manifest length limits, and no missing or unused keys in any file under `src/` |
 | `repository-files.test.js` | Only the listed public files are tracked; local working files stay in the ignored `local/` folder |
 | `release-package.test.js` (full suite only) | RC/stable tags, exact release notes, directory-rule ZIP contents including every registry file, and failed-build behavior |
-| `e2e/message-width.js` | Real-browser measurements on synthetic message trees: px/%, nested width limits, late messages, tables, code wrapping, images, input, and protected overlay content |
+| `e2e/message-width.js` | Real-browser measurements on synthetic message trees: px/%, nested width limits, late messages, response headers and loading states, table scrolling, code wrapping, media and input sizes, and protected overlay content |
 | `e2e/chatgpt-reading.js` | Real-browser measurements on stripped ChatGPT markup: font/density/manual spacing boundaries, protected code/table/controls, user full width gated by width, native wrap, streamed content, pause restoration, and fresh resampling on resume |
 | `e2e/navigation-surfaces.js` | Navigation rails on Gemini, ordinary ChatGPT, Dots and Page quick chat: tick placement, jumps, previews, virtualized history, gutters, pause, and a jump while earlier history loads |
 | `e2e/sites.js` | The same width, reading, navigation, surface, pause and takeover scenario on every core site's fixture plus the synthetic reference site |

@@ -26,7 +26,9 @@ function packageFiles(root) {
         }
     };
     walk('src');
-    for (const locale of fs.readdirSync(path.join(root, '_locales'))) list.push(`_locales/${locale}/messages.json`);
+    for (const locale of fs.readdirSync(path.join(root, '_locales'), { withFileTypes: true })) {
+        if (locale.isDirectory()) list.push(`_locales/${locale.name}/messages.json`);
+    }
     list.push('icons/icon16.png', 'icons/icon48.png', 'icons/icon128.png');
     return [...new Set(list)].sort();
 }
@@ -115,7 +117,7 @@ try {
     }
     fs.copyFileSync(path.join(sourceRoot, 'scripts/package.ps1'), path.join(fixtureRoot, 'scripts/package.ps1'));
     for (const file of ['README.md', '.env', 'tests/local.test.js', 'icons/promotion/unwanted.png', 'src/notes.md',
-        'src/content/sites/capture.json', 'src/popup/popup.css.map', '_locales/en/README.md', 'icons/icon.svg']) {
+        'src/content/sites/capture.json', 'src/popup/popup.css.map', '_locales/.DS_Store', '_locales/en/README.md', 'icons/icon.svg']) {
         const destination = path.join(fixtureRoot, file);
         fs.mkdirSync(path.dirname(destination), { recursive: true });
         fs.writeFileSync(destination, 'This file must never enter the release ZIP.');

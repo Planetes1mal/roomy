@@ -12,7 +12,6 @@
     const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'wg-message-width-'));
     const read = name => fs.readFileSync(path.join(repo, name), 'utf8');
     const script = source => `<script>${source.replace(/<\/script/gi, '<\\/script')}</script>`;
-    const probe = process.argv.includes('--probe');
     const cases = ['baseline', 'response-content', 'anonymous', 'message-content', 'markdown',
         'tag-only', 'limited-parent', 'padded-body'];
     const fixture = name => {
@@ -84,8 +83,32 @@
         [data-generated] .overlay-container { position:relative; }
         [data-generated] .generated-image-controls { position:absolute; top:12px; right:12px; display:flex; gap:8px; }
         [data-generated] .generated-image-controls button { width:36px; height:36px; padding:0; border:0; }
+        [data-components] [data-capped] { display:block; max-width:240px; }
+        [data-components] :is(message-actions, .response-container-header, thinking-overlay) { margin-inline:12px; }
+        [data-components] thinking-overlay[data-capped] { display:flex; }
+        [data-components] thinking-dots-animation { display:block; width:100%; }
+        [data-components] .horizontal-scroll-wrapper { margin-inline:-30px; padding-inline:10px; }
+        [data-components] ::-webkit-scrollbar-track { margin-inline:20px; }
+        [data-components] [data-control] { box-sizing:border-box; width:120px; max-width:60px; }
+        [data-components] p { font-size:20px; line-height:32px; margin:16px 0 8px; }
+        .hero-caption-row .caption { margin-left:24px; }
     </style><style>${read('src/content/gemini-content.css')}</style></head><body>
         ${cases.map(fixture).join('')}
+        <div class="conversation-container" data-components>
+            <user-query><div class="user-query-bubble-container"><p data-capped>Question</p></div></user-query>
+            <model-response>
+                <div class="response-container-header" data-capped>Answer</div>
+                <thinking-overlay data-capped><thinking-dots-animation>...</thinking-dots-animation></thinking-overlay>
+                <response-element data-capped><div class="markdown">
+                    <p data-capped>First</p><p data-reading>Second</p>
+                    ${['img','video','svg','canvas','iframe','button','input','select','textarea'].map(tag =>
+                        ['img','input'].includes(tag) ? `<${tag} data-control>` : `<${tag} data-control></${tag}>`).join('')}
+                </div></response-element>
+                <div class="horizontal-scroll-wrapper"><table-block><div class="table-content"></div></table-block></div>
+                <message-actions data-capped>Copy</message-actions>
+            </model-response>
+            <pending-request><thinking-dots-animation data-capped>...</thinking-dots-animation></pending-request>
+        </div>
         <div class="conversation-container" data-captions style="width:100%;margin:auto">
             <model-response><single-image style="display:block"><div class="image-button">
                 <img width="240" height="1" alt="" style="display:block;margin:auto"
@@ -110,12 +133,12 @@
                 const width = node => node.getBoundingClientRect().width;
                 const send = message => window.deliver(message, {}, () => {});
                 const rows = [];
-                const take = (setting, fullWidth, wrap, mode='extension') => {
+                const take = (setting, fullWidth, wrap) => {
                     for (const section of document.querySelectorAll('[data-case]')) {
                         const get = selector => section.querySelector(selector);
                         const table = get('.table-content');
                         const code = get('pre');
-                        rows.push({name:section.dataset.case, setting, fullWidth, wrap, mode,
+                        rows.push({name:section.dataset.case, setting, fullWidth, wrap,
                             viewport:innerWidth, parent:width(section), response:width(get('[data-text]')),
                             body:width(get('.markdown')),
                             user:width(get('user-query')), bubble:width(get('.user-query-bubble-with-background')),
@@ -147,23 +170,7 @@
                 lateSection.querySelector('.response-content').style.maxWidth = '760px';
                 document.body.appendChild(lateSection);
                 await new Promise(resolve => setTimeout(resolve, 0));
-                take(window.settings.chatWidthSetting, true, true, 'late-insertion');
-                if (${probe}) {
-                    const setting = {value:1600,unit:'px'};
-                    window.settings.chatWidthSetting = setting;
-                    send({action:'updateWidthSetting',setting});
-                    for (const [mode, css] of [
-                        ['max-only','*{max-width:none!important;}'],
-                        ['width-only','.chat-container,.message-content,textarea{width:100%!important;}'],
-                        ['full','*{max-width:none!important;}.chat-container,.message-content,textarea{width:100%!important;}']
-                    ]) {
-                        const style=document.createElement('style');
-                        style.textContent=css;
-                        document.head.appendChild(style);
-                        take(setting,true,true,mode);
-                        style.remove();
-                    }
-                }
+                take(window.settings.chatWidthSetting, true, true);
                 const pageProtected = [...document.querySelectorAll('body > .protected, body > .protected .protected')].map(width);
                 const pageOverlayContent = [...document.querySelectorAll('body > .protected .overlay-body')].map(width);
                 const captions = [];
@@ -186,7 +193,32 @@
                 const conversation = baseline.querySelector('.conversation-container');
                 const drop = baseline.querySelector('.upload-card');
                 const captionRow = host.querySelector('.hero-caption-row');
-                send({action:'updateDensity',settings:{messageCompactness:30,messageFontSize:125}});
+                const components = document.querySelector('[data-components]');
+                const get = selector => components.querySelector(selector);
+                const bounds = node => {
+                    const {left, right} = node.getBoundingClientRect();
+                    return [left, right];
+                };
+                const layout = {
+                    column:bounds(components),
+                    children:[...components.querySelectorAll('[data-capped], .horizontal-scroll-wrapper, table-block')].map(bounds),
+                    controls:[...components.querySelectorAll('[data-control]')].map(el => getComputedStyle(el).maxWidth),
+                    dots:width(get('thinking-overlay > thinking-dots-animation')),
+                    scrollbar:getComputedStyle(get('.table-content'), '::-webkit-scrollbar-track').marginInline,
+                    bubbleAlign:getComputedStyle(get('.user-query-bubble-container')).alignItems
+                };
+                const readingStyle = () => {
+                    const s = getComputedStyle(get('[data-reading]'));
+                    return [s.fontSize, s.lineHeight, s.marginTop, s.marginBottom].map(parseFloat);
+                };
+                const reading = {native:readingStyle()};
+                send({action:'updateDensity',settings:{messageCompactness:50,messageFontSize:125}});
+                reading.compact = readingStyle();
+                for (const space of [8, 0]) {
+                    send({action:'updateDensity',settings:{messageSpacingCustom:true, messageLineHeight:1.5,
+                        messageParagraphSpacing:space, messageFontSize:125}});
+                    reading['spacing' + space] = readingStyle();
+                }
                 send({action:'updateWidthEnabled',enabled:false});
                 const paused = {
                     conversation:width(conversation), max:conversation.style.getPropertyValue('max-width'),
@@ -239,7 +271,7 @@
                 measureImage('paused');
                 const output=document.createElement('pre');
                 output.id='results';
-                output.textContent=JSON.stringify({rows,pageProtected,pageOverlayContent,captions,paused,resumed,siteOwned,generated});
+                output.textContent=JSON.stringify({rows,pageProtected,pageOverlayContent,captions,layout,reading,paused,resumed,siteOwned,generated});
                 document.body.appendChild(output);
             });
         `)}</body></html>`;
@@ -265,13 +297,6 @@
     const report = JSON.parse(match[1]);
     fs.writeFileSync(path.join(temp, 'results.json'), JSON.stringify(report, null, 4));
     console.log(`Synthetic fixture and measurements: ${temp}`);
-    if (probe) {
-        console.table(report.rows.filter(row => ['max-only','width-only','full'].includes(row.mode)).map(row => ({
-            case:row.name, mode:row.mode, response:row.response, input:row.input, image:row.image,
-            nestedDialog:row.protected[1], sources:row.sources
-        })));
-        return;
-    }
     const failures = [];
     const check = (row, key, expected) => {
         if (Math.abs(row[key] - expected) > 1) {
@@ -297,6 +322,17 @@
     }
     assert.deepStrictEqual(report.pageProtected, [300,300,300], 'Page overlay/menu changed');
     assert.deepStrictEqual(report.pageOverlayContent, [120,120], 'Page overlay content changed');
+    const {layout, reading} = report;
+    assert(layout.children.every(box => box.every((edge, i) => Math.abs(edge - layout.column[i]) <= 1)),
+        `Text, actions, thinking and table wrappers align with the column: ${JSON.stringify(layout)}`);
+    assert(layout.dots > 0 && layout.dots < 60, 'dots inside a thinking overlay keep their content width');
+    assert.deepStrictEqual(layout.controls, Array(9).fill('60px'), 'media and form controls keep their native cap');
+    assert.strictEqual(layout.scrollbar, '0px', 'the table scrollbar track reaches both edges');
+    assert.strictEqual(layout.bubbleAlign, 'stretch', 'full-width user query wrapper stretches its contents');
+    assert.deepStrictEqual(reading.native, [20, 32, 16, 8]);
+    assert.deepStrictEqual(reading.compact, [25, 36.4, 9, 4.5], 'font, line height and margins follow native metrics');
+    assert.deepStrictEqual(reading.spacing8, [25, 37.5, 8, 0]);
+    assert.deepStrictEqual(reading.spacing0, [25, 37.5, 0, 0], 'manual paragraph spacing accepts zero');
     for (const caption of report.captions) {
         assert(Math.abs(caption.image - caption.caption) <= 1,
             `Image caption misaligned after ${caption.via} at ${caption.value}px`);
