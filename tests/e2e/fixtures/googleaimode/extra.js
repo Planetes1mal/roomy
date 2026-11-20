@@ -16,7 +16,8 @@ module.exports.pageScenario = `
             tabsOffset:rect('.P3mIxe').left - rect('.mZJni').left,
             questionOffset:rect('.tbIZh').right - rect('.mZJni').right,
             sources:rect('.oRipZb').width, gap:rect('.oRipZb').left - rect('.mZJni').right,
-            left:rect('.sidebar').width, overflow:document.documentElement.scrollWidth - innerWidth
+            left:rect('.sidebar').width, viewport:document.documentElement.clientWidth,
+            overflow:document.documentElement.scrollWidth - document.documentElement.clientWidth
         });
         try {
             await wait();
@@ -34,6 +35,12 @@ module.exports.pageScenario = `
             out.at1000 = geometry();
             width(90, 'percent');
             out.capped = geometry();
+            width(1000);
+            document.documentElement.style.overflowY = 'hidden';
+            width(90, 'percent');
+            out.noScrollbar = geometry();
+            document.documentElement.style.removeProperty('overflow-y');
+            await wait();
             const main = q('[data-artifact-opened]');
             main.setAttribute('data-artifact-opened','true');
             await wait();
@@ -69,7 +76,13 @@ module.exports.pageScenario = `
 module.exports.check = function (out, expected, { assert, near }) {
     assert.deepStrictEqual(out.entry, [0, true], 'search and its entry toggle stay native');
     assert.strictEqual(out.surface, 'chat');
-    for (const [sample, width] of [[out.at700, 700], [out.at1000, 1000], [out.capped, 1858]]) {
+    const cap = sample => sample.viewport - 206 - expected.sourceWidth - expected.sourceGap - 48;
+    assert.strictEqual(out.noScrollbar.viewport - out.capped.viewport, 16, 'the fixture reserves a real scrollbar gutter');
+    for (const sample of [out.capped, out.noScrollbar]) {
+        assert(cap(sample) > 1000 && cap(sample) < sample.viewport * .9, 'the percent case reaches the available-space cap');
+    }
+    for (const [sample, width] of [[out.at700, 700], [out.at1000, 1000],
+        [out.capped, cap(out.capped)], [out.noScrollbar, cap(out.noScrollbar)]]) {
         near(sample.answer, width, 'answer width');
         near(sample.shell, width + 40, 'composer keeps its original outer inset');
         near(sample.composerOffset, 0, 'input text aligns with answers');

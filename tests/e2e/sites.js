@@ -453,7 +453,7 @@
         const { report, expected, extra, motionPage } = run(target);
         if (!extra?.pageScenario) check(target.id, report, expected);
         if (extra && extra.check) extra.check(report, expected, { assert, near });
-        if (motionPage) await extra.runMotion(chrome, temp, motionPage);
+        if (motionPage) await extra.runMotion(chrome, temp, motionPage, report, expected);
         console.log(`Passed generic site checks for ${target.id}`);
     }
     console.log(`Passed site regression for ${selected.map(target => target.id).join(', ')} (${temp}).`);

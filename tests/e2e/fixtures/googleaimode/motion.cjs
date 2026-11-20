@@ -27,7 +27,8 @@ async function exercise() {
         return {
             width:answer.width, left:answer.left, owned:!!q('[data-wg-aim-motion]'), tabs:box('.P3mIxe').left - answer.left,
             bubble:box('.tbIZh').right - answer.right, editor:box('.t0ITR textarea').left - answer.left,
-            gap:box('.oRipZb').left - answer.right, sources:box('.oRipZb').width
+            gap:box('.oRipZb').left - answer.right, sources:box('.oRipZb').width,
+            overflow:document.documentElement.scrollWidth - document.documentElement.clientWidth
         };
     }
     async function sample(change, reverseAtMidpoint = false) {
@@ -55,7 +56,8 @@ async function exercise() {
         turn.remove();
         dock.remove();
         document.body.append(fragment);
-        const native = { left:q('.ilZyRc').getBoundingClientRect().left };
+        const root = document.documentElement;
+        const native = { left:q('.ilZyRc').getBoundingClientRect().left, overflow:root.scrollWidth - root.clientWidth };
         function partialFrame(selector) {
             const r = q(selector).getBoundingClientRect();
             return { width:r.width, tabs:q('.P3mIxe').getBoundingClientRect().left - r.left,
@@ -73,7 +75,7 @@ async function exercise() {
         await fetch('/release-dcl');
         if (!window.domContentLoaded) await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, { once:true }));
         q('.e9EfHf').remove();
-        const toggleSidebar = innerWidth === 1440;
+        const toggleSidebar = root.clientWidth === 1440;
         if (toggleSidebar) document.body.style.setProperty('--lhs', '0px');
         await frame();
         let duringUpdate;
@@ -107,7 +109,7 @@ async function exercise() {
         await frame();
         const left = !q('[data-wg-aim-motion]') && !document.documentElement.classList.contains('wider-width-active');
         await fetch('/report', { method:'POST', body:JSON.stringify({
-            viewport:[innerWidth,innerHeight], native, questionFirst, answerFirst, firstFrame, early, duringUpdate, newSnapshot, firstChatFrame,
+            viewport:[root.clientWidth,root.clientHeight], native, questionFirst, answerFirst, firstFrame, early, duringUpdate, newSnapshot, firstChatFrame,
             narrow, wide, reversed, pause, cleaned, resume, left, timings
         }) });
     } catch (error) {
@@ -115,7 +117,7 @@ async function exercise() {
     }
 }
 
-async function runMotion(chrome, temp, page, viewportWidth) {
+async function runMotion(chrome, temp, page, viewportWidth, windowOverhead) {
     let unblock;
     const dclGate = new Promise(resolve => { unblock = resolve; });
     let finish;
@@ -147,7 +149,7 @@ async function runMotion(chrome, temp, page, viewportWidth) {
     });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const child = spawn(chrome, ['--headless=new', '--disable-extensions', '--disable-sync', '--disable-background-networking',
-        '--no-first-run', '--no-default-browser-check', '--force-prefers-no-reduced-motion', '--window-size=' + viewportWidth + ',1440',
+        '--no-first-run', '--no-default-browser-check', '--force-prefers-no-reduced-motion', '--window-size=' + (viewportWidth + windowOverhead) + ',1440',
         '--user-data-dir=' + path.join(temp, 'motion-' + viewportWidth), 'http://127.0.0.1:' + server.address().port], { stdio:'ignore' });
     const closed = new Promise(resolve => child.once('close', resolve));
     let timer;
@@ -166,6 +168,7 @@ async function runMotion(chrome, temp, page, viewportWidth) {
     assert(!data.error, data.error);
     fs.writeFileSync(path.join(temp, 'googleaimode-motion-' + viewportWidth + '.json'), JSON.stringify(data));
     assert.strictEqual(data.viewport[0], viewportWidth);
+    assert.equal(data.native.overflow, 0, 'the native grid fits the CSS layout viewport');
     const wideTarget = Math.min(1000, viewportWidth - 206 - 448 - 48);
     assert(data.early, 'sample the full-document entry before DOMContentLoaded');
     for (const sample of [data.questionFirst, data.answerFirst]) {
@@ -188,6 +191,7 @@ async function runMotion(chrome, temp, page, viewportWidth) {
         assert(distinct.size > 3, name + ': partial widths appear in separate real frames');
         if (name === 'reversed') assert(frames.some(f => f.width < wideTarget - (wideTarget - 652) / 4), 'reverse a return that has already started');
         for (const f of frames) {
+            assert.equal(f.overflow, 0, name + ': the page does not overflow horizontally');
             assert(Math.max(Math.abs(f.tabs), Math.abs(f.bubble), Math.abs(f.editor)) < 1, name + ': edges track each frame');
             assert(Math.abs(f.gap - 76) < 1 && Math.abs(f.sources - 372) < 1, name + ': source links keep their space');
         }
@@ -214,7 +218,9 @@ async function runMotion(chrome, temp, page, viewportWidth) {
     }
 }
 
-module.exports = async function (chrome, temp, page) {
-    await runMotion(chrome, temp, page, 2560);
-    await runMotion(chrome, temp, page, 1440);
+module.exports = async function (chrome, temp, page, report, expected) {
+    // --window-size includes platform window borders and the fixture's vertical scrollbar.
+    const windowOverhead = expected.viewport[0] - report.capped.viewport;
+    await runMotion(chrome, temp, page, 2560, windowOverhead);
+    await runMotion(chrome, temp, page, 1440, windowOverhead);
 };
