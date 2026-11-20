@@ -55,11 +55,16 @@
             access: 'optional', since: '3.2.0', runtime: 'core', storage: 'default',
             capabilities: ['width'], tasks: ['reading', 'wide'],
             adapter: { js: 'src/content/sites/beta.js' }
+        },
+        {
+            id: 'googleaimode', name: 'Google AI Mode', url: 'https://www.google.com/', matches: ['https://www.google.com/*'],
+            access: 'optional', since: '3.3.0', runtime: 'core', storage: 'default', capabilities: ['width'], tasks: [],
+            adapter: { js: 'src/content/sites/googleaimode.js' }
         }`;
     fs.writeFileSync(registryPath, registry.slice(0, start) + fakeSites + registry.slice(end));
     const manifestPath = path.join(extension, 'manifest.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    manifest.optional_host_permissions = ['https://chatgpt.com/*', 'https://alpha.example/*', 'https://www.alpha.example/*', 'https://beta.example/*'];
+    manifest.optional_host_permissions = ['https://chatgpt.com/*', 'https://alpha.example/*', 'https://www.alpha.example/*', 'https://beta.example/*', 'https://www.google.com/*'];
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 4));
 
     async function withBrowser(check) {
@@ -218,7 +223,7 @@
             let list = await popup.evaluate(LIST_STATE);
             assert.strictEqual(list.view, 'list', 'opens the list away from a supported site');
             assert.deepStrictEqual(list.yours, ['gemini'], 'required sites are in "your websites"');
-            assert.deepStrictEqual(list.addable, ['chatgpt', 'alpha', 'beta'], 'ungranted sites follow the registry order');
+            assert.deepStrictEqual(list.addable, ['chatgpt', 'alpha', 'beta', 'googleaimode'], 'ungranted sites follow the registry order');
             assert.strictEqual(list.addableShown, true);
             assert.deepStrictEqual(list.fresh, [], 'no New marker without intro flags');
             assert.deepStrictEqual(list.current, [], 'no current-page marker on a non-site page');
@@ -387,6 +392,43 @@
             await popup.evaluate('flushPendingChanges()');
             await popup.close();
             console.log('PASS: real clicks, paused edits, width lock, task and range undo, validation, manual spacing, focus');
+
+            popup = await openPopup('?site=googleaimode');
+            await popup.ready();
+            const drag = await popup.evaluate(`(async () => {
+                chrome.tabs.query = async query => query.active ? [{id:7, url:'https://www.google.com/search?udm=50'}] : [];
+                chrome.permissions.contains = async () => true;
+                chrome.tabs.sendMessage = async () => ({site:'googleaimode', protocolVersion:2, capabilities:{}});
+                const sent = [];
+                let disconnected = false;
+                chrome.tabs.connect = (tabId, { name, frameId }) => ({
+                    onDisconnect:{ addListener() {} },
+                    postMessage(setting) { sent.push({tabId, name, frameId, value:setting.value, time:performance.now()}); },
+                    disconnect() { disconnected = true; }
+                });
+                await initializeSettings();
+                const slider = document.getElementById('widthSlider');
+                for (let i = 0; i < 12; i++) {
+                    slider.value = 1050 + i * 50;
+                    slider.dispatchEvent(new Event('input', {bubbles:true}));
+                    await new Promise(resolve => setTimeout(resolve, 15));
+                }
+                const readWidth = async () => (await chrome.storage.sync.get('googleaimodeWidthSettings'))
+                    .googleaimodeWidthSettings?.chatWidthSetting.value;
+                const beforeRelease = await readWidth();
+                slider.dispatchEvent(new Event('change', {bubbles:true}));
+                await flushPendingChanges();
+                const saved = await readWidth();
+                return {sent, beforeRelease, saved, disconnected};
+            })()`);
+            assert(drag.sent.length >= 2, 'the active Google tab receives intermediate targets during a drag');
+            assert(drag.sent.every((msg, i) => msg.tabId === 7 && msg.frameId === 0 && msg.name === 'roomy-google-width-preview' &&
+                (!i || msg.time - drag.sent[i - 1].time >= 30)), 'previews are scoped to the active tab and throttled');
+            assert.strictEqual(drag.beforeRelease, undefined, 'continuous input does not write to sync storage');
+            assert.strictEqual(drag.saved, 1600);
+            assert(drag.disconnected, 'the saved width supersedes the transient preview');
+            await popup.close();
+            console.log('PASS: throttled Google width drag previews and final storage commit');
 
             for (const locale of LOCALES) {
                 popup = await openPopup('?view=list');

@@ -6,6 +6,7 @@ let settingsLoaded = false;
 let taskBusy = false;
 let currentSite = null;
 let activeTabSite = null;
+let activeTabId = null;
 let storedSettings = {};
 const siteSettings = {};
 const taskUndo = {};

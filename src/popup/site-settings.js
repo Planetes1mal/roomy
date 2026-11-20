@@ -7,6 +7,41 @@ const isSameWidthSetting = (a, b) => a.unit === b.unit && a.value === b.value;
 let activePanel = 'home';
 let pendingSliderSave;
 let sliderTimer;
+let widthPreview = null;
+
+function previewGoogleWidth(setting) {
+    if (!widthPreview) {
+        const port = chrome.tabs.connect(activeTabId, { name: 'roomy-google-width-preview', frameId: 0 });
+        const session = { port, setting, timer: null };
+        widthPreview = session;
+        port.onDisconnect.addListener(() => {
+            // A freshly navigated or older tab may have no preview receiver.
+            void chrome.runtime.lastError;
+            clearTimeout(session.timer);
+            session.port = null;
+        });
+    }
+    const session = widthPreview;
+    session.setting = setting;
+    if (session.port && session.timer === null) {
+        session.timer = setTimeout(() => {
+            session.timer = null;
+            try {
+                session.port?.postMessage(session.setting);
+            } catch {
+                // A navigating tab can disconnect before the onDisconnect event arrives.
+                session.port = null;
+            }
+        }, 32);
+    }
+}
+
+function endWidthPreview(setting) {
+    if (widthPreview?.setting !== setting) return;
+    clearTimeout(widthPreview.timer);
+    widthPreview.port?.disconnect();
+    widthPreview = null;
+}
 
 function flushSlider() {
     clearTimeout(sliderTimer);
@@ -31,12 +66,19 @@ function editWidth(edit, dragging = false) {
     Object.assign(siteSettings[site], width);
     renderWidth();
     renderTasks();
-    const save = () => writePatch(site, () => patch, {
-        action: 'updateWidthSetting', setting: width.chatWidthSetting,
-        ranges: { widthMin: width.widthMin, widthMax: width.widthMax,
-            widthPercentMin: width.widthPercentMin, widthPercentMax: width.widthPercentMax },
-        enabled: width.widthEnabled
-    });
+    const setting = width.chatWidthSetting;
+    const preview = dragging && site === 'googleaimode' && activeTabSite === site && activeTabId != null &&
+        siteSettings[site].siteEnabled && width.widthEnabled && isGranted(site);
+    if (preview) previewGoogleWidth(setting);
+    const save = () => {
+        const saved = writePatch(site, () => patch, {
+            action: 'updateWidthSetting', setting,
+            ranges: { widthMin: width.widthMin, widthMax: width.widthMax,
+                widthPercentMin: width.widthPercentMin, widthPercentMax: width.widthPercentMax },
+            enabled: width.widthEnabled
+        });
+        return preview ? saved.finally(() => endWidthPreview(setting)) : saved;
+    };
     saveSliderChange(save, dragging);
 }
 

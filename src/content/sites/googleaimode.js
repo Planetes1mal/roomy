@@ -23,6 +23,8 @@
     let frame = null;
     let wasPainted = false;
     let version = 0;
+    let previewPort = null;
+    let previewWidth = null;
 
     function clearMotion() {
         ++version;
@@ -93,7 +95,7 @@
         setLength('--wg-aim-source-space', 'calc(' + style.getPropertyValue('--rhs-width').trim() +
             ' + ' + style.getPropertyValue('--rhs-margin').trim() + ')');
         setLength('--wg-aim-available', grid.clientWidth + 'px');
-        setLength('--wg-aim-requested', ctx.settingsUtils.getWidthCssValue(ctx.settings.chatWidthSetting));
+        setLength('--wg-aim-requested', ctx.settingsUtils.getWidthCssValue(previewWidth || ctx.settings.chatWidthSetting));
         if (state === 'wide') return;
         ++version;
         if (!state) {
@@ -118,7 +120,27 @@
         }
     }
 
-    window.widerRoomyCore.defineSite({
+    function connectPreview(port) {
+        if (port.name !== 'roomy-google-width-preview' || ctx.retired) return;
+        previewPort?.disconnect();
+        previewPort = port;
+        previewWidth = null;
+        port.onMessage.addListener(setting => {
+            if (port !== previewPort || !ctx.width.active || !host || !Number.isFinite(setting?.value)) return;
+            previewWidth = ctx.settingsUtils.normalizeWidthSetting(setting, ctx.settings);
+            setLength('--wg-aim-requested', ctx.settingsUtils.getWidthCssValue(previewWidth));
+        });
+        port.onDisconnect.addListener(() => {
+            if (port !== previewPort) return;
+            previewPort = null;
+            previewWidth = null;
+            if (host && ctx.width.active && !ctx.retired) {
+                setLength('--wg-aim-requested', ctx.settingsUtils.getWidthCssValue(ctx.settings.chatWidthSetting));
+            }
+        });
+    }
+
+    const ctx = window.widerRoomyCore.defineSite({
         id: 'googleaimode',
         selectors,
         discover(ctx) {
@@ -148,6 +170,16 @@
                 'textarea', selectors.question, '.xEFZqe', selectors.tabs].join(', '),
             attributes: ['data-artifact-opened', 'data-mlbl']
         },
-        hooks: { afterSync: syncMotion, retire: resetSurface }
+        hooks: {
+            afterSync: syncMotion,
+            retire() {
+                resetSurface();
+                chrome.runtime.onConnect?.removeListener(connectPreview);
+                previewPort?.disconnect();
+                previewPort = null;
+                previewWidth = null;
+            }
+        }
     });
+    if (ctx && !ctx.retired) chrome.runtime.onConnect?.addListener(connectPreview);
 })();
