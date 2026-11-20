@@ -4,6 +4,12 @@ All notable changes to Roomy (formerly Wider Gemini) are documented in this file
 
 Release notes on GitHub are generated from the matching `## <release-version>` section when a `v<release-version>` tag is pushed. Candidate versions such as `2.6.0-rc.1` are marked as prereleases.
 
+## 3.3.1 (2026-11-20)
+
+### Fixes
+
+- Wide conversations in Google AI Mode now fit beside the sidebar. The search tabs, answers, and follow-up box stay visible when you expand or collapse it.
+
 ## 3.3.0 (2026-11-20)
 
 ### Google AI Mode
