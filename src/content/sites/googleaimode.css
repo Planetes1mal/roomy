@@ -1,27 +1,52 @@
-/* Google's desktop layout uses 12 tracks for answers and eight for sources. The
-   fixed follow-up box has its own grid and keeps its native 20px outer inset. */
-html.wider-width-active [data-wgx-width="googleGrid"] {
-    --wg-aim-gap: 20px;
-    --wg-aim-source-space: calc(var(--rhs-width) + var(--rhs-margin));
-    --wg-aim-answer: min(var(--wgx-width), calc(var(--wgx-available) - var(--wg-aim-source-space) - 48px));
-    --wg-aim-tracks: minmax(4px, 1fr)
-        repeat(12, minmax(0, calc((var(--wg-aim-answer) - 11 * var(--wg-aim-gap)) / 12)))
-        repeat(8, minmax(0, calc((var(--wg-aim-source-space) - 8 * var(--wg-aim-gap)) / 8)))
-        minmax(4px, 1fr);
+/* Animate one inherited length so Google's independent grids agree on every frame. */
+@property --wg-aim-answer {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 652px;
+}
+@property --wg-aim-bias {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+}
+
+[data-wg-aim-motion] {
+    --wg-aim-answer: var(--wg-aim-native);
+    --wg-aim-bias: var(--wg-aim-native-bias, 0px);
+    --wg-aim-tracks: max(4px, calc((100% - var(--wg-aim-answer) - var(--wg-aim-source-space) - 40px) / 2 + var(--wg-aim-bias)))
+        repeat(12, minmax(0, calc((var(--wg-aim-answer) - 220px) / 12)))
+        repeat(8, minmax(0, calc((var(--wg-aim-source-space) - 160px) / 8)))
+        minmax(0px, 1fr);
+}
+[data-wg-aim-motion="wide"] {
+    --wg-aim-answer: min(var(--wg-aim-requested), calc(var(--wg-aim-available) - var(--wg-aim-source-space) - 48px));
+    --wg-aim-bias: 0px;
+}
+@media (prefers-reduced-motion: no-preference) {
+    [data-wg-aim-motion][data-wg-aim-ready] {
+        transition-property: --wg-aim-answer, --wg-aim-bias;
+        transition-duration: .35s;
+        transition-timing-function: linear(0, 0.0664, 0.1972, 0.3425, 0.4783, 0.5952, 0.691, 0.7671, 0.8261, 0.8711, 0.9051, 0.9305, 0.9493, 0.9631, 0.9732, 0.9806, 0.986, 0.9899, 0.9928, 0.9948, 0.9963, 0.9973, 0.9981, 0.9986, 0.999, 0.9993, 0.9995, 0.9996, 1);
+    }
+}
+[data-wg-aim-grid],
+[data-wg-aim-grid] > .y4VEUd,
+[data-wg-aim-motion] > .DZ13He.YNk70c:has(> .P3mIxe) {
     grid-template-columns: var(--wg-aim-tracks) !important;
 }
-html.wider-width-active [data-wgx-width="googleGrid"] > .y4VEUd {
-    grid-template-columns: var(--wg-aim-tracks) !important;
-}
-html.wider-width-active [data-wgx-width="googleGrid"] > .y4VEUd .t0ITR {
+[data-wg-aim-grid] > .y4VEUd .t0ITR {
     width: auto !important;
     justify-self: stretch !important;
 }
-html.wider-width-active [data-wgx-width="googleGrid"] [data-scope-id][data-mlbl] .pWvJNd:has(.mZJni) {
+[data-wg-aim-grid] .ilZyRc[data-rfsp]:has(.xEFZqe) {
+    width: var(--wg-aim-answer) !important;
+    max-width: var(--wg-aim-answer) !important;
+}
+[data-wg-aim-grid] [data-scope-id][data-mlbl] .pWvJNd:has(.mZJni) {
     flex: 0 0 var(--wg-aim-answer) !important;
     min-width: 0 !important;
 }
-html.wider-width-active [data-wgx-width="googleGrid"] [data-scope-id][data-mlbl] .pWvJNd .mZJni {
+[data-wg-aim-grid] [data-scope-id][data-mlbl] .pWvJNd .mZJni {
     width: 100% !important;
     max-width: 100% !important;
 }

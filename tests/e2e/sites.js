@@ -1,4 +1,4 @@
-(function () {
+(async function () {
     'use strict';
 
     const assert = require('assert');
@@ -296,16 +296,16 @@
         const registrySource = read(sharedScripts[0]);
         const fixtureRegistry = target.id === 'reference' ? registrySource.replace('const SITES = [',
             "const SITES = [{ id:'reference', matches:[], capabilities:['width','navigation','reading','userFullWidth'], tasks:[] },") : registrySource;
-        const scripts = [
+        const install = widthEnabled => [
             script(harness(target.id)),
             script(fixtureRegistry), script(read(sharedScripts[1])),
             script(`window.store = { [widerGeminiSettings.getSiteKeys(${JSON.stringify(target.id)}).width]:
-                { widthEnabled:false, chatWidthSetting:{ value:1000, unit:'px' } } };
+                { widthEnabled:${widthEnabled}, chatWidthSetting:{ value:1000, unit:'px' } } };
                 window.coreSources = ${JSON.stringify(coreSources)};`),
-            script(coreSources),
-            script(extra?.pageScenario || scenario(target.id, expected))
+            script(coreSources)
         ].join('');
-        const html = page.replace('</head>', `${styles}</head>`).replace('</body>', `${scripts}</body>`);
+        const tests = script(extra?.pageScenario || scenario(target.id, expected));
+        const html = page.replace('</head>', `${styles}</head>`).replace('</body>', `${install(false)}${tests}</body>`);
         const file = path.join(temp, `${target.id}.html`);
         fs.writeFileSync(file, html);
         const [w, h] = expected.viewport || [1600, 1000];
@@ -319,7 +319,8 @@
         const report = JSON.parse(match[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&'));
         fs.writeFileSync(path.join(temp, `${target.id}.json`), JSON.stringify(report, null, 4));
         assert(!report.error, `${target.id}: ${report.error}`);
-        return { report, expected, extra };
+        const motionPage = extra?.runMotion && page.replace('</head>', styles + install(true) + '</head>');
+        return { report, expected, extra, motionPage };
     }
 
     function check(id, r, expected) {
@@ -449,10 +450,11 @@
     }
 
     for (const target of selected) {
-        const { report, expected, extra } = run(target);
+        const { report, expected, extra, motionPage } = run(target);
         if (!extra?.pageScenario) check(target.id, report, expected);
         if (extra && extra.check) extra.check(report, expected, { assert, near });
+        if (motionPage) await extra.runMotion(chrome, temp, motionPage);
         console.log(`Passed generic site checks for ${target.id}`);
     }
     console.log(`Passed site regression for ${selected.map(target => target.id).join(', ')} (${temp}).`);
-})();
+})().catch(error => { console.error(error); process.exitCode = 1; });

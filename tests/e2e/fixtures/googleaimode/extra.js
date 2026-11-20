@@ -12,7 +12,9 @@ module.exports.pageScenario = `
         const marked = () => document.querySelectorAll('[data-wgx-width]').length;
         const geometry = () => ({
             answer:rect('.mZJni').width, shell:rect('.t0ITR').width,
-            aligned:Math.abs(rect('.mZJni').left - rect('.t0ITR textarea').left) < 1,
+            composerOffset:rect('.t0ITR textarea').left - rect('.mZJni').left,
+            tabsOffset:rect('.P3mIxe').left - rect('.mZJni').left,
+            questionOffset:rect('.tbIZh').right - rect('.mZJni').right,
             sources:rect('.oRipZb').width, gap:rect('.oRipZb').left - rect('.mZJni').right,
             left:rect('.sidebar').width, overflow:document.documentElement.scrollWidth - innerWidth
         });
@@ -70,7 +72,9 @@ module.exports.check = function (out, expected, { assert, near }) {
     for (const [sample, width] of [[out.at700, 700], [out.at1000, 1000], [out.capped, 1858]]) {
         near(sample.answer, width, 'answer width');
         near(sample.shell, width + 40, 'composer keeps its original outer inset');
-        assert(sample.aligned, 'input text aligns with answers');
+        near(sample.composerOffset, 0, 'input text aligns with answers');
+        near(sample.tabsOffset, 0, 'tabs align with the left edge of answers');
+        near(sample.questionOffset, 0, 'questions align with the right edge of answers');
         near(sample.sources, expected.sourceWidth, 'sources keep their native width');
         near(sample.gap, expected.sourceGap, 'sources stay clear of answers');
         near(sample.left, 206, 'left sidebar keeps its width');
@@ -84,6 +88,8 @@ module.exports.check = function (out, expected, { assert, near }) {
     near(out.wrapped.answer, 700, 'wrapped answer follows the width');
     near(out.wrapped.shell, 740, 'wrapped answer and follow-up box stay aligned');
     near(out.wrapped.gap, expected.sourceGap, 'wrapped answer leaves room for sources');
-    assert(out.wrapped.aligned);
+    near(out.wrapped.composerOffset, 0, 'wrapped answer and editor align');
     assert.deepStrictEqual(out.exit, ['notApplicable', 0, true]);
 };
+
+module.exports.runMotion = require('./motion.cjs');

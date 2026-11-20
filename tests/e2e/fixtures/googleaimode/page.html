@@ -6,11 +6,17 @@
 <style>
     body { margin: 0; --lhs: 206px; --center-width: 652px; --rhs-width: 372px; --rhs-margin: 76px; }
     .sidebar { position: fixed; width: var(--lhs); height: 100vh; }
-    [data-artifact-opened] { margin-left: var(--lhs); }
-    [data-artifact-opened], .y4VEUd { display: grid; gap: 0 20px; grid-template-columns: minmax(84px,1fr) repeat(20,36px) minmax(10px,1fr); }
+    .DZ13He, .QGG6Id { margin-left: var(--lhs); }
+    .QGG6Id > section { grid-column: 1 / -1; }
+    .P3mIxe { grid-column: 2 / -1; }
+    .DZ13He, .QGG6Id, [data-artifact-opened], .y4VEUd { display: grid; gap: 0 20px; grid-template-columns: minmax(84px,1fr) repeat(20,36px) minmax(10px,1fr); }
     .y4VEUd { position: fixed; inset: auto 0 0; padding-left: var(--lhs); height: 142px; }
     .t0ITR { grid-column: 2 / span 12; margin: 0 -20px; padding: 16px 80px 16px 20px; }
     .t0ITR textarea { display: block; box-sizing: border-box; width: 100%; }
+    .question-row { grid-column: 2 / -2; }
+    .ilZyRc { width: var(--center-width); }
+    .xEFZqe { display: flex; width: fit-content; max-width: 100%; margin-left: auto; }
+    .tbIZh { max-width: 504px; }
     [data-scope-id] { grid-column: 2 / -2; min-height: 400px; }
     .row { display: flex; }
     .pWvJNd { width: var(--center-width); }
@@ -23,13 +29,19 @@
 <aside class="sidebar">Search history</aside>
 <form role="search"><textarea></textarea><button type="button" role="link">AI Mode</button></form>
 <template>
+<div class="e9EfHf">
+    <header class="DZ13He YNk70c"><nav class="P3mIxe">AI Mode · All</nav></header>
+    <div class="QGG6Id YNk70c"><section>
     <div role="main" data-artifact-opened="false">
+        <div class="question-row"><div class="ilZyRc" data-rfsp><div class="xEFZqe"><div class="tbIZh">A short question</div></div></div></div>
         <div data-scope-id data-mlbl data-last-turn><div class="row">
             <div class="pWvJNd"><div class="mZJni"><h2>Answer</h2></div></div>
             <div class="sources"><aside class="oRipZb">Source links</aside></div>
         </div></div>
         <div class="y4VEUd"><div class="t0ITR"><textarea></textarea></div></div>
     </div>
+    </section></div>
+</div>
 </template>
 </body>
 </html>
