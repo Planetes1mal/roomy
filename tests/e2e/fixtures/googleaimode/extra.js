@@ -47,6 +47,15 @@ module.exports.pageScenario = `
             out.empty = [status().surface.kind, rect('.t0ITR').width];
             main.prepend(turn);
             out.returned = [status().surface.kind, rect('.mZJni').width];
+            // Some turns insert a display:contents container while the answer streams in.
+            const wrap = document.createElement('div');
+            wrap.setAttribute('data-container-id','');
+            wrap.style.display = 'contents';
+            const answer = q('.mZJni');
+            answer.replaceWith(wrap);
+            wrap.append(answer);
+            out.wrappedSurface = status().surface.kind;
+            out.wrapped = geometry();
             main.remove();
             await wait();
             out.exit = [status().surface.kind, marked(), location.href === start];
@@ -71,5 +80,10 @@ module.exports.check = function (out, expected, { assert, near }) {
     assert.deepStrictEqual(out.paused, [0, expected.nativeWidth]);
     assert.deepStrictEqual(out.empty, ['home', 740]);
     assert.deepStrictEqual(out.returned, ['chat', 700]);
+    assert.strictEqual(out.wrappedSurface, 'chat', 'wrapped answer remains a recognized conversation');
+    near(out.wrapped.answer, 700, 'wrapped answer follows the width');
+    near(out.wrapped.shell, 740, 'wrapped answer and follow-up box stay aligned');
+    near(out.wrapped.gap, expected.sourceGap, 'wrapped answer leaves room for sources');
+    assert(out.wrapped.aligned);
     assert.deepStrictEqual(out.exit, ['notApplicable', 0, true]);
 };

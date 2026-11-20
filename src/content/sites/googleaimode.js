@@ -4,7 +4,7 @@
     const selectors = {
         grid: '[role="main"][data-artifact-opened]',
         turn: '[data-scope-id][data-mlbl]',
-        answer: '.pWvJNd > .mZJni',
+        answer: '.pWvJNd .mZJni',
         composer: '.t0ITR:has(textarea)',
         dock: '.y4VEUd',
         sources: '.oRipZb'

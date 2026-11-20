@@ -17,11 +17,11 @@ html.wider-width-active [data-wgx-width="googleGrid"] > .y4VEUd .t0ITR {
     width: auto !important;
     justify-self: stretch !important;
 }
-html.wider-width-active [data-wgx-width="googleGrid"] [data-scope-id][data-mlbl] .pWvJNd:has(> .mZJni) {
+html.wider-width-active [data-wgx-width="googleGrid"] [data-scope-id][data-mlbl] .pWvJNd:has(.mZJni) {
     flex: 0 0 var(--wg-aim-answer) !important;
     min-width: 0 !important;
 }
-html.wider-width-active [data-wgx-width="googleGrid"] [data-scope-id][data-mlbl] .pWvJNd > .mZJni {
+html.wider-width-active [data-wgx-width="googleGrid"] [data-scope-id][data-mlbl] .pWvJNd .mZJni {
     width: 100% !important;
     max-width: 100% !important;
 }
