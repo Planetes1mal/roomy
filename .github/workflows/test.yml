@@ -12,6 +12,10 @@ permissions:
 jobs:
   tests:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [unit-and-layout, sites-and-popup]
     steps:
       - uses: actions/checkout@v7
 
@@ -21,21 +25,31 @@ jobs:
           package-manager-cache: false
 
       - name: Run unit and packaging tests
+        if: matrix.suite == 'unit-and-layout'
         run: node scripts/test.js
 
-      - name: Run synthetic layout regression
+      - name: Locate Chrome
         shell: pwsh
         run: |
           $chromePath = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe').'(default)'
           $chromeVersion = (Get-Item -LiteralPath $chromePath).VersionInfo.ProductVersion
           Write-Host "Google Chrome $chromeVersion ($chromePath)"
-          $env:WG_CHROME = $chromePath
+          "WG_CHROME=$chromePath" >> $env:GITHUB_ENV
+
+      - name: Check message width, reading and navigation
+        if: matrix.suite == 'unit-and-layout'
+        shell: pwsh
+        run: |
           node tests/e2e/message-width.js
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           node tests/e2e/chatgpt-reading.js
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           node tests/e2e/navigation-surfaces.js
-          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+
+      - name: Check site adapters and popup
+        if: matrix.suite == 'sites-and-popup'
+        shell: pwsh
+        run: |
           node tests/e2e/sites.js
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           node tests/e2e/popup-sites.js . popup-sites-check
