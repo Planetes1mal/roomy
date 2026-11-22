@@ -22,6 +22,7 @@ tests/*
 tests/e2e/*
 !tests/e2e/message-width.js
 !tests/e2e/chatgpt-reading.js
+!tests/e2e/reading-scroll.js
 !tests/e2e/navigation-surfaces.js
 !tests/e2e/performance.js
 !tests/e2e/package-load.js
