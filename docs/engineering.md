@@ -115,6 +115,7 @@ Internal checks require Node.js 24, plus Chrome for browser checks. No npm packa
 node scripts/test.js --skip-packaging
 node tests/e2e/message-width.js
 node tests/e2e/chatgpt-reading.js
+node tests/e2e/reading-scroll.js
 node tests/e2e/navigation-surfaces.js
 node tests/e2e/sites.js
 node tests/e2e/popup-sites.js . local/popup-sites-check
@@ -135,6 +136,7 @@ For full release validation, `node scripts/test.js` also runs packaging tests an
 | `release-package.test.js` (full suite only) | RC/stable tags, exact release notes, directory-rule ZIP contents including every registry file, and failed-build behavior |
 | `e2e/message-width.js` | Real-browser measurements on synthetic message trees: px/%, nested width limits, late messages, response headers and loading states, table scrolling, code wrapping, media and input sizes, and protected overlay content |
 | `e2e/chatgpt-reading.js` | Real-browser measurements on stripped ChatGPT markup: font/density/manual spacing boundaries, protected code/table/controls, user full width gated by width, native wrap, streamed content, pause restoration, and fresh resampling on resume |
+| `e2e/reading-scroll.js` | Six cases per layout check that sampling a new paragraph at 200% font and full density preserves both `scrollTop` and a visible paragraph's position in the viewport. Covers Gemini, ChatGPT in both scroll directions, Claude and DeepSeek, with scroll anchoring and smooth scrolling. |
 | `e2e/navigation-surfaces.js` | Navigation rails on Gemini, ordinary ChatGPT, Dots and Page quick chat: tick placement, jumps, previews, virtualized history, gutters, pause, and a jump while earlier history loads |
 | `e2e/sites.js` | The same width, reading, navigation, surface, pause and takeover scenario on every core site's fixture plus the synthetic reference site |
 | `e2e/popup-sites.js` | The popup with a fake registry: list grouping and order, New markers, Allow requesting only that site's hosts synchronously, capability-gated controls, the intro line, and six languages within 400px, with screenshots |

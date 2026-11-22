@@ -44,6 +44,8 @@ jobs:
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           node tests/e2e/chatgpt-reading.js
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          node tests/e2e/reading-scroll.js
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
           node tests/e2e/navigation-surfaces.js
 
       - name: Check site adapters and popup

@@ -190,6 +190,8 @@
         if (!pending.length) return;
 
         const enabled = READING_CLASSES.filter(name => document.body.classList.contains(name));
+        const scroller = enabled.length ? (findChatScroller() || document.scrollingElement) : null;
+        const scrollTop = scroller?.scrollTop;
         enabled.forEach(name => document.body.classList.remove(name));
         let measurements;
         try {
@@ -201,6 +203,10 @@
             });
         } finally {
             enabled.forEach(name => document.body.classList.add(name));
+            // Measuring at native size can move the viewport even with scroll anchoring enabled.
+            if (scroller && Math.abs(scroller.scrollTop - scrollTop) > 0.5) {
+                scroller.scrollTo({ top: scrollTop, behavior: 'instant' });
+            }
         }
         for (const { node, font, line, top, bottom, gap, display } of measurements) {
             const isRoot = node.matches(READING_ROOT_SELECTOR);
