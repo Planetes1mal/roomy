@@ -371,6 +371,8 @@
         if (!pending.length) return;
         const root = document.documentElement;
         const tokens = root.getAttribute(READING_ATTR);
+        const scroller = tokens ? (surface.scroll || document.scrollingElement) : null;
+        const scrollTop = scroller?.scrollTop;
         if (tokens !== null) root.removeAttribute(READING_ATTR);
         let metrics;
         try {
@@ -384,6 +386,10 @@
             });
         } finally {
             if (tokens !== null) root.setAttribute(READING_ATTR, tokens);
+            // Keep the signed offset: a column-reverse thread scrolls toward negative values.
+            if (scroller && Math.abs(scroller.scrollTop - scrollTop) > 0.5) {
+                scroller.scrollTo({ top: scrollTop, behavior: 'instant' });
+            }
         }
         for (const { node, display, font, line, top, bottom } of metrics) {
             const user = !node.closest(ASSISTANT_ROOT);
