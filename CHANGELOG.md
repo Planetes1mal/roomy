@@ -4,6 +4,12 @@ All notable changes to Roomy (formerly Wider Gemini) are documented in this file
 
 Release notes on GitHub are generated from the matching `## <release-version>` section when a `v<release-version>` tag is pushed. Candidate versions such as `2.6.0-rc.1` are marked as prereleases.
 
+## 3.3.2 (2026-11-22)
+
+### Fixes
+
+- Fixed a bug that could make long conversations jump upward as a reply streamed in when you used a custom font size or message spacing on Gemini, ChatGPT, Claude, or DeepSeek.
+
 ## 3.3.1 (2026-11-20)
 
 ### Fixes
