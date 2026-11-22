@@ -61,7 +61,7 @@ For layout changes, also try the affected flow on the real Gemini, ChatGPT, Clau
 
 Do not include private conversations, account details, tokens, or local diagnostic archives in an issue or commit. Keep local diagnostics and experimental browser scripts in the ignored `local/` folder.
 
-The repository holds only the extension, its tests and build scripts, and the public documentation. Keep research, metrics, verification logs, experiments and other working notes in the ignored `local/` folder. `tests/repository-files.test.js` lists every public path and fails when anything else is committed; extend that list in the same PR when a new public file is genuinely needed.
+The repository holds only the extension, its tests and build scripts, and the public documentation. Keep research, metrics, verification logs, experiments and other working notes in the ignored `local/` folder. `tests/repository-files.test.js` checks every tracked path against its public rules, each an exact file name, a directory, or a pattern, and fails when a tracked path matches none of them. The `tests/` directory rule already covers a new standalone script under `tests/e2e/`, but the root `.gitignore` ignores that folder's files by default: allow the script there with its own `!tests/e2e/<name>.js` line, as the existing scripts do. Extend the rules in the repository test, in the same PR, only when a genuinely public file falls outside them.
 
 ## Translations
 
