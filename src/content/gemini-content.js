@@ -189,6 +189,15 @@
         const pending = [...candidates].filter(node => !measuredReadingNodes.has(node));
         if (!pending.length) return;
 
+        // Removing the typography classes below re-lays out the whole conversation at
+        // native size. In a long chat that collapses scrollHeight by thousands of pixels
+        // in a single layout pass, and because Gemini's transcript scroller disables
+        // scroll anchoring, the browser clamps scrollTop and the reader is thrown upwards.
+        // Remember the scroll offset and put it back once the classes are back: the whole
+        // pass runs inside one task, so nothing paints while the height is collapsed.
+        const readingScroller = findChatScroller() || document.scrollingElement || document.documentElement;
+        const readingScrollTop = readingScroller ? readingScroller.scrollTop : 0;
+
         const enabled = READING_CLASSES.filter(name => document.body.classList.contains(name));
         enabled.forEach(name => document.body.classList.remove(name));
         let measurements;
@@ -201,6 +210,13 @@
             });
         } finally {
             enabled.forEach(name => document.body.classList.add(name));
+        }
+
+        // The height is back, so the old offset points at the same text again.
+        if (readingScroller) {
+            const limit = Math.max(0, readingScroller.scrollHeight - readingScroller.clientHeight);
+            const target = Math.min(readingScrollTop, limit);
+            if (Math.abs(readingScroller.scrollTop - target) > 0.5) readingScroller.scrollTop = target;
         }
         for (const { node, font, line, top, bottom, gap, display } of measurements) {
             const isRoot = node.matches(READING_ROOT_SELECTOR);
