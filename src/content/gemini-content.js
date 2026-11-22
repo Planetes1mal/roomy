@@ -189,19 +189,58 @@
         const pending = [...candidates].filter(node => !measuredReadingNodes.has(node));
         if (!pending.length) return;
 
-        const enabled = READING_CLASSES.filter(name => document.body.classList.contains(name));
-        enabled.forEach(name => document.body.classList.remove(name));
-        let measurements;
-        try {
-            measurements = pending.map(node => {
-                const style = getComputedStyle(node);
-                return { node, font: parseFloat(style.fontSize), line: parseFloat(style.lineHeight),
-                    top: parseFloat(style.marginTop), bottom: parseFloat(style.marginBottom),
-                    gap: parseFloat(style.rowGap), display: style.display };
-            });
-        } finally {
-            enabled.forEach(name => document.body.classList.add(name));
-        }
+        // Measure in place. Toggling the typography classes off re-lays out the whole
+        // conversation at native size: in a long chat that collapses scrollHeight by
+        // thousands of pixels in a single frame, and because Gemini's scroller disables
+        // scroll anchoring the browser clamps scrollTop, throwing the reader upwards.
+        // Measure what is on screen instead and divide the applied scale back out.
+        const bodyClassList = document.body.classList;
+        const readingFontOn = bodyClassList.contains('wider-gemini-font-enabled');
+        const readingDensityOn = bodyClassList.contains('wider-gemini-density-enabled');
+        const readingCustomSpacing = bodyClassList.contains('wider-gemini-spacing-custom');
+        const readingRootStyle = getComputedStyle(document.documentElement);
+        const readingFontScale = parseFloat(readingRootStyle.getPropertyValue('--gemini-font-scale')) || 1;
+        const readingProgress = parseFloat(readingRootStyle.getPropertyValue('--gemini-density-progress')) || 0;
+        const readingSpacingScale = parseFloat(readingRootStyle.getPropertyValue('--gemini-density-spacing-scale')) || 1;
+        const safeScale = readingFontScale > 0 ? readingFontScale : 1;
+        const spacingDivisor = (!readingCustomSpacing && readingSpacingScale > 0 && readingSpacingScale < 1)
+            ? readingSpacingScale : 1;
+        const measurements = pending.map(node => {
+            const style = getComputedStyle(node);
+            const measuredFont = parseFloat(style.fontSize);
+            const measuredLine = parseFloat(style.lineHeight);
+            const measuredTop = parseFloat(style.marginTop);
+            const measuredBottom = parseFloat(style.marginBottom);
+            const measuredGap = parseFloat(style.rowGap);
+            const alreadyTyped = node.hasAttribute('data-wg-typography');
+            const font = (readingFontOn && alreadyTyped && Number.isFinite(measuredFont))
+                ? measuredFont / safeScale : measuredFont;
+            let line = measuredLine;
+            const lineKind = node.getAttribute('data-wg-line');
+            if ((readingFontOn || readingDensityOn) && alreadyTyped && Number.isFinite(measuredLine) &&
+                lineKind !== null && lineKind !== 'inline') {
+                line = measuredLine / safeScale;
+                if (readingDensityOn && !readingCustomSpacing && readingProgress > 0 &&
+                    Number.isFinite(font) && font > 0) {
+                    // measured = (native - reduction * progress) * scale
+                    for (let i = 0; i < 3; i++) {
+                        const compact = Math.min(line, Math.max(font * 1.15, line * 0.82));
+                        const next = measuredLine / safeScale + (line - compact) * readingProgress;
+                        if (!Number.isFinite(next) || Math.abs(next - line) < 0.01) break;
+                        line = next;
+                    }
+                }
+            }
+            const adjustSpacing = (value, hasAttr) => (hasAttr && Number.isFinite(value))
+                ? value / spacingDivisor : value;
+            return {
+                node, font, line,
+                top: adjustSpacing(measuredTop, node.hasAttribute('data-wg-spacing')),
+                bottom: adjustSpacing(measuredBottom, node.hasAttribute('data-wg-spacing')),
+                gap: adjustSpacing(measuredGap, node.hasAttribute('data-wg-gap')),
+                display: style.display
+            };
+        });
         for (const { node, font, line, top, bottom, gap, display } of measurements) {
             const isRoot = node.matches(READING_ROOT_SELECTOR);
             const text = node.matches(READING_TEXT_SELECTOR) || isRoot;
