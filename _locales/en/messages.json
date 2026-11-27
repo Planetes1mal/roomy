@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy: Wide Mode for Gemini, ChatGPT, Claude, DeepSeek & Google AI Mode"
+    "message": "Roomy: Widen Gemini, ChatGPT, Claude, DeepSeek, Google AI Mode & NotebookLM"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Widen Gemini, ChatGPT, Claude, DeepSeek and Google AI Mode. Save a separate conversation width for each site."
+    "message": "Widen Gemini, ChatGPT, Claude, DeepSeek, Google AI Mode and NotebookLM. Save a separate conversation width for each site."
   },
   "widthLabel": {
     "message": "Conversation width"

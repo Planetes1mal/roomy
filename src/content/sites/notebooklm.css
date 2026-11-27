@@ -1,0 +1,18 @@
+:where(html.wider-width-active) chat-panel[data-wgx-width="variable"] {
+    /* The scroll pane and omnibar share a center, but only the scroll pane reserves scrollbar space. */
+    --wg-notebooklm-pair: min(var(--wgx-width, 1000px), calc(var(--wgx-available, 100%) - 48px));
+}
+
+:where(html.wider-width-active) chat-panel[data-wgx-width="variable"] > .chat-panel-content >
+    :is(chat-panel-header, .chat-panel-empty-state, chat-panel-zero-state, .chat-message-pair) {
+    max-inline-size: var(--wg-notebooklm-pair) !important;
+}
+
+:where(html.wider-width-active) chat-panel[data-wgx-width="variable"] .chat-message-pair .to-user-message-inner-content {
+    max-inline-size: none !important;
+}
+
+:where(html.wider-width-active) chat-panel[data-wgx-width="variable"] > omnibar .omnibar-container {
+    max-inline-size: var(--wg-notebooklm-pair) !important;
+    padding-inline: var(--nb-sys-spacing--xxl, 24px) !important;
+}
