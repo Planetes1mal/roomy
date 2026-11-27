@@ -9,6 +9,9 @@ const messages = Object.fromEntries(LOCALES.map(locale =>
     [locale, JSON.parse(read(`_locales/${locale}/messages.json`))]));
 const english = messages.en;
 const keys = Object.keys(english);
+const sandbox = {};
+require('vm').runInNewContext(read('src/shared/sites.js'), sandbox);
+const siteNames = sandbox.widerRoomySites.sites.map(site => site.name);
 
 for (const locale of LOCALES) {
     const own = Object.keys(messages[locale]);
@@ -33,6 +36,11 @@ for (const locale of LOCALES) {
     assert.ok(length('appName') <= 75, `${locale}.appName is longer than 75 characters`);
     assert.ok(length('appDesc') <= 132, `${locale}.appDesc is longer than 132 characters`);
     assert.ok(length('brandName') <= 12, `${locale}.brandName is longer than 12 characters`);
+    const { appName, appDesc } = messages[locale];
+    assert.ok(!siteNames.some(name => appName.message.includes(name)), `${locale}.appName lists a supported site`);
+    const mentioned = siteNames.filter(name => appDesc.message.includes(name));
+    assert.ok(mentioned.length <= 5 && mentioned.every(name => appDesc.message.split(name).length === 2),
+        `${locale}.appDesc must mention at most five supported sites, each once`);
 }
 
 function walk(directory) {

@@ -4,6 +4,10 @@ All notable changes to Roomy (formerly Wider Gemini) are documented in this file
 
 Release notes on GitHub are generated from the matching `## <release-version>` section when a `v<release-version>` tag is pushed. Candidate versions such as `2.6.0-rc.1` are marked as prereleases.
 
+## 3.4.1 (2026-11-27)
+
+- The extension now has a shorter name and summary in all six languages. The store description links to the full list of supported sites.
+
 ## 3.4.0 (2026-11-27)
 
 ### NotebookLM

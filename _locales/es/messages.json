@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy amplía Gemini, ChatGPT, Claude, DeepSeek, Google AI Mode y NotebookLM"
+    "message": "Roomy: modo ancho para chats de IA"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Amplía Gemini, ChatGPT, Claude, DeepSeek, Google AI Mode y NotebookLM. Guarda un ancho de conversación distinto para cada sitio."
+    "message": "Guarda un ancho de lectura para cada sitio. Da más espacio a las tablas o acorta las líneas de las respuestas largas."
   },
   "widthLabel": {
     "message": "Ancho de conversación"
