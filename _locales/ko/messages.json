@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy: Gemini·ChatGPT·Claude·DeepSeek·Google AI Mode 와이드 모드"
+    "message": "Roomy: Gemini·ChatGPT·Claude·DeepSeek·Google AI Mode·NotebookLM 와이드 모드"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Gemini, ChatGPT, Claude, DeepSeek, Google AI Mode의 대화 너비를 사이트별로 설정하세요."
+    "message": "Gemini, ChatGPT, Claude, DeepSeek, Google AI Mode, NotebookLM의 대화 너비를 사이트별로 설정하세요."
   },
   "widthLabel": {
     "message": "대화 너비"

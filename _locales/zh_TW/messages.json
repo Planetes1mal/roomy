@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy：Gemini、ChatGPT、Claude、DeepSeek 與 Google AI Mode 寬版閱讀"
+    "message": "Roomy：Gemini、ChatGPT、Claude、DeepSeek、Google AI Mode 與 NotebookLM 寬版閱讀"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "分別設定 Gemini、ChatGPT、Claude、DeepSeek 和 Google AI Mode 的對話寬度。"
+    "message": "分別設定 Gemini、ChatGPT、Claude、DeepSeek、Google AI Mode 和 NotebookLM 的對話寬度。"
   },
   "widthLabel": {
     "message": "對話寬度"

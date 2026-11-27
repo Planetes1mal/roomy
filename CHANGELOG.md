@@ -4,6 +4,14 @@ All notable changes to Roomy (formerly Wider Gemini) are documented in this file
 
 Release notes on GitHub are generated from the matching `## <release-version>` section when a `v<release-version>` tag is pushed. Candidate versions such as `2.6.0-rc.1` are marked as prereleases.
 
+## 3.4.0 (2026-11-27)
+
+### NotebookLM
+
+- Choose **Allow** next to NotebookLM in the Roomy popup to enable it. Access to notebook.google.com is optional.
+- Set the width of your notebook overview, messages, and input in pixels or as a percentage of the browser window. They fit the space available beside Sources and Studio, including when you open a quiz.
+- Use the navigation marks to jump to your questions and reach earlier messages in a long notebook conversation.
+
 ## 3.3.2 (2026-11-22)
 
 ### Fixes

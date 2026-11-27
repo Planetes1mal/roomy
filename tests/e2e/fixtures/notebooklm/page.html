@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Notebook conversation fixture</title>
+    <style>
+        body { margin: 0; }
+        notebook { display: grid; gap: 8px; padding: 12px; grid-template-columns: var(--left, 25%) minmax(0, 1fr) var(--right, 25%); }
+        section, chat-panel { min-width: 0; }
+        chat-panel { display: flex; flex-direction: column; height: calc(100vh - 32px); }
+        .chat-panel-content { display: flex; flex-direction: column; align-items: center; flex: 1; overflow: auto; scrollbar-gutter: stable both-edges; padding-inline: 8px; }
+        .chat-panel-content > :is(.chat-message-pair, chat-panel-header, .chat-panel-empty-state, chat-panel-zero-state) {
+            flex: none; width: 100%; max-inline-size: 756px; box-sizing: border-box;
+        }
+        .chat-message-pair, .chat-panel-empty-state { padding-inline: 24px; }
+        .date-separator { align-self: stretch; text-align: center; }
+        chat-message, omnibar, query-box { display: block; }
+        .to-user-message-inner-content { box-sizing: border-box; max-inline-size: 900px; padding-inline: 5px; min-height: 75vh; }
+        .omnibar-container { box-sizing: border-box; margin: auto; padding-inline: 16px; max-inline-size: 660px; }
+        textarea { box-sizing: border-box; width: 100%; }
+        table-element-view { display: block; overflow-x: auto; }
+        table { width: 850px; }
+    </style>
+</head>
+<body>
+    <notebook>
+        <section class="source-panel"><button>Sources</button></section>
+        <section class="chat-panel">
+            <chat-panel>
+                <div class="chat-panel-content">
+                    <chat-panel-header>Notebook overview</chat-panel-header>
+                    <div class="chat-panel-empty-state">A summary of the sources.</div>
+                    <div class="date-separator">Today</div>
+                </div>
+                <omnibar><div class="omnibar-container"><query-box><textarea></textarea></query-box></div></omnibar>
+            </chat-panel>
+        </section>
+        <section class="studio-panel"><button>Studio</button></section>
+    </notebook>
+    <template>
+        <div class="chat-message-pair">
+            <chat-message><div class="from-user-container"><div class="message-text-content"></div></div></chat-message>
+            <chat-message><div class="to-user-message-inner-content"><div class="message-text-content">
+                <p>These two configurations differ by one option.</p><table-element-view><table><tr><td>Sample</td></tr></table></table-element-view>
+            </div></div></chat-message>
+        </div>
+    </template>
+    <script>
+        function makePair(question) {
+            const pair = document.querySelector('template').content.firstElementChild.cloneNode(true);
+            pair.querySelector('.from-user-container .message-text-content').textContent = question;
+            return pair;
+        }
+        for (const question of ['How are options sampled?', 'Which option changed?', 'Which examples remain?']) {
+            document.querySelector('.chat-panel-content').append(makePair(question));
+        }
+    </script>
+</body>
+</html>

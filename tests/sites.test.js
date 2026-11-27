@@ -81,6 +81,13 @@ for (const site of sites) {
     assert.strictEqual(registry.forUrl(`${site.url}chat/abc?x=1#y`), site);
 }
 const google = registry.get('googleaimode');
+const notebook = registry.forUrl('https://notebook.google.com/notebook/example');
+assert.strictEqual(notebook.id, 'notebooklm');
+assert.strictEqual(notebook.access, 'optional');
+assert.deepStrictEqual(plain(notebook.capabilities), ['width', 'navigation']);
+assert.deepStrictEqual(plain(notebook.tasks), []);
+assert.ok(registry.addedSince('3.3.2').includes(notebook), 'offer NotebookLM to users upgrading from 3.3.2');
+assert.strictEqual(registry.forUrl('https://notebook.google.com.example.org/notebook/example'), null);
 assert.strictEqual(registry.forUrl('https://www.google.com/search?q=test&udm=50'), google);
 for (const url of ['https://www.google.com/', 'https://www.google.com/search?q=test']) {
     assert.strictEqual(registry.candidateForUrl(url), google);

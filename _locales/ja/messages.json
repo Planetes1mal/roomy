@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "Roomy：Gemini・ChatGPT・Claude・DeepSeek・Google AI Mode をワイド表示"
+    "message": "Roomy：Gemini・ChatGPT・Claude・DeepSeek・Google AI Mode・NotebookLM をワイド表示"
   },
   "brandName": {
     "message": "Roomy"
   },
   "appDesc": {
-    "message": "Gemini、ChatGPT、Claude、DeepSeek、Google AI Mode の会話幅をサイトごとに設定できます。"
+    "message": "Gemini、ChatGPT、Claude、DeepSeek、Google AI Mode、NotebookLM の会話幅をサイトごとに設定できます。"
   },
   "widthLabel": {
     "message": "会話の幅"

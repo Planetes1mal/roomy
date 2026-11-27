@@ -87,6 +87,19 @@
             capabilities: ['width'],
             tasks: [],
             adapter: { js: 'src/content/sites/googleaimode.js', css: 'src/content/sites/googleaimode.css' }
+        },
+        {
+            id: 'notebooklm',
+            name: 'NotebookLM',
+            url: 'https://notebook.google.com/',
+            matches: ['https://notebook.google.com/*'],
+            access: 'optional',
+            since: '3.4.0',
+            runtime: 'core',
+            storage: 'default',
+            capabilities: ['width', 'navigation'],
+            tasks: [],
+            adapter: { js: 'src/content/sites/notebooklm.js', css: 'src/content/sites/notebooklm.css' }
         }
     ];
 
